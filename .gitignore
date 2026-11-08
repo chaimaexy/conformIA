@@ -1,0 +1,34 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Données volumineuses (régénérables par le pipeline d'ingestion)
+data/raw/*
+data/processed/*
+!data/**/.gitkeep
+
+# Logs et divers
+logs/
+*.log
+.DS_Store
+Thumbs.db
+supabase/.temp/

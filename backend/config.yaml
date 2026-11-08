@@ -1,0 +1,35 @@
+# Configuration non sensible de ConformIA.
+# Les secrets (clés API, URL Supabase) vont dans .env, jamais ici.
+
+llm:
+  provider: mistral
+  chat_model: mistral-small-latest      # passer à mistral-large-latest pour l'agent de conformité
+  temperature: 0.0                      # réponses juridiques : déterministe
+  max_tokens: 1024
+
+embeddings:
+  provider: mistral
+  model: mistral-embed
+  dimension: 1024                       # doit correspondre à vector(1024) dans la migration SQL
+
+chunking:
+  strategy: structural                  # structural | recursive | semantic (comparées en phase 2)
+  chunk_size: 1000
+  chunk_overlap: 150
+
+retrieval:
+  top_k: 8                              # candidats récupérés avant reranking
+  final_k: 4                            # chunks envoyés au LLM
+  hybrid: true                          # dense (pgvector) + plein texte (tsvector 'french')
+  multi_query: false                    # activé en phase 4
+  rrf_k: 60                             # constante de Reciprocal Rank Fusion
+
+corpus:
+  language: fr
+  sources:
+    - id: ai_act
+      title: "Règlement (UE) 2024/1689 - AI Act"
+      celex: "32024R1689"
+    - id: rgpd
+      title: "Règlement (UE) 2016/679 - RGPD"
+      celex: "32016R0679"

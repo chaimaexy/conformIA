@@ -1,0 +1,22 @@
+services:
+  api:
+    build: ./backend
+    env_file: .env
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Phase 7 : ingestion asynchrone des PDF utilisateurs
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  # worker:
+  #   build: ./backend
+  #   env_file: .env
+  #   command: celery -A app.workers.celery_app worker --loglevel=info
+  #   depends_on: [redis]
