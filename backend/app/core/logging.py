@@ -9,5 +9,5 @@ def setup_logging(level: str = "INFO") -> None:
         stream=sys.stdout,
         force=True,
     )
-    for noisy in ("httpx", "httpcore"):
+    for noisy in ("httpx", "httpx2", "httpcore", "huggingface_hub", "sentence_transformers"):
         logging.getLogger(noisy).setLevel(logging.WARNING)

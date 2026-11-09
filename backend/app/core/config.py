@@ -67,8 +67,11 @@ class RerankerConfig(BaseModel):
 
 class ChunkingConfig(BaseModel):
     strategy: Literal["structural", "recursive", "semantic"] = "structural"
-    chunk_size: int = 1000
-    chunk_overlap: int = 150
+    chunk_size: int = 1000  # récursif
+    chunk_overlap: int = 150  # récursif
+    max_chars: int = 2000  # structurel et sémantique : taille maximale d'un chunk
+    min_chars: int = 300  # sémantique : fusion des fragments plus courts
+    semantic_percentile: float = 90  # sémantique : seuil de coupure (percentile des distances)
 
 
 class RetrievalConfig(BaseModel):

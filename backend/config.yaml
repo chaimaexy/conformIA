@@ -31,9 +31,12 @@ reranker:
   answerability_threshold: null         # calibré en phase 4 sur le golden set (questions hors corpus incluses)
 
 chunking:
-  strategy: structural                  # structural | recursive | semantic (comparées en phase 2)
-  chunk_size: 1000
-  chunk_overlap: 150
+  strategy: structural                  # structural | recursive | semantic (comparées en phase 3)
+  chunk_size: 1000                      # récursif : taille cible (caractères)
+  chunk_overlap: 150                    # récursif : chevauchement
+  max_chars: 2000                       # structurel + sémantique : taille maximale
+  min_chars: 300                        # sémantique : fusion des fragments plus courts
+  semantic_percentile: 90               # sémantique : coupe aux 10 % de transitions les plus « éloignées »
 
 retrieval:
   top_k: 8                              # candidats récupérés avant reranking

@@ -16,9 +16,16 @@ dependencies = [
     "beautifulsoup4>=4.12",
     "lxml>=5.3",
     "pdfplumber>=0.11",
+    "langchain-text-splitters>=0.3",
+    "numpy>=2.0",
 ]
 
 [project.optional-dependencies]
+# Encodeurs locaux (bge-m3, cross-encodeurs) : torch CPU + sentence-transformers.
+# Sous Windows/Linux sans GPU : pip install torch --index-url https://download.pytorch.org/whl/cpu
+local = [
+    "sentence-transformers>=3.3",
+]
 dev = [
     "pytest>=8.3",
     "httpx>=0.27",

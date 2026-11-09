@@ -83,6 +83,19 @@ uvicorn app.main:app --reload # http://localhost:8000/docs
 pytest
 ```
 
+Encodeurs locaux (bge-m3, cross-encodeurs), sur CPU :
+
+```bash
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+pip install -e ".[local]"
+```
+
+> **Windows 11 et Smart App Control** : ce contrôle bloque les DLL de paquets publiés
+> très récemment (pas encore de « réputation »), avec l'erreur *« Une stratégie de contrôle
+> d'application a bloqué ce fichier »*. Solution sans désactiver la protection : installer
+> une version plus ancienne et répandue du paquet concerné (ici `regex==2025.11.3` et
+> `scikit-learn==1.7.2`).
+
 ## Ingestion du corpus
 
 ```bash
@@ -127,12 +140,46 @@ l'ordre**. Elle servira de grille à l'agent de conformité (phase 6).
 > Les textes consolidés sont un outil de documentation : seules les versions publiées au
 > Journal officiel font foi.
 
+## Chunking, embeddings et indexation
+
+```bash
+cd backend
+python -m app.indexing                 # 3 stratégies, 2 modèles, envoi dans Supabase
+python -m app.indexing --no-upload     # calcul local seulement (cache data/cache/)
+```
+
+| Stratégie | Principe | Chunks | Taille médiane | < 100 car. | À cheval sur 2 sections |
+|---|---|---|---|---|---|
+| **Structurelle** | 1 unité juridique = 1 chunk ; découpe aux paragraphes / intertitres si > 2 000 car. ; en-tête de contexte (« AI Act > CHAPITRE III > Article 6 - ... (partie 2/3 - paragraphe 1) ») | 1 190 | 1 402 | 1 | 0 |
+| **Récursive** (référence des tutoriels) | `RecursiveCharacterTextSplitter`, 1 000 car., chevauchement 150, sans structure ni en-tête | 2 354 | 764 | 189 | 24 |
+| **Sémantique** | Coupe là où deux phrases consécutives s'éloignent (10 % des distances cosinus les plus fortes), sans franchir les sections | 1 334 | 1 084 | 4 | 0 |
+
+Plan d'expérience, pour comparer à coût raisonnable sans GPU : les 3 stratégies avec
+`mistral-embed` (comparaison du chunking), et la stratégie structurelle aussi avec `bge-m3`
+(comparaison des modèles). Les vecteurs sont mis en cache (SQLite) : ré-indexer ne coûte rien.
+
+| Modèle | Où | Temps pour 1 190 chunks (i5-10210U, sans GPU) |
+|---|---|---|
+| `mistral-embed` | API Mistral (lots de 64, 60 requêtes/min) | ~1 min |
+| `bge-m3` (XLM-RoBERTa, 568M paramètres) | CPU local | **74 min** |
+
+Supabase contient 4 878 chunks (~35 Mo, colonnes `embedding` et `embedding_bge_m3`, index HNSW
+avec parcours itératif pgvector 0.8 pour filtrer par stratégie sans perdre de résultats).
+
+**Premier test, premier échec instructif.** À la question « À partir de quand les règles sur les
+systèmes d'IA à haut risque de l'annexe III s'appliquent-elles ? », la bonne réponse est
+l'article 113 (2 décembre 2027, version omnibus). La recherche dense le classe au rang 5
+(récursif), 11 (structurel), 19 (sémantique) et au-delà de 50 (bge-m3) : elle ramène les articles
+qui *parlent* de haut risque (6, 7) plutôt que celui qui donne les *dates*. C'est ce que le golden
+set (phase 3) mesurera, et ce que la recherche hybride, le multi-query et le reranker (phase 4)
+doivent corriger.
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
 - [x] **Phase 1a** : ingestion AI Act + RGPD (versions consolidées, rectificatifs, contrôles qualité)
 - [x] **Phase 1b** : fiches pratiques IA de la CNIL (17 fiches + liste de vérification PDF, fidélité caractère par caractère)
-- [ ] **Phase 2** : chunking (3 stratégies) + embeddings (`mistral-embed` vs `bge-m3`) + indexation
+- [x] **Phase 2** : chunking (3 stratégies) + embeddings (`mistral-embed` vs `bge-m3`) + indexation Supabase (4 878 chunks)
 - [ ] **Phase 3** : golden set (~80 questions, dont des questions hors corpus) + évaluation de référence
 - [ ] **Phase 4** : retrieval avancé (hybride, multi-query, RRF, cross-encodeur BERT), garde-fou « je ne sais pas » calibré, mesuré à chaque étape
 - [ ] **Phase 5** : génération Mistral avec citations vérifiées, mémoire conversationnelle, streaming

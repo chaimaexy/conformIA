@@ -32,3 +32,6 @@ logs/
 .DS_Store
 Thumbs.db
 supabase/.temp/
+
+# Caches (embeddings, modèles)
+data/cache/
