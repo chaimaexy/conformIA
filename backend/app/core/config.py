@@ -44,7 +44,7 @@ class Settings(BaseSettings):
 
 class LLMConfig(BaseModel):
     provider: Literal["mistral"] = "mistral"
-    chat_model: str = "mistral-small-latest"
+    chat_model: str = "ministral-8b-latest"
     temperature: float = 0.0
     max_tokens: int = 1024
 

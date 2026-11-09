@@ -3,7 +3,9 @@
 
 llm:
   provider: mistral
-  chat_model: mistral-small-latest      # passer à mistral-large-latest pour l'agent de conformité
+  # Offre gratuite actuelle : ministral-8b / open-mistral-nemo seulement (2 req/min).
+  # mistral-small / medium / large nécessitent l'offre payante (Scale).
+  chat_model: ministral-8b-latest
   temperature: 0.0                      # réponses juridiques : déterministe
   max_tokens: 1024
 
