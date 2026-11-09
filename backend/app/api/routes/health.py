@@ -15,5 +15,5 @@ def health() -> dict:
         "llm_model": cfg.llm.chat_model,
         "embedding_model": cfg.embeddings.model,
         "mistral_configured": bool(settings.mistral_api_key),
-        "supabase_configured": bool(settings.supabase_url and settings.supabase_anon_key),
+        "supabase_configured": bool(settings.supabase_url and settings.supabase_secret_key),
     }

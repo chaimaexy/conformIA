@@ -31,6 +31,8 @@ create table public.chunks (
     unique (document_id, strategy, chunk_index)
 );
 
+create index documents_owner_id_idx on public.documents (owner_id);
+
 create index chunks_embedding_hnsw on public.chunks
     using hnsw (embedding extensions.vector_cosine_ops);
 create index chunks_fts_gin on public.chunks using gin (fts);
@@ -78,14 +80,17 @@ alter table public.documents enable row level security;
 alter table public.chunks enable row level security;
 
 create policy "documents lisibles" on public.documents
-    for select using (owner_id is null or owner_id = auth.uid());
+    for select to anon, authenticated
+    using (owner_id is null or owner_id = (select auth.uid()));
 
+-- (select auth.uid()) est évalué une seule fois par requête, pas par ligne
 create policy "chunks lisibles" on public.chunks
-    for select using (
+    for select to anon, authenticated
+    using (
         exists (
             select 1 from public.documents d
             where d.id = chunks.document_id
-              and (d.owner_id is null or d.owner_id = auth.uid())
+              and (d.owner_id is null or d.owner_id = (select auth.uid()))
         )
     );
--- Les écritures passent par le backend avec la clé service_role (qui contourne RLS).
+-- Les écritures passent par le backend avec la clé secrète (qui contourne RLS).

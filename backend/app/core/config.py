@@ -33,8 +33,10 @@ class Settings(BaseSettings):
     mistral_api_key: str | None = None
 
     supabase_url: str | None = None
-    supabase_anon_key: str | None = None
-    supabase_service_role_key: str | None = None
+    # Nouveau format de clés Supabase (remplace anon / service_role)
+    supabase_publishable_key: str | None = None  # côté client, soumise à RLS
+    supabase_secret_key: str | None = None  # côté serveur uniquement, contourne RLS
+    supabase_jwks_url: str | None = None  # vérification des JWT Supabase Auth
     database_url: str | None = None
 
     config_path: Path = BACKEND_DIR / "config.yaml"
