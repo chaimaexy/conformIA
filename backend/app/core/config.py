@@ -15,6 +15,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 REPO_DIR = BACKEND_DIR.parent
+DATA_DIR = REPO_DIR / "data"
+RAW_DIR = DATA_DIR / "raw"
+PROCESSED_DIR = DATA_DIR / "processed"
 
 
 class Settings(BaseSettings):
@@ -53,6 +56,13 @@ class EmbeddingsConfig(BaseModel):
     provider: Literal["mistral"] = "mistral"
     model: str = "mistral-embed"
     dimension: int = 1024
+    compare_with: list[str] = Field(default_factory=list)  # ex. "local:BAAI/bge-m3"
+
+
+class RerankerConfig(BaseModel):
+    model: str = "BAAI/bge-reranker-v2-m3"
+    candidates: list[str] = Field(default_factory=list)
+    answerability_threshold: float | None = None  # calibré sur le golden set
 
 
 class ChunkingConfig(BaseModel):
@@ -72,7 +82,11 @@ class RetrievalConfig(BaseModel):
 class CorpusSource(BaseModel):
     id: str
     title: str
-    celex: str | None = None
+    kind: Literal["eurlex", "cnil"] = "eurlex"
+    url: str | None = None  # page d'index (fiches CNIL)
+    celex: str | None = None  # acte de base (JO) : source des considérants
+    consolidated: str | None = None  # version consolidée : source des articles et annexes
+    corrigenda: list[str] = Field(default_factory=list)  # rectificatifs FR à appliquer/vérifier
 
 
 class CorpusConfig(BaseModel):
@@ -83,6 +97,7 @@ class CorpusConfig(BaseModel):
 class AppConfig(BaseModel):
     llm: LLMConfig = Field(default_factory=LLMConfig)
     embeddings: EmbeddingsConfig = Field(default_factory=EmbeddingsConfig)
+    reranker: RerankerConfig = Field(default_factory=RerankerConfig)
     chunking: ChunkingConfig = Field(default_factory=ChunkingConfig)
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     corpus: CorpusConfig = Field(default_factory=CorpusConfig)

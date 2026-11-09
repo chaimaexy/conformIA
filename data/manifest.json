@@ -1,0 +1,317 @@
+{
+  "generated_at": "2026-11-09T15:48:50+00:00",
+  "note": "Textes consolidés EUR-Lex : outil de documentation, seules les versions publiées au JO font foi. Réutilisation autorisée (décision 2011/833/UE). Fiches CNIL : licence CC-BY-ND 4.0, citer « Source : CNIL » et la date d'extraction.",
+  "sources": [
+    {
+      "id": "ai_act",
+      "title": "Règlement (UE) 2024/1689 - AI Act (modifié par le règlement (UE) 2026/1744)",
+      "freshness": {
+        "checked": true,
+        "checked_at": "2026-11-09T15:48:27+00:00",
+        "latest_consolidated": "02024R1689-20260727",
+        "corrigenda_fr": [
+          "32024R1689R(01)"
+        ],
+        "up_to_date": true
+      },
+      "files": [
+        {
+          "role": "considérants (JO)",
+          "celex": "32024R1689",
+          "url": "http://publications.europa.eu/resource/celex/32024R1689",
+          "eurlex": "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:32024R1689",
+          "sha256": "d8b1a7775f597dc8d49a2bdc91af0dca3bc12ac558b97504685f9534660bb44e",
+          "size": 1383324,
+          "retrieved_at": "2026-11-09T11:10:46+00:00"
+        },
+        {
+          "role": "articles et annexes",
+          "celex": "02024R1689-20260727",
+          "url": "http://publications.europa.eu/resource/celex/02024R1689-20260727",
+          "eurlex": "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:02024R1689-20260727",
+          "sha256": "248c47ff5dd6583d98711347541047e7a2b83d5122174312558a8a17d90b81f8",
+          "size": 924085,
+          "retrieved_at": "2026-11-09T11:43:04+00:00"
+        },
+        {
+          "role": "rectificatif",
+          "celex": "32024R1689R(01)",
+          "url": "http://publications.europa.eu/resource/celex/32024R1689R%2801%29",
+          "eurlex": "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:32024R1689R(01)",
+          "sha256": "327317ca859cbc419d83df8fd453f9fa0faad66e5bdaea32586eb0be11dff71f",
+          "size": 4705,
+          "retrieved_at": "2026-11-09T11:43:53+00:00"
+        }
+      ],
+      "counts": {
+        "considerant": 180,
+        "article": 119,
+        "annexe": 14
+      },
+      "amended_sections": 45,
+      "corrigenda_report": [
+        "vérifié        32024R1689R(01) | Page 57, article 10, paragraphe 2"
+      ],
+      "coverage_missing": 0
+    },
+    {
+      "id": "cnil_ia",
+      "title": "CNIL - Fiches pratiques IA (développement des systèmes d'IA et RGPD)",
+      "license": "CC-BY-ND 4.0 (https://creativecommons.org/licenses/by-nd/4.0/deed.fr)",
+      "attribution": "Source : CNIL – https://www.cnil.fr",
+      "files": [
+        {
+          "role": "index",
+          "url": "https://www.cnil.fr/fr/les-fiches-pratiques-ia",
+          "sha256": "2c1bf0da15587cf31f3c2dda2fe0e3945c875ad04c5a64fcef1c00e99b70e5bd",
+          "retrieved_at": "2026-11-09T15:26:45+00:00"
+        },
+        {
+          "role": "fiche",
+          "title": "Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD",
+          "url": "https://www.cnil.fr/fr/developpement-des-systemes-dia-les-recommandations-de-la-cnil-pour-respecter-le-rgpd",
+          "published": "2025-07-22",
+          "sha256": "ec5a3f8aa6c038d0ab19b983cc5144634f4200f586ce8ee739872265db1afdcf",
+          "retrieved_at": "2026-11-09T15:26:46+00:00",
+          "characters_verified": 51460
+        },
+        {
+          "role": "fiche",
+          "title": "Quel est le périmètre des fiches pratiques sur l’IA ?",
+          "url": "https://www.cnil.fr/fr/quel-est-le-perimetre-des-fiches-pratiques-sur-lia",
+          "published": "2024-04-08",
+          "sha256": "1bca4718bb7f2d3a5538e4ae5e38487b4c0e290cd194f5eae1ace878fe41b93a",
+          "retrieved_at": "2026-11-09T15:27:06+00:00",
+          "characters_verified": 11285
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Déterminer le régime juridique applicable",
+          "url": "https://www.cnil.fr/fr/determiner-le-regime-juridique-applicable",
+          "published": "2024-04-08",
+          "sha256": "dd7d5e84ec795403ca3cdde6e5f3d0523294d03df3f2c755a8d67faa71516357",
+          "retrieved_at": "2026-11-09T15:27:07+00:00",
+          "characters_verified": 4914
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Définir une finalité",
+          "url": "https://www.cnil.fr/fr/definir-une-finalite-0",
+          "published": "2024-04-08",
+          "sha256": "d4ffcace09677b1e0b5dfbca28756e0a194fa029a5e953172fff0eb92b8eef6f",
+          "retrieved_at": "2026-11-09T15:27:08+00:00",
+          "characters_verified": 14879
+        },
+        {
+          "role": "fiche",
+          "title": "Déterminer la qualification juridique des acteurs",
+          "url": "https://www.cnil.fr/fr/determiner-la-qualification-juridique-des-fournisseurs-de-systemes-dia",
+          "published": "2024-04-08",
+          "sha256": "6028c51b68ef5f60bd6d097df77d08400b0332ffd670c1990ed84a64396c4509",
+          "retrieved_at": "2026-11-09T15:27:18+00:00",
+          "characters_verified": 10538
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Assurer que le traitement est licite - Définir une base légale",
+          "url": "https://www.cnil.fr/fr/assurer-que-le-traitement-est-licite",
+          "published": "2024-04-08",
+          "sha256": "ee3252775d9ae0da444877b748d6f73bf1c70650c7740d584c2d914ae0b996b2",
+          "retrieved_at": "2026-11-09T15:27:49+00:00",
+          "characters_verified": 16391
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Assurer que le traitement est licite - En cas de réutilisation des données, effectuer les tests et vérifications nécessaires",
+          "url": "https://www.cnil.fr/fr/assurer-que-le-traitement-est-licite-reutilisation-des-donnees",
+          "published": "2024-04-08",
+          "sha256": "3220f3cae4060b23660f08691a043f7c05edaf2109c2380128465dabcc733e85",
+          "retrieved_at": "2026-11-09T15:27:56+00:00",
+          "characters_verified": 19746
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Réaliser une analyse d’impact si nécessaire",
+          "url": "https://www.cnil.fr/fr/realiser-une-analyse-dimpact-si-necessaire",
+          "published": "2024-04-08",
+          "sha256": "3a5290b932ee90b68aef7fdbc1b69f4fce3efd0bd2b43e75c4387220d3ebdd9c",
+          "retrieved_at": "2026-11-09T15:28:02+00:00",
+          "characters_verified": 17415
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Tenir compte de la protection des données dans la conception du système",
+          "url": "https://www.cnil.fr/fr/tenir-compte-de-la-protection-des-donnees-dans-la-conception-du-systeme",
+          "published": "2024-04-08",
+          "sha256": "77b662ff1d42a12b4703c6af7e86bd622604f627a71dc3727e58bc32b39bbbb5",
+          "retrieved_at": "2026-11-09T15:28:03+00:00",
+          "characters_verified": 17760
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Tenir compte de la protection des données dans la collecte et la gestion des données",
+          "url": "https://www.cnil.fr/fr/tenir-compte-de-la-protection-des-donnees-dans-la-collecte-et-la-gestion-des-donnees",
+          "published": "2024-04-08",
+          "sha256": "ea89890d788182acdf4c2728ce1302b35a4b4ea0e3d3249544ffc8e75c4e33d3",
+          "retrieved_at": "2026-11-09T15:28:04+00:00",
+          "characters_verified": 22986
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Mobiliser la base légale de l’intérêt légitime pour développer un système d’IA",
+          "url": "https://www.cnil.fr/fr/base-legale-interet-legitime-developpement-systeme",
+          "published": "2025-06-19",
+          "sha256": "c132ff7212af985aaff2ad9982990fb9151d5fddaa9b97bc6f8fcfeeb0df3587",
+          "retrieved_at": "2026-11-09T15:28:14+00:00",
+          "characters_verified": 40136
+        },
+        {
+          "role": "fiche",
+          "title": "La base légale de l’intérêt légitime : fiche focus sur les mesures à prendre en cas de collecte des données par moissonnage (web scraping)",
+          "url": "https://www.cnil.fr/fr/focus-interet-legitime-collecte-par-moissonnage",
+          "published": "2025-06-19",
+          "sha256": "24a83b065b85725ce8cc2e42a1a2893a3e3e5d0df83217efaa78d417eefb4ea5",
+          "retrieved_at": "2026-11-09T15:28:23+00:00",
+          "characters_verified": 14494
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Informer les personnes concernées",
+          "url": "https://www.cnil.fr/fr/ia-informer-les-personnes-concernees",
+          "published": "2025-02-07",
+          "sha256": "edda50a3aea011872b903f26ddb20054e5d09dc4532a9ee494ab850dfbb61c20",
+          "retrieved_at": "2026-11-09T15:28:28+00:00",
+          "characters_verified": 23399
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Respecter et faciliter l’exercice des droits des personnes concernées",
+          "url": "https://www.cnil.fr/fr/ia-respecter-lexercice-des-droits-des-personnes",
+          "published": "2025-02-07",
+          "sha256": "5378f125e10eec5b6bc7d13ed3d84f8f88442152c5189073be829e17da135a2b",
+          "retrieved_at": "2026-11-09T15:28:37+00:00",
+          "characters_verified": 29040
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Annoter les données",
+          "url": "https://www.cnil.fr/fr/ia-annoter-les-donnees",
+          "published": "2025-07-22",
+          "sha256": "6c16e47899d62a9856244a16276368d6c0628c8c9918701d17d50f07b6f29bb4",
+          "retrieved_at": "2026-11-09T15:28:38+00:00",
+          "characters_verified": 22821
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Garantir la sécurité du développement d’un système d’IA",
+          "url": "https://www.cnil.fr/fr/ia-garantir-la-securite-du-developpement",
+          "published": "2025-07-22",
+          "sha256": "78464aa8b54ebb0075c8f3a8b781b468b038117331c68f183489ba012d385f58",
+          "retrieved_at": "2026-11-09T15:28:40+00:00",
+          "characters_verified": 22283
+        },
+        {
+          "role": "fiche",
+          "title": "IA : Analyser le statut d’un modèle d’IA au regard du RGPD",
+          "url": "https://www.cnil.fr/fr/ia-analyser-le-statut-dun-modele-dia-au-regard-du-rgpd",
+          "published": "2025-07-22",
+          "sha256": "c80070f849ac15a567aac3c317431b09feff7b6856bfd9254de994bf00c2b966",
+          "retrieved_at": "2026-11-09T15:28:48+00:00",
+          "characters_verified": 35692
+        },
+        {
+          "role": "liste de vérification (PDF)",
+          "title": "Développement des systèmes d'IA : Que faut-il vérifier ?",
+          "url": "https://www.cnil.fr/sites/default/files/2025-07/ia_liste_de_verification.pdf",
+          "published": "2025-07-22",
+          "sha256": "dd3b8cf85d60c1a2093184e14a62df0c1e9197aadec15e18e29bfb4c755de4c2",
+          "retrieved_at": "2026-11-09T15:44:28+00:00",
+          "characters_verified": 15031,
+          "measures": 79,
+          "hyphenation_defaults": [
+            "gra-nularité"
+          ]
+        }
+      ],
+      "counts": {
+        "fiches": 17,
+        "checklist_measures": 79,
+        "sections": 104
+      }
+    },
+    {
+      "id": "rgpd",
+      "title": "Règlement (UE) 2016/679 - RGPD",
+      "freshness": {
+        "checked": true,
+        "checked_at": "2026-11-09T15:48:33+00:00",
+        "latest_consolidated": "02016R0679-20160504",
+        "corrigenda_fr": [
+          "32016R0679R(02)"
+        ],
+        "up_to_date": true
+      },
+      "files": [
+        {
+          "role": "considérants (JO)",
+          "celex": "32016R0679",
+          "url": "http://publications.europa.eu/resource/celex/32016R0679",
+          "eurlex": "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:32016R0679",
+          "sha256": "27a2248cf0cf7c79a3ec7eae30b6e871817230d9f577632fed915181642144c2",
+          "size": 876858,
+          "retrieved_at": "2026-11-09T11:10:46+00:00"
+        },
+        {
+          "role": "articles et annexes",
+          "celex": "02016R0679-20160504",
+          "url": "http://publications.europa.eu/resource/celex/02016R0679-20160504",
+          "eurlex": "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:02016R0679-20160504",
+          "sha256": "fa7661d464cb4f3f9b4c62ae742c82ec6208b7bd0b8a07b21da2830a13f44a78",
+          "size": 499019,
+          "retrieved_at": "2026-11-09T11:43:05+00:00"
+        },
+        {
+          "role": "rectificatif",
+          "celex": "32016R0679R(02)",
+          "url": "http://publications.europa.eu/resource/celex/32016R0679R%2802%29",
+          "eurlex": "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:32016R0679R(02)",
+          "sha256": "78ba7db805b2f41ee076736db5eeba5e316fe58cf88e385eda1c431227191047",
+          "size": 38764,
+          "retrieved_at": "2026-11-09T11:43:54+00:00"
+        }
+      ],
+      "counts": {
+        "considerant": 173,
+        "article": 99,
+        "annexe": 0
+      },
+      "amended_sections": 0,
+      "corrigenda_report": [
+        "appliqué       32016R0679R(02) | Page 14, au considérant 71, cinquième et sixième phrases",
+        "appliqué       32016R0679R(02) | Page 25, au considérant 134",
+        "appliqué       32016R0679R(02) | Page 26, au considérant 143, premier alinéa, dernière phrase",
+        "vérifié        32016R0679R(02) | Page 38, à l’article 9, paragraphe 2, point g)",
+        "vérifié        32016R0679R(02) | Page 39, à l’article 10",
+        "vérifié        32016R0679R(02) | Page 55, à l’article 37, paragraphe 1, point c)",
+        "vérifié        32016R0679R(02) | Page 58, à l’article 41, paragraphe 3",
+        "vérifié        32016R0679R(02) | Page 58, à l’article 41, paragraphe 5",
+        "vérifié        32016R0679R(02) | Page 59, à l’article 42, paragraphe 7",
+        "vérifié        32016R0679R(02) | Page 60, à l’article 43, paragraphe 3, première phrase",
+        "vérifié        32016R0679R(02) | Page 60, à l’article 43, paragraphe 6",
+        "vérifié        32016R0679R(02) | Page 63, à l’article 47, paragraphe 2, point j), première phrase",
+        "vérifié        32016R0679R(02) | Page 66, à l’article 53, paragraphe 1",
+        "vérifié        32016R0679R(02) | Page 69, à l’article 57, paragraphe 1, point p)",
+        "vérifié        32016R0679R(02) | Page 74, à l’article 64, paragraphe 1, point c)",
+        "vérifié        32016R0679R(02) | Page 74, à l’article 64, paragraphes 6, 7 et 8",
+        "vérifié        32016R0679R(02) | Page 74, à l’article 64, paragraphes 6, 7 et 8",
+        "vérifié        32016R0679R(02) | Page 74, à l’article 64, paragraphes 6, 7 et 8",
+        "vérifié        32016R0679R(02) | Page 74, à l’article 65, paragraphe 1, point a)",
+        "vérifié        32016R0679R(02) | Page 76, à l’article 69, paragraphe 2",
+        "vérifié        32016R0679R(02) | Page 77, à l’article 70, paragraphe 1, point l)",
+        "vérifié        32016R0679R(02) | Page 77, à l’article 70, paragraphe 1, point o)",
+        "vérifié        32016R0679R(02) | Page 77, à l’article 70, paragraphe 1, point p)"
+      ],
+      "coverage_missing": 0
+    }
+  ]
+}

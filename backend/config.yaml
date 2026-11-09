@@ -9,10 +9,26 @@ llm:
   temperature: 0.0                      # réponses juridiques : déterministe
   max_tokens: 1024
 
+# Génération : seul un LLM génératif peut rédiger la réponse (un BERT ne génère pas de texte).
+# Contrainte offre gratuite (2 req/min) : 1 appel LLM par question, cache + retry, et
+# évaluation du retrieval sans LLM (recall@k, MRR).
+
 embeddings:
   provider: mistral
   model: mistral-embed
   dimension: 1024                       # doit correspondre à vector(1024) dans la migration SQL
+  # Comparaison en phase 2 avec un encodeur de la famille BERT, local (CPU) et multilingue :
+  # BAAI/bge-m3 (XLM-RoBERTa, MIT, 1024 dims -> même schéma SQL).
+  compare_with: ["local:BAAI/bge-m3"]
+
+reranker:
+  # Cross-encodeur BERT local : reranking + garde-fou « assez de preuves pour répondre ? »
+  # (l'idée des modèles de décision Jev / GLiDE, avec des modèles ouverts qui tournent sur CPU).
+  model: BAAI/bge-reranker-v2-m3        # multilingue, Apache-2.0, 568M paramètres
+  candidates:                           # choix final par mesure (qualité + latence CPU) en phase 4
+    - BAAI/bge-reranker-v2-m3
+    - antoinelouis/crossencoder-camembert-base-mmarcoFR   # CamemBERT français, MIT, 110M
+  answerability_threshold: null         # calibré en phase 4 sur le golden set (questions hors corpus incluses)
 
 chunking:
   strategy: structural                  # structural | recursive | semantic (comparées en phase 2)
@@ -26,12 +42,22 @@ retrieval:
   multi_query: false                    # activé en phase 4
   rrf_k: 60                             # constante de Reciprocal Rank Fusion
 
+# Versions figées pour la reproductibilité. L'ingestion interroge Cellar et prévient
+# si une version consolidée plus récente ou un nouveau rectificatif français existe.
 corpus:
   language: fr
   sources:
     - id: ai_act
-      title: "Règlement (UE) 2024/1689 - AI Act"
+      title: "Règlement (UE) 2024/1689 - AI Act (modifié par le règlement (UE) 2026/1744)"
       celex: "32024R1689"
+      consolidated: "02024R1689-20260727"   # intègre l'omnibus numérique (UE) 2026/1744
+      corrigenda: ["32024R1689R(01)"]       # art. 10 ; R(02)-(04) ne concernent pas le français
     - id: rgpd
       title: "Règlement (UE) 2016/679 - RGPD"
       celex: "32016R0679"
+      consolidated: "02016R0679-20160504"
+      corrigenda: ["32016R0679R(02)"]       # JO L 127 du 23.5.2018 : considérants 71, 134, 143 + articles
+    - id: cnil_ia
+      kind: cnil
+      title: "CNIL - Fiches pratiques IA (développement des systèmes d'IA et RGPD)"
+      url: "https://www.cnil.fr/fr/les-fiches-pratiques-ia"   # licence CC-BY-ND 4.0
