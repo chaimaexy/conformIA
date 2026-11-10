@@ -151,7 +151,7 @@ python -m app.indexing --no-upload     # calcul local seulement (cache data/cach
 | Stratégie | Principe | Chunks | Taille médiane | < 100 car. | À cheval sur 2 sections |
 |---|---|---|---|---|---|
 | **Structurelle** | 1 unité juridique = 1 chunk ; découpe aux paragraphes / intertitres si > 2 000 car. ; en-tête de contexte (« AI Act > CHAPITRE III > Article 6 - ... (partie 2/3 - paragraphe 1) ») | 1 190 | 1 402 | 1 | 0 |
-| **Récursive** (référence des tutoriels) | `RecursiveCharacterTextSplitter`, 1 000 car., chevauchement 150, sans structure ni en-tête | 2 354 | 764 | 189 | 24 |
+| **Récursive** (référence des tutoriels) | `RecursiveCharacterTextSplitter` avec ses réglages par défaut, 1 000 car., chevauchement 150, sans structure ni en-tête | 2 329 | 804 | 187 | 24 |
 | **Sémantique** | Coupe là où deux phrases consécutives s'éloignent (10 % des distances cosinus les plus fortes), sans franchir les sections | 1 334 | 1 084 | 4 | 0 |
 
 Plan d'expérience, pour comparer à coût raisonnable sans GPU : les 3 stratégies avec
@@ -163,7 +163,7 @@ Plan d'expérience, pour comparer à coût raisonnable sans GPU : les 3 stratég
 | `mistral-embed` | API Mistral (lots de 64, 60 requêtes/min) | ~1 min |
 | `bge-m3` (XLM-RoBERTa, 568M paramètres) | CPU local | **74 min** |
 
-Supabase contient 4 878 chunks (~35 Mo, colonnes `embedding` et `embedding_bge_m3`, index HNSW
+Supabase contient 4 853 chunks (~35 Mo, colonnes `embedding` et `embedding_bge_m3`, index HNSW
 avec parcours itératif pgvector 0.8 pour filtrer par stratégie sans perdre de résultats).
 
 **Premier test, premier échec instructif.** À la question « À partir de quand les règles sur les
@@ -174,13 +174,99 @@ qui *parlent* de haut risque (6, 7) plutôt que celui qui donne les *dates*. C'e
 set (phase 3) mesurera, et ce que la recherche hybride, le multi-query et le reranker (phase 4)
 doivent corriger.
 
+## Évaluation : le golden set
+
+```bash
+cd backend
+python -m app.evaluation.generate          # questions proposées par Mistral (2 par section)
+python -m app.evaluation.review export     # -> eval/relecture.csv, à relire dans Excel
+python -m app.evaluation.review import [fichier.csv]   # relecture -> eval/golden_set.jsonl (validé contre le corpus)
+python -m app.evaluation.retrieval --validated   # hit@k, recall@k, MRR par configuration
+```
+
+Le golden set ([eval/golden_set.jsonl](backend/eval/golden_set.jsonl)) associe chaque question
+aux **sections** du corpus qui contiennent la réponse (« ai_act / Article 113 », ou une fiche
+CNIL entière). Noter au niveau de la section, et non du chunk, rend la comparaison équitable
+entre stratégies de découpage.
+
+| Catégorie | Ce qu'elle teste | Exemple |
+|---|---|---|
+| directe | vocabulaire du texte | « Quelles obligations pour les fournisseurs de modèles d'IA à usage général ? » |
+| reformulee | cas pratique, mots du quotidien | « Notre logiciel trie des CV : est-ce à haut risque ? » |
+| reference | numéro cité | « Que dit l'article 22 du RGPD ? » |
+| date | calendrier modifié par l'omnibus | « Depuis quand les pratiques interdites s'appliquent-elles ? » |
+| multi_sources | plusieurs textes | « Biais et données sensibles : AI Act art. 4 bis + RGPD art. 9 » |
+| cnil_pratique | recommandations CNIL | « Peut-on se fonder sur l'intérêt légitime pour entraîner un modèle ? » |
+| hors_corpus | savoir dire « je ne sais pas » | « Quel taux de TVA pour un logiciel SaaS ? » |
+
+Construction : 36 questions écrites à la main (cas difficiles, hors corpus) et 60 questions
+proposées par Mistral à partir de 30 sections tirées au sort (échantillon stratifié). Toute
+section attendue est vérifiée contre le corpus à l'import.
+
+**Relecture, en trois passes :**
+1. Relecture par un autre LLM (ChatGPT), **sans accès aux textes** : 8 rejets, dont 7 étaient
+   faux (il jugeait de mémoire, par exemple « l'article 78 ne parle pas de suppression des
+   données » alors que son paragraphe 2 le prévoit). Seules 2 corrections ont été retenues.
+   Leçon : un LLM qui juge du droit sans la source se trompe avec assurance, et c'est
+   précisément le problème que ce RAG doit résoudre.
+2. Vérification **contre le texte exact** de chaque section attendue (96 questions) :
+   1 erreur de sens corrigée (secret professionnel « sauf à l'égard des » autorités
+   notifiantes, inversé), 1 mécanisme inventé, des exemples ou affirmations absents du texte,
+   des réponses incomplètes ; et 11 sections qui répondent **aussi** à une question ajoutées
+   aux sections attendues (ex. annexe XI en plus de l'annexe XII, considérant 30 pour les
+   adresses IP), pour ne pas compter à tort un bon résultat comme un échec.
+3. Arbitrage humain des 5 cas où la question ou la vérité terrain elle-même avait changé
+   (tous validés). Résultat : 96 questions validées, 0 rejetée.
+
+Le détail (avant/après et justification de chaque correction) est dans
+[eval/relecture_verifiee.csv](backend/eval/relecture_verifiee.csv), colonne `commentaire`.
+
+Métriques, sans appel au LLM : **hit@k** (une section attendue dans les k premiers chunks),
+**recall@8** (part des sections attendues retrouvées, utile pour les questions multi-sources),
+**MRR@20** (1/rang du premier bon chunk). Pour les questions hors corpus, on relève le score du
+premier résultat : il servira à calibrer le garde-fou « je ne sais pas ».
+
+### Résultats de référence (recherche dense seule)
+
+96 questions validées (88 dans le corpus, 8 hors corpus).
+Détail par question : [eval/results/baseline.json](backend/eval/results/baseline.json).
+
+| Configuration | hit@1 | hit@4 | hit@8 | hit@20 | recall@8 | MRR@20 |
+|---|---|---|---|---|---|---|
+| récursif + mistral-embed | 0.39 | 0.61 | 0.70 | 0.83 | 0.64 | 0.498 |
+| sémantique + mistral-embed | 0.44 | 0.67 | 0.75 | **0.89** | 0.69 | 0.557 |
+| structurel + mistral-embed | **0.52** | 0.67 | 0.74 | 0.86 | 0.69 | **0.609** |
+| structurel + bge-m3 | 0.44 | **0.69** | **0.77** | 0.86 | **0.73** | 0.563 |
+
+hit@8 par catégorie :
+
+| Catégorie (n) | récursif | sémantique | structurel | structurel + bge-m3 |
+|---|---|---|---|---|
+| directe (35) | 0.77 | 0.89 | 0.91 | 0.91 |
+| reformulee (37) | 0.65 | 0.65 | 0.62 | 0.68 |
+| date (4) | 0.25 | 0.00 | 0.00 | 0.00 |
+| reference (4) | 0.75 | 1.00 | 0.75 | 0.75 |
+| multi_sources (3) | 0.67 | 1.00 | 1.00 | 1.00 |
+| cnil_pratique (5) | 1.00 | 0.80 | 0.80 | 1.00 |
+
+Ce qu'on en retient :
+- **Le chunking structurel gagne** : +13 points de hit@1 et +0,11 de MRR sur la référence
+  récursive. Respecter les unités juridiques et ajouter un en-tête de contexte paie.
+- **bge-m3 (BERT, local) retrouve plus** (hit@8, recall@8, cas pratiques) mais classe moins
+  bien en tête que mistral-embed : les deux modèles sont complémentaires.
+- **Trois faiblesses nettes** que la phase 4 doit corriger : les **cas pratiques** (~65 %),
+  les **dates** (0 sur 4 : la recherche dense ramène les articles *sur* le haut risque, pas
+  l'article 113 qui donne les *dates*), et le **« je ne sais pas »** : le score cosinus du
+  1er résultat ne sépare pas les questions hors corpus (max 0,85 avec mistral-embed) de
+  questions légitimes (dès 0,81). Il faudra un autre signal, celui du reranker.
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
 - [x] **Phase 1a** : ingestion AI Act + RGPD (versions consolidées, rectificatifs, contrôles qualité)
 - [x] **Phase 1b** : fiches pratiques IA de la CNIL (17 fiches + liste de vérification PDF, fidélité caractère par caractère)
-- [x] **Phase 2** : chunking (3 stratégies) + embeddings (`mistral-embed` vs `bge-m3`) + indexation Supabase (4 878 chunks)
-- [ ] **Phase 3** : golden set (~80 questions, dont des questions hors corpus) + évaluation de référence
+- [x] **Phase 2** : chunking (3 stratégies) + embeddings (`mistral-embed` vs `bge-m3`) + indexation Supabase (4 853 chunks)
+- [x] **Phase 3** : golden set (96 questions vérifiées contre les sources, dont 8 hors corpus) + évaluation de référence
 - [ ] **Phase 4** : retrieval avancé (hybride, multi-query, RRF, cross-encodeur BERT), garde-fou « je ne sais pas » calibré, mesuré à chaque étape
 - [ ] **Phase 5** : génération Mistral avec citations vérifiées, mémoire conversationnelle, streaming
 - [ ] **Phase 6** : agent LangGraph d'analyse de conformité, guidé par la liste de vérification CNIL (human-in-the-loop)

@@ -1,9 +1,13 @@
 """Chunking récursif : la base des tutoriels (RecursiveCharacterTextSplitter).
 
 Le document est traité comme un texte brut : on coupe tous les `chunk_size` caractères
-en préférant les sauts de paragraphe, puis de ligne, puis les fins de phrase, avec un
+en préférant les sauts de paragraphe, puis de ligne, puis les espaces, avec un
 chevauchement. Aucune connaissance de la structure juridique, pas d'en-tête de contexte :
 c'est la référence que les stratégies plus fines doivent battre.
+
+Pour une comparaison équitable, on garde EXACTEMENT les séparateurs par défaut de
+LangChain (["\n\n", "\n", " ", ""]), ceux des tutoriels. (Ajouter ". " colle le point
+au début du morceau suivant : « . Ces différences... ».)
 
 Pour pouvoir citer quand même, on retrouve les sections couvertes grâce aux positions
 (start_index) de chaque chunk dans le texte complet.
@@ -42,8 +46,7 @@ def chunk_document(
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
-        separators=["\n\n", "\n", ". ", " ", ""],
-        add_start_index=True,
+        add_start_index=True,  # séparateurs par défaut
     )
     chunks = []
     for i, doc in enumerate(splitter.create_documents([full_text])):
