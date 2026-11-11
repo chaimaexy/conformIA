@@ -1,0 +1,919 @@
+{
+  "date": "2026-11-10T17:38:35+00:00",
+  "questions": 96,
+  "validated_only": true,
+  "results": {
+    "hybride + multi-query": {
+      "config": {
+        "name": "hybride + multi-query",
+        "strategy": "structural",
+        "dense_models": [
+          "mistral-embed",
+          "local:BAAI/bge-m3"
+        ],
+        "bm25": true,
+        "candidates": 50,
+        "rrf_k": 60,
+        "multi_query": true,
+        "reranker": null,
+        "rerank_candidates": 20
+      },
+      "summary": {
+        "questions": 88,
+        "hit@1": 0.489,
+        "hit@4": 0.784,
+        "hit@8": 0.898,
+        "hit@20": 0.932,
+        "recall@8": 0.856,
+        "mrr@20": 0.638,
+        "top1_score_corpus": 0.167,
+        "top1_score_hors_corpus": 0.141,
+        "hit@8_par_categorie": {
+          "cnil_pratique": 1.0,
+          "date": 0.0,
+          "directe": 0.94,
+          "multi_sources": 1.0,
+          "reference": 0.75,
+          "reformulee": 0.95
+        }
+      },
+      "gate": {
+        "sans_refus_a_tort": {
+          "seuil": 0.1046,
+          "hors_corpus_bloquees": 0.0
+        },
+        "tout_bloquer": {
+          "seuil": 0.1758,
+          "refus_a_tort": 0.568
+        },
+        "separation_parfaite": false
+      },
+      "questions": [
+        {
+          "id": "m001",
+          "category": "date",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 1,
+          "top_score": 0.1431,
+          "top_label": "Article 6"
+        },
+        {
+          "id": "m002",
+          "category": "date",
+          "rank": 16,
+          "found@8": 0,
+          "n_expected": 1,
+          "top_score": 0.1382,
+          "top_label": "Considérant 179"
+        },
+        {
+          "id": "m003",
+          "category": "date",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 1,
+          "top_score": 0.1623,
+          "top_label": "Article 2"
+        },
+        {
+          "id": "m004",
+          "category": "date",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 1,
+          "top_score": 0.1365,
+          "top_label": "Considérant 97"
+        },
+        {
+          "id": "m005",
+          "category": "reference",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.192,
+          "top_label": "Annexe III"
+        },
+        {
+          "id": "m006",
+          "category": "reference",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1814,
+          "top_label": "Article 22"
+        },
+        {
+          "id": "m007",
+          "category": "reference",
+          "rank": 6,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1134,
+          "top_label": "Article 79"
+        },
+        {
+          "id": "m008",
+          "category": "reference",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 1,
+          "top_score": 0.1393,
+          "top_label": "Considérant 87"
+        },
+        {
+          "id": "m009",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 2,
+          "n_expected": 2,
+          "top_score": 0.1295,
+          "top_label": "Annexe III"
+        },
+        {
+          "id": "m010",
+          "category": "reformulee",
+          "rank": 3,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1621,
+          "top_label": "Considérant 18"
+        },
+        {
+          "id": "m011",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1659,
+          "top_label": "Article 50"
+        },
+        {
+          "id": "m012",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1853,
+          "top_label": "Article 99"
+        },
+        {
+          "id": "m013",
+          "category": "reformulee",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1845,
+          "top_label": "Considérant 58"
+        },
+        {
+          "id": "m014",
+          "category": "reformulee",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 1,
+          "top_score": 0.1592,
+          "top_label": "Considérant 92"
+        },
+        {
+          "id": "m015",
+          "category": "multi_sources",
+          "rank": 1,
+          "found@8": 3,
+          "n_expected": 3,
+          "top_score": 0.1426,
+          "top_label": "Considérant 71"
+        },
+        {
+          "id": "m016",
+          "category": "cnil_pratique",
+          "rank": 5,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1474,
+          "top_label": "CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3ème étape (bis) : Adapter les garanties au moissonnage des données"
+        },
+        {
+          "id": "m017",
+          "category": "cnil_pratique",
+          "rank": 2,
+          "found@8": 2,
+          "n_expected": 2,
+          "top_score": 0.1838,
+          "top_label": "CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3e étape : Définir la « base légale » qui vous autorise à traiter des données personnelles"
+        },
+        {
+          "id": "m018",
+          "category": "cnil_pratique",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1282,
+          "top_label": "CNIL, liste de vérification IA, point 1 « Déterminer le régime juridique applicable et votre responsabilité Définir un cadre pour les utilisateurs »"
+        },
+        {
+          "id": "m019",
+          "category": "cnil_pratique",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1854,
+          "top_label": "CNIL, « IA : Annoter les données », Les enjeux de l’annotation pour les droits et libertés des personnes"
+        },
+        {
+          "id": "m020",
+          "category": "multi_sources",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 3,
+          "top_score": 0.1754,
+          "top_label": "CNIL, « IA : Garantir la sécurité du développement d’un système d’IA », L’approche méthodologique à adopter"
+        },
+        {
+          "id": "m021",
+          "category": "directe",
+          "rank": 4,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1252,
+          "top_label": "Considérant 93"
+        },
+        {
+          "id": "m022",
+          "category": "directe",
+          "rank": 4,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.108,
+          "top_label": "Considérant 114"
+        },
+        {
+          "id": "m023",
+          "category": "directe",
+          "rank": 6,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1851,
+          "top_label": "Considérant 110"
+        },
+        {
+          "id": "m024",
+          "category": "directe",
+          "rank": 5,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1577,
+          "top_label": "CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3e étape : Définir la « base légale » qui vous autorise à traiter des données personnelles"
+        },
+        {
+          "id": "m025",
+          "category": "directe",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1842,
+          "top_label": "Considérant 67"
+        },
+        {
+          "id": "m026",
+          "category": "multi_sources",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 2,
+          "top_score": 0.1924,
+          "top_label": "Article 4 bis"
+        },
+        {
+          "id": "m027",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1845,
+          "top_label": "Article 73"
+        },
+        {
+          "id": "m028",
+          "category": "cnil_pratique",
+          "rank": 1,
+          "found@8": 2,
+          "n_expected": 2,
+          "top_score": 0.1851,
+          "top_label": "CNIL, « IA : Tenir compte de la protection des données dans la collecte et la gestion des données », Conservation des données"
+        },
+        {
+          "id": "m029",
+          "category": "hors_corpus",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 0,
+          "top_score": 0.127,
+          "top_label": "Annexe III"
+        },
+        {
+          "id": "m030",
+          "category": "hors_corpus",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 0,
+          "top_score": 0.1758,
+          "top_label": "Article 88"
+        },
+        {
+          "id": "m031",
+          "category": "hors_corpus",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 0,
+          "top_score": 0.1174,
+          "top_label": "CNIL, « IA : Tenir compte de la protection des données dans la conception du système », La méthode à employer"
+        },
+        {
+          "id": "m032",
+          "category": "hors_corpus",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 0,
+          "top_score": 0.1472,
+          "top_label": "Considérant 136"
+        },
+        {
+          "id": "m033",
+          "category": "hors_corpus",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 0,
+          "top_score": 0.142,
+          "top_label": "Considérant 49"
+        },
+        {
+          "id": "m034",
+          "category": "hors_corpus",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 0,
+          "top_score": 0.156,
+          "top_label": "CNIL, « IA : Réaliser une analyse d’impact si nécessaire », La réalisation d’une AIPD pour le développement de systèmes d’IA"
+        },
+        {
+          "id": "m035",
+          "category": "hors_corpus",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 0,
+          "top_score": 0.1225,
+          "top_label": "Considérant 1"
+        },
+        {
+          "id": "m036",
+          "category": "hors_corpus",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 0,
+          "top_score": 0.1391,
+          "top_label": "Annexe XI"
+        },
+        {
+          "id": "g001",
+          "category": "directe",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1852,
+          "top_label": "Considérant 73"
+        },
+        {
+          "id": "g002",
+          "category": "reformulee",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1464,
+          "top_label": "Considérant 73"
+        },
+        {
+          "id": "g003",
+          "category": "directe",
+          "rank": 11,
+          "found@8": 0,
+          "n_expected": 1,
+          "top_score": 0.1363,
+          "top_label": "Considérant 91"
+        },
+        {
+          "id": "g004",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1354,
+          "top_label": "Article 4"
+        },
+        {
+          "id": "g005",
+          "category": "directe",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.145,
+          "top_label": "Considérant 111"
+        },
+        {
+          "id": "g006",
+          "category": "reformulee",
+          "rank": 3,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1313,
+          "top_label": "Considérant 115"
+        },
+        {
+          "id": "g007",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1891,
+          "top_label": "Article 36"
+        },
+        {
+          "id": "g008",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1938,
+          "top_label": "Article 36"
+        },
+        {
+          "id": "g009",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1856,
+          "top_label": "Article 28"
+        },
+        {
+          "id": "g010",
+          "category": "reformulee",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1225,
+          "top_label": "Article 31"
+        },
+        {
+          "id": "g011",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1936,
+          "top_label": "Article 13"
+        },
+        {
+          "id": "g012",
+          "category": "reformulee",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.165,
+          "top_label": "Considérant 72"
+        },
+        {
+          "id": "g013",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1965,
+          "top_label": "Article 83"
+        },
+        {
+          "id": "g014",
+          "category": "reformulee",
+          "rank": 19,
+          "found@8": 0,
+          "n_expected": 1,
+          "top_score": 0.1534,
+          "top_label": "Article 16"
+        },
+        {
+          "id": "g015",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1745,
+          "top_label": "Annexe IX"
+        },
+        {
+          "id": "g016",
+          "category": "reformulee",
+          "rank": 3,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1436,
+          "top_label": "CNIL, « IA : Réaliser une analyse d’impact si nécessaire », La réalisation d’une AIPD pour le développement de systèmes d’IA"
+        },
+        {
+          "id": "g017",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1881,
+          "top_label": "Considérant 28"
+        },
+        {
+          "id": "g018",
+          "category": "reformulee",
+          "rank": 2,
+          "found@8": 2,
+          "n_expected": 2,
+          "top_score": 0.1757,
+          "top_label": "Considérant 29"
+        },
+        {
+          "id": "g019",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 2,
+          "n_expected": 2,
+          "top_score": 0.1959,
+          "top_label": "Article 90"
+        },
+        {
+          "id": "g020",
+          "category": "reformulee",
+          "rank": 5,
+          "found@8": 1,
+          "n_expected": 2,
+          "top_score": 0.1721,
+          "top_label": "Article 75"
+        },
+        {
+          "id": "g021",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1923,
+          "top_label": "Considérant 118"
+        },
+        {
+          "id": "g022",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1883,
+          "top_label": "Considérant 118"
+        },
+        {
+          "id": "g023",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1877,
+          "top_label": "Article 5"
+        },
+        {
+          "id": "g024",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 2,
+          "n_expected": 2,
+          "top_score": 0.1812,
+          "top_label": "Considérant 39"
+        },
+        {
+          "id": "g025",
+          "category": "directe",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1946,
+          "top_label": "Considérant 26"
+        },
+        {
+          "id": "g026",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 2,
+          "n_expected": 2,
+          "top_score": 0.1967,
+          "top_label": "Considérant 30"
+        },
+        {
+          "id": "g027",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1669,
+          "top_label": "Article 33"
+        },
+        {
+          "id": "g028",
+          "category": "reformulee",
+          "rank": 3,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1278,
+          "top_label": "Considérant 85"
+        },
+        {
+          "id": "g029",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1957,
+          "top_label": "Article 71"
+        },
+        {
+          "id": "g030",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1939,
+          "top_label": "Article 71"
+        },
+        {
+          "id": "g031",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.194,
+          "top_label": "Considérant 9"
+        },
+        {
+          "id": "g032",
+          "category": "reformulee",
+          "rank": 5,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.158,
+          "top_label": "Considérant 5"
+        },
+        {
+          "id": "g033",
+          "category": "directe",
+          "rank": null,
+          "found@8": 0,
+          "n_expected": 1,
+          "top_score": 0.1558,
+          "top_label": "Considérant 78"
+        },
+        {
+          "id": "g034",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 2,
+          "top_score": 0.1509,
+          "top_label": "Article 28"
+        },
+        {
+          "id": "g035",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1931,
+          "top_label": "CNIL, « IA : Déterminer le régime juridique applicable », En pratique"
+        },
+        {
+          "id": "g036",
+          "category": "reformulee",
+          "rank": 5,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1802,
+          "top_label": "CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », Introduction"
+        },
+        {
+          "id": "g037",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1965,
+          "top_label": "CNIL, « IA : Informer les personnes concernées », Comment fournir l’information ?"
+        },
+        {
+          "id": "g038",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.145,
+          "top_label": "CNIL, « IA : Informer les personnes concernées », Comment fournir l’information ?"
+        },
+        {
+          "id": "g039",
+          "category": "directe",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1509,
+          "top_label": "Considérant 14"
+        },
+        {
+          "id": "g040",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1431,
+          "top_label": "CNIL, « Quel est le périmètre des fiches pratiques sur l’IA ? », Textes applicables"
+        },
+        {
+          "id": "g041",
+          "category": "directe",
+          "rank": 3,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1714,
+          "top_label": "Considérant 45"
+        },
+        {
+          "id": "g042",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1948,
+          "top_label": "CNIL, « IA : Assurer que le traitement est licite - Définir une base légale », La base légale de la mission d’intérêt public"
+        },
+        {
+          "id": "g043",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1551,
+          "top_label": "CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », Rappel général sur les droits applicables"
+        },
+        {
+          "id": "g044",
+          "category": "reformulee",
+          "rank": 3,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1656,
+          "top_label": "CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 8e étape : Assurer l’exercice des droits"
+        },
+        {
+          "id": "g045",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1046,
+          "top_label": "Article 78"
+        },
+        {
+          "id": "g046",
+          "category": "reformulee",
+          "rank": 6,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1723,
+          "top_label": "Article 74"
+        },
+        {
+          "id": "g047",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1645,
+          "top_label": "Article 31"
+        },
+        {
+          "id": "g048",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1644,
+          "top_label": "Article 31"
+        },
+        {
+          "id": "g049",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1913,
+          "top_label": "Article 17"
+        },
+        {
+          "id": "g050",
+          "category": "reformulee",
+          "rank": 8,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1651,
+          "top_label": "Article 16"
+        },
+        {
+          "id": "g051",
+          "category": "directe",
+          "rank": 1,
+          "found@8": 2,
+          "n_expected": 2,
+          "top_score": 0.1775,
+          "top_label": "Annexe XI"
+        },
+        {
+          "id": "g052",
+          "category": "reformulee",
+          "rank": 3,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1652,
+          "top_label": "Annexe IV"
+        },
+        {
+          "id": "g053",
+          "category": "directe",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1923,
+          "top_label": "Considérant 59"
+        },
+        {
+          "id": "g054",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 2,
+          "top_score": 0.1402,
+          "top_label": "Considérant 64"
+        },
+        {
+          "id": "g055",
+          "category": "directe",
+          "rank": 3,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1697,
+          "top_label": "Considérant 13"
+        },
+        {
+          "id": "g056",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1907,
+          "top_label": "Article 30"
+        },
+        {
+          "id": "g057",
+          "category": "directe",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.149,
+          "top_label": "CNIL, liste de vérification IA, point 0 « Présentation »"
+        },
+        {
+          "id": "g058",
+          "category": "reformulee",
+          "rank": 8,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1557,
+          "top_label": "CNIL, « IA : Tenir compte de la protection des données dans la collecte et la gestion des données », Documentation"
+        },
+        {
+          "id": "g059",
+          "category": "directe",
+          "rank": 2,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1899,
+          "top_label": "CNIL, « IA : Tenir compte de la protection des données dans la collecte et la gestion des données », Collecte"
+        },
+        {
+          "id": "g060",
+          "category": "reformulee",
+          "rank": 1,
+          "found@8": 1,
+          "n_expected": 1,
+          "top_score": 0.1781,
+          "top_label": "CNIL, liste de vérification IA, point 5 « Limiter les données traitées à celles qui sont pertinentes et nécessaires (minimisation des données) »"
+        }
+      ]
+    }
+  }
+}

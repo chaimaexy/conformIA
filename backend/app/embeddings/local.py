@@ -6,13 +6,30 @@ Dépendances optionnelles : pip install -e ".[local]"
 """
 
 import logging
+from pathlib import Path
 
 import numpy as np
 
-from app.core.config import DATA_DIR
+from app.core.config import DATA_DIR, get_settings
 
 logger = logging.getLogger(__name__)
-MODELS_CACHE = DATA_DIR / "cache" / "hf"  # dans le dépôt (ignoré par git), pas sur C:
+MODELS_CACHE = DATA_DIR / "cache" / "hf"  # dans le dépôt (ignoré par git)
+HOME_CACHE = Path.home() / ".cache" / "conformia" / "hf"  # repli quand le disque du dépôt est plein
+
+
+def models_cache(model_id: str) -> str:
+    """Dossier du cache Hugging Face à utiliser pour ce modèle.
+
+    Le dossier où ses poids sont déjà téléchargés, sinon MODELS_CACHE_DIR (.env), sinon
+    data/cache/hf. Les modèles peuvent ainsi être répartis sur plusieurs disques.
+    """
+    configured = get_settings().models_cache_dir
+    folder = "models--" + model_id.replace("/", "--")
+    for root in (configured, MODELS_CACHE, HOME_CACHE):
+        snapshots = Path(root) / folder / "snapshots" if root else None
+        if snapshots and any(snapshots.glob("*/*.safetensors")):
+            return str(root)
+    return str(configured or MODELS_CACHE)
 
 
 class LocalEmbedder:
@@ -34,7 +51,7 @@ class LocalEmbedder:
 
             logger.info("Chargement de %s (CPU)...", self.model_id)
             self._model = SentenceTransformer(
-                self.model_id, device="cpu", cache_folder=str(MODELS_CACHE)
+                self.model_id, device="cpu", cache_folder=models_cache(self.model_id)
             )
             self._model.max_seq_length = self.max_seq_length
             m = self._model  # la méthode a été renommée dans sentence-transformers 5

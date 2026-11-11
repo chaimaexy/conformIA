@@ -34,6 +34,8 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:3000"]
 
     mistral_api_key: str | None = None
+    cohere_api_key: str | None = None  # reranker Cohere (clé d'essai gratuite)
+    models_cache_dir: Path | None = None  # cache Hugging Face (défaut : data/cache/hf)
 
     supabase_url: str | None = None
     # Nouveau format de clés Supabase (remplace anon / service_role)
@@ -60,9 +62,9 @@ class EmbeddingsConfig(BaseModel):
 
 
 class RerankerConfig(BaseModel):
-    model: str = "BAAI/bge-reranker-v2-m3"
-    candidates: list[str] = Field(default_factory=list)
-    answerability_threshold: float | None = None  # calibré sur le golden set
+    model: str | None = "cohere:rerank-v5.0-pro"  # None : pas de reranking
+    candidates: list[str] = Field(default_factory=list)  # comparés en phase 4
+    answerability_threshold: float | None = None  # « je ne sais pas » sous ce score
 
 
 class ChunkingConfig(BaseModel):
@@ -75,11 +77,13 @@ class ChunkingConfig(BaseModel):
 
 
 class RetrievalConfig(BaseModel):
-    top_k: int = 8
-    final_k: int = 4
-    hybrid: bool = True
-    multi_query: bool = False
+    dense_models: list[str] = Field(default_factory=lambda: ["mistral-embed", "local:BAAI/bge-m3"])
+    bm25: bool = True
+    candidates: int = 50  # résultats de chaque retriever avant fusion
     rrf_k: int = 60
+    multi_query: bool = False
+    rerank_candidates: int = 20  # candidats fusionnés relus par le reranker
+    final_k: int = 4  # chunks envoyés au LLM
 
 
 class CorpusSource(BaseModel):

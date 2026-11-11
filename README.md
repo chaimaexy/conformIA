@@ -13,8 +13,8 @@
 |---|---|
 | Frontend | Next.js, TypeScript, Supabase Auth |
 | Backend | FastAPI, Python 3.13 |
-| Données | Supabase (Postgres + pgvector + plein texte `french`) |
-| IA | Mistral AI (`ministral-8b`, `mistral-embed`), encodeurs BERT locaux (`bge-m3`, cross-encodeur `bge-reranker-v2-m3` ou CamemBERT), LangChain, LangGraph |
+| Données | Supabase (Postgres + pgvector) |
+| IA | Mistral AI (`ministral-8b`, `mistral-embed`), `bge-m3` local (BERT), BM25, reranker Cohere `rerank-v5.0-pro`, LangChain, LangGraph |
 | Évaluation | métriques de retrieval (recall@k, MRR), RAGAS sur échantillon, pytest |
 | DevOps | Docker, GitHub Actions |
 
@@ -27,8 +27,9 @@ PC portable sans GPU (i5, 8 Go de RAM). Chaque brique doit tourner sur CPU.
 |---|---|---|
 | Génération | **Mistral** (`ministral-8b`, configurable) | Seul un modèle génératif rédige une réponse ; un BERT est un encodeur, il ne génère pas de texte. 1 appel par question, cache et retry |
 | Embeddings | **`mistral-embed`**, comparé à **`bge-m3`** (XLM-RoBERTa, famille BERT, local) | Mesurer si un encodeur ouvert multilingue fait mieux en français ; même dimension (1024) |
-| Reranking | **Cross-encodeur BERT local** : `bge-reranker-v2-m3` vs CamemBERT français (`crossencoder-camembert-base-mmarcoFR`) | C'est là que les encodeurs BERT excellent ; choix final par qualité et latence CPU |
-| Garde-fou | Seuil sur le score du reranker : **refuser de répondre** si le corpus ne couvre pas la question | Idée des « modèles de décision » (Jev, GLiDE), réalisée avec des modèles ouverts |
+| Recherche | **Hybride** : 2 recherches denses (`mistral-embed`, `bge-m3`) + BM25, fusion RRF | Le dense comprend les reformulations, BM25 les mots rares ; +15 points de hit@8 (phase 4) |
+| Reranking | **Cohere `rerank-v5.0-pro`** (API), comparé à `bge-reranker-v2-m3`, Qwen3-Reranker et CamemBERT en local | Meilleure qualité, < 1 s par question ; les modèles locaux prennent de 20 s à plusieurs minutes sur CPU |
+| Garde-fou | Seuil sur le score du reranker : **refuser de répondre** si le corpus ne couvre pas la question | Idée des « modèles de décision » (Jev, GLiDE) ; seul le score Cohere sépare parfaitement les questions hors corpus |
 | Vérification | Chaque phrase de la réponse doit s'appuyer sur un extrait cité | Pas d'affirmation juridique sans source |
 
 **Technologies étudiées et écartées** (novembre 2026) :
@@ -45,13 +46,13 @@ PC portable sans GPU (i5, 8 Go de RAM). Chaque brique doit tourner sur CPU.
 EUR-Lex / CNIL ──► ingestion ──► chunking (structurel | récursif | sémantique)
                                       │
                                       ▼
-                 embeddings (mistral-embed | bge-m3) ──► Supabase (pgvector + tsvector)
+                 embeddings (mistral-embed | bge-m3) ──► Supabase (pgvector)
                                                               │
-question ──► réécriture (historique) ──► multi-query ──► dense + plein texte ──► RRF
-                                                                                  │
-                                              cross-encodeur BERT (rerank + garde-fou)
-                                                                                  │
-                                                 Mistral ◄── contexte suffisant ? ┘
+question ──► réécriture (historique) ──► 2 denses + BM25 ──► RRF
+                                                              │
+                                          reranker Cohere (rerank + garde-fou)
+                                                              │
+                                     Mistral ◄── contexte suffisant ? ┘
                                                     │              non -> « je ne sais pas »
                                        réponse + citations vérifiées
 ```
@@ -260,6 +261,143 @@ Ce qu'on en retient :
   1er résultat ne sépare pas les questions hors corpus (max 0,85 avec mistral-embed) de
   questions légitimes (dès 0,81). Il faudra un autre signal, celui du reranker.
 
+## Retrieval avancé (phase 4)
+
+```bash
+cd backend
+python -m app.retrieval.multiquery                                # reformulations du golden set (cache)
+python -m app.evaluation.retrieval --validated --suite phase4     # chaque brique, une par une
+python -m app.evaluation.retrieval --validated --suite final      # comparaison finale des rerankers
+```
+
+Pipeline retenu (`config.yaml`, `RetrievalSettings.from_config()`) :
+
+```
+question ─┬─ dense mistral-embed (pgvector HNSW) ─┐
+          ├─ dense bge-m3        (pgvector HNSW) ─┼─ RRF (k = 60) ─> 20 candidats ─> reranker Cohere ─> 4 chunks
+          └─ BM25 (racines françaises)          ──┘   50 par retriever                │
+                                                                        score du 1er < 0,25 ─> « je ne sais pas »
+```
+
+| Brique | Ce qu'elle fait | Paramètres |
+|---|---|---|
+| **BM25** | Recherche par mots-clés, pondérée par la rareté des mots (IDF) et la longueur du chunk. Écrite en Python (index inversé en mémoire, 1 190 chunks) | racinisation Snowball française, mots-outils et élisions (« l' », « d' ») retirés, k1 = 1,2, b = 0,75 |
+| **RRF** (Reciprocal Rank Fusion) | Fusionne des classements de natures différentes (cosinus, BM25) par leurs **rangs** : score = Σ 1/(k + rang). Un chunk bien classé par plusieurs retrievers passe devant | k = 60, 50 candidats par retriever |
+| **Multi-query** | `ministral-8b` réécrit la question en 3 variantes (juridique, mots-clés, réponse hypothétique « HyDE ») ; chaque variante est cherchée puis tout est fusionné | JSON, température 0, cache SQLite. **Écarté** (voir ci-dessous) |
+| **Reranker** (cross-encodeur) | Lit la question et le chunk **ensemble** (attention croisée) et note leur pertinence de 0 à 1. Bien plus précis qu'un cosinus, mais une passe du modèle par paire : appliqué aux 20 meilleurs candidats seulement | 20 candidats, score sigmoïde (local) ou `relevance_score` (Cohere), cache SQLite |
+| **Renvois** | L'en-tête de chaque chunk liste le titre des chapitres, sections et annexes du même texte qu'il cite : « chapitre II » devient « chapitre II (Pratiques interdites en matière d'IA) ». Le texte de loi n'est pas modifié | 102 chunks sur 1 190 ; renvois vers d'autres actes ignorés |
+| **Garde-fou** | « Je ne sais pas » si le score du meilleur chunk après reranking est sous un seuil | seuil 0,25 (Cohere v5 pro) |
+
+**Pourquoi BM25 en Python plutôt que le plein texte de Postgres ?** `ts_rank` n'a pas d'IDF :
+un mot présent dans tout le corpus (« règlement ») pèse autant qu'un mot rare (« biométrique »).
+Sur une question type, le mode ET ne trouve aucun chunk ; le mode OU en remonte 1 165 sur 1 190,
+presque à égalité. BM25 règle ce problème, et l'index de 1 190 chunks tient en mémoire.
+
+### Les briques une par une
+
+Mesures sur le golden set, **avant** l'ajout des Renvois (88 questions du corpus).
+Détail : [hybride.json](backend/eval/results/hybride.json),
+[multiquery.json](backend/eval/results/multiquery.json),
+[rerank.json](backend/eval/results/rerank.json), [cohere.json](backend/eval/results/cohere.json).
+
+| Configuration | hit@1 | hit@4 | hit@8 | MRR@20 | cas pratiques (hit@8) |
+|---|---|---|---|---|---|
+| dense mistral-embed (référence) | 0.52 | 0.67 | 0.73 | 0.608 | 0.59 |
+| BM25 seul | 0.51 | 0.72 | 0.78 | 0.607 | 0.73 |
+| mistral-embed + BM25 | 0.59 | 0.76 | 0.84 | 0.679 | 0.78 |
+| mistral-embed + bge-m3 + BM25 (**hybride**) | 0.59 | 0.82 | 0.88 | 0.697 | 0.86 |
+| hybride + multi-query | 0.49 | 0.78 | 0.90 | 0.638 | 0.95 |
+| hybride + CamemBERT (reranker français, 110M) | 0.51 | 0.81 | 0.88 | 0.647 | 0.84 |
+| hybride + bge-reranker-v2-m3 | 0.63 | 0.89 | 0.92 | 0.744 | 0.92 |
+| hybride + Cohere v5 pro | 0.73 | 0.91 | 0.92 | 0.814 | 0.95 |
+| hybride + multi-query + Cohere v5 pro | 0.72 | 0.90 | 0.92 | 0.807 | 0.97 |
+
+- **BM25 seul fait déjà mieux que le dense** sur les cas pratiques : les questions juridiques
+  contiennent des mots rares et décisifs (« biométrique », « notifiés ») qu'un cosinus dilue.
+- **L'hybride à 3 retrievers** gagne +15 points de hit@8 et +0,09 de MRR sur la référence.
+- **Le multi-query est écarté** : il retrouve un peu plus (hit@8), mais ses reformulations
+  amènent des chunks voisins qui passent devant le bon (hit@1 de 0,59 à 0,49). Avec un reranker,
+  il n'apporte plus rien et brouille le garde-fou. En prime, il coûte un appel LLM par question.
+- **CamemBERT n'améliore rien** : il a été entraîné sur des questions web traduites (mMARCO),
+  loin du vocabulaire juridique.
+
+### Comparaison finale des rerankers
+
+Index avec Renvois, 96 questions (88 du corpus, 8 hors corpus).
+Détail : [final.json](backend/eval/results/final.json).
+
+| Configuration | hit@1 | hit@4 | hit@8 | recall@8 | MRR@20 | dates (hit@8) |
+|---|---|---|---|---|---|---|
+| dense mistral-embed | 0.50 | 0.65 | 0.72 | 0.67 | 0.590 | 0 / 4 |
+| hybride | 0.58 | 0.81 | 0.88 | 0.86 | 0.690 | 1 / 4 |
+| hybride + bge-reranker-v2-m3 | 0.64 | 0.89 | 0.94 | 0.91 | 0.757 | 3 / 4 |
+| hybride + Cohere v5 fast | 0.73 | **0.94** | **0.95** | **0.92** | 0.828 | 3 / 4 |
+| **hybride + Cohere v5 pro** | **0.75** | 0.93 | 0.94 | 0.91 | **0.837** | 3 / 4 |
+
+Latence mesurée pour une question et 20 chunks réels (médiane de 3 appels pour Cohere), sur le
+portable i5-10210U sans GPU :
+
+| Reranker | Qualité (MRR@20) | Latence par question | Garde-fou | Licence, coût |
+|---|---|---|---|---|
+| **Cohere rerank v5.0 pro** | **0.837** | **0,8 s** (API) | **séparation parfaite** | API payante à l'usage ; clé d'essai gratuite, non commerciale |
+| Cohere rerank v5.0 fast | 0.828 | 0,8 s (API) | séparation parfaite | idem |
+| bge-reranker-v2-m3 (568M) | 0.757 | 133 s (6,6 s / paire, CPU) | non | Apache 2.0, local |
+| Qwen3-Reranker-0.6B | 0.64 \* | ~200 s (~10 s / paire, CPU) | non | Apache 2.0, local |
+| CamemBERT mmarcoFR (110M) | 0.647 \*\* | 20 s (1 s / paire, CPU) | non | MIT, local |
+
+\* Qwen3 : évaluation arrêtée après 3 h de calcul ; mesuré sur les 64 questions entièrement
+notées (56 du corpus, [qwen3_partiel.json](backend/eval/results/qwen3_partiel.json)).
+Sur ces mêmes questions : hybride seul 0,672, bge-v2-m3 0,764, Cohere fast 0,818, Cohere pro
+0,823. Qwen3 **dégrade** le classement de l'hybride (cause non étudiée : conversion
+« seq-cls » du modèle, ou instruction en anglais sur un corpus français).
+\*\* mesuré avant l'ajout des Renvois.
+
+**Choix : Cohere v5 pro.** Les deux versions Cohere sont proches (1 à 2 questions d'écart sur
+88) et répondent aussi vite à ce volume. *Pro* classe mieux en tête (hit@1, MRR) et place
+l'article 113 au 1er rang sur les 3 questions de date retrouvées, là où *fast* met une fois
+devant un considérant aux dates périmées (voir ci-dessous). Seuls les modèles Cohere ont un
+score qui permet un garde-fou fiable.
+
+Les modèles locaux restent intéressants sur un serveur avec GPU ; sur un portable sans GPU, leur
+latence (20 s à plus de 2 min par question) les rend inutilisables en conversation.
+
+### Les questions de date et les Renvois
+
+Les 4 questions de date (« depuis quand les pratiques interdites s'appliquent-elles ? ») ont
+toutes pour réponse l'article 113, qui ne cite que des **numéros** : « les chapitres I et II
+s'appliquent à partir du 2 février 2025 ». Les mots de la question (« pratiques interdites »)
+n'y figurent pas ; ils sont dans le titre du chapitre II, ailleurs dans le texte. Aucun retriever
+ne pouvait faire le lien.
+
+Le piège : le **considérant 179** parle lui aussi des dates d'application, mais dans leur
+version de 2024, jamais mise à jour par l'omnibus 2026/1744 (« le présent règlement devrait
+s'appliquer à partir du 2 août 2026 »). Un RAG qui le cite donne une date périmée, avec une
+source à l'appui.
+
+Avec les Renvois, l'en-tête de l'article 113 contient « chapitre II (Pratiques interdites en
+matière d'IA) ; chapitre V (Modèles d'IA à usage général) ; … ». Résultat avec un reranker :
+**3 questions de date sur 4** retrouvées (contre 1 sur 4 avant), au 1er rang avec Cohere pro et
+bge-v2-m3. Cohere fast classe l'article 113 au 2e rang pour les pratiques interdites, derrière
+le considérant 179. La 4e (modèles d'IA à usage
+général) échoue encore : l'article 113 n'entre pas dans les 20 candidats de l'hybride, le
+reranker ne peut donc pas le remonter. Pour la génération (phase 5), le considérant 179 sera
+signalé comme non mis à jour.
+
+### Garde-fou « je ne sais pas »
+
+Score du meilleur chunk après reranking :
+
+| Reranker | Questions hors corpus (max) | Questions du corpus (min) | Séparation |
+|---|---|---|---|
+| dense (cosinus mistral-embed) | 0.851 | 0.812 | non : 3 hors corpus sur 8 passent |
+| bge-reranker-v2-m3 | 0.412 | 0.002 | non : 1 question du corpus notée 0,002 |
+| Cohere v5 fast | 0.129 | 0.440 | oui |
+| **Cohere v5 pro** | **0.131** | **0.435** | **oui** |
+
+Avec Cohere v5 pro, un seuil à **0,25** (milieu de l'écart) bloque les 8 questions hors
+corpus et ne refuse aucune des 88 questions légitimes. Avec seulement 8 questions hors corpus,
+ce seuil reste à surveiller : la phase 5 le vérifiera sur les réponses générées.
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
@@ -267,7 +405,7 @@ Ce qu'on en retient :
 - [x] **Phase 1b** : fiches pratiques IA de la CNIL (17 fiches + liste de vérification PDF, fidélité caractère par caractère)
 - [x] **Phase 2** : chunking (3 stratégies) + embeddings (`mistral-embed` vs `bge-m3`) + indexation Supabase (4 853 chunks)
 - [x] **Phase 3** : golden set (96 questions vérifiées contre les sources, dont 8 hors corpus) + évaluation de référence
-- [ ] **Phase 4** : retrieval avancé (hybride, multi-query, RRF, cross-encodeur BERT), garde-fou « je ne sais pas » calibré, mesuré à chaque étape
+- [x] **Phase 4** : retrieval hybride (2 denses + BM25, RRF), reranker Cohere comparé à 3 rerankers ouverts, Renvois dans les en-têtes, garde-fou « je ne sais pas » calibré (multi-query mesuré puis écarté)
 - [ ] **Phase 5** : génération Mistral avec citations vérifiées, mémoire conversationnelle, streaming
 - [ ] **Phase 6** : agent LangGraph d'analyse de conformité, guidé par la liste de vérification CNIL (human-in-the-loop)
 - [ ] **Phase 7** : frontend Next.js, upload PDF (Celery + Redis), auth

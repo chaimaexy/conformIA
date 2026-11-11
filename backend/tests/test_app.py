@@ -17,7 +17,9 @@ def test_health_ok():
 def test_config_yaml_is_valid():
     cfg = load_app_config(BACKEND_DIR / "config.yaml")
     assert cfg.embeddings.dimension == 1024
-    assert cfg.retrieval.final_k <= cfg.retrieval.top_k
+    assert cfg.retrieval.final_k <= cfg.retrieval.rerank_candidates <= cfg.retrieval.candidates
+    assert cfg.reranker.model in cfg.reranker.candidates
+    assert 0 < cfg.reranker.answerability_threshold < 1
     assert {s.id for s in cfg.corpus.sources} >= {"ai_act", "rgpd"}
 
 

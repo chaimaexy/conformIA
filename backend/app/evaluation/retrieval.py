@@ -14,19 +14,20 @@ servira à calibrer le garde-fou « je ne sais pas » (phase 4).
 Usage (depuis backend/) :
     python -m app.evaluation.retrieval                 # toutes les questions non rejetées
     python -m app.evaluation.retrieval --validated     # seulement les questions validées
+    python -m app.evaluation.retrieval --validated --suite phase4 --name hybride
 """
 
 import argparse
 import json
 import logging
 import statistics
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import UTC, datetime
 
 from app.core.logging import setup_logging
-from app.embeddings import get_embedder
 from app.evaluation.golden import EVAL_DIR, GoldenItem, load
-from app.vectordb.store import client, vector_literal
+from app.retrieval.pipeline import RetrievalSettings, Retriever
+from app.vectordb.store import client
 
 logger = logging.getLogger("eval.retrieval")
 RESULTS_DIR = EVAL_DIR / "results"
@@ -37,16 +38,68 @@ KS = (1, 4, 8, 20)
 @dataclass(frozen=True)
 class Config:
     name: str
-    strategy: str
-    model: str
+    settings: RetrievalSettings
 
 
-CONFIGS = [
-    Config("récursif + mistral-embed", "recursive", "mistral-embed"),
-    Config("sémantique + mistral-embed", "semantic", "mistral-embed"),
-    Config("structurel + mistral-embed", "structural", "mistral-embed"),
-    Config("structurel + bge-m3", "structural", "local:BAAI/bge-m3"),
-]
+MISTRAL, BGE = "mistral-embed", "local:BAAI/bge-m3"
+CAMEMBERT = "antoinelouis/crossencoder-camembert-base-mmarcoFR"
+BGE_RERANK = "BAAI/bge-reranker-v2-m3"
+QWEN3 = "tomaarsen/Qwen3-Reranker-0.6B-seq-cls"
+COHERE = "cohere:rerank-v5.0-pro"
+COHERE_FAST = "cohere:rerank-v5.0-fast"
+HYBRID = RetrievalSettings("structural", (MISTRAL, BGE), bm25=True)
+SUITES = {
+    # Phase 3 : stratégies de découpage x modèles d'embedding (recherche dense seule)
+    "phase3": [
+        Config("récursif + mistral-embed", RetrievalSettings("recursive", (MISTRAL,))),
+        Config("sémantique + mistral-embed", RetrievalSettings("semantic", (MISTRAL,))),
+        Config("structurel + mistral-embed", RetrievalSettings("structural", (MISTRAL,))),
+        Config("structurel + bge-m3", RetrievalSettings("structural", (BGE,))),
+    ],
+    # Phase 4 : recherche hybride sur le découpage structurel
+    "phase4": [
+        Config("dense mistral-embed", RetrievalSettings("structural", (MISTRAL,))),
+        Config("BM25 seul", RetrievalSettings("structural", (), bm25=True)),
+        Config("mistral + BM25 (RRF)", RetrievalSettings("structural", (MISTRAL,), bm25=True)),
+        Config("bge-m3 + BM25 (RRF)", RetrievalSettings("structural", (BGE,), bm25=True)),
+        Config("hybride : mistral + bge-m3 + BM25 (RRF)", HYBRID),
+        Config("hybride + multi-query", replace(HYBRID, multi_query=True)),
+        Config("hybride + reranker CamemBERT", replace(HYBRID, reranker=CAMEMBERT)),
+        Config("hybride + reranker bge-v2-m3", replace(HYBRID, reranker=BGE_RERANK)),
+        Config(
+            "hybride + multi-query + reranker bge-v2-m3",
+            replace(HYBRID, multi_query=True, reranker=BGE_RERANK),
+        ),
+        Config(
+            "hybride + multi-query + reranker CamemBERT",
+            replace(HYBRID, multi_query=True, reranker=CAMEMBERT),
+        ),
+    ],
+    # Comparaison finale, sur l'index avec renvois résolus (multi-query et CamemBERT écartés)
+    "final": [
+        Config("dense mistral-embed", RetrievalSettings("structural", (MISTRAL,))),
+        Config("hybride : mistral + bge-m3 + BM25 (RRF)", HYBRID),
+        Config("hybride + reranker bge-v2-m3", replace(HYBRID, reranker=BGE_RERANK)),
+        Config("hybride + reranker Qwen3-0.6B", replace(HYBRID, reranker=QWEN3)),
+        Config("hybride + reranker Cohere v5 fast", replace(HYBRID, reranker=COHERE_FAST)),
+        Config("hybride + reranker Cohere v5 pro", replace(HYBRID, reranker=COHERE)),
+    ],
+    # Rerankers récents : open source (Qwen3) et API commerciale (Cohere)
+    "rerankers": [
+        Config("hybride + reranker Qwen3-0.6B", replace(HYBRID, reranker=QWEN3)),
+        Config("hybride + reranker Cohere v5 pro", replace(HYBRID, reranker=COHERE)),
+        Config("hybride + reranker Cohere v5 fast", replace(HYBRID, reranker=COHERE_FAST)),
+        Config(
+            "hybride + multi-query + reranker Qwen3-0.6B",
+            replace(HYBRID, multi_query=True, reranker=QWEN3),
+        ),
+        Config(
+            "hybride + multi-query + reranker Cohere v5 pro",
+            replace(HYBRID, multi_query=True, reranker=COHERE),
+        ),
+    ],
+}
+CONFIGS = SUITES["phase3"]
 
 
 def first_rank(item: GoldenItem, rows: list[dict], sources: dict[str, str]) -> int | None:
@@ -94,6 +147,33 @@ def summarize(per_question: list[dict]) -> dict:
     return summary
 
 
+def gate_analysis(per_question: list[dict]) -> dict:
+    """Le score du 1er résultat sépare-t-il les questions hors corpus des autres ?
+
+    Garde-fou : « je ne sais pas » si score < seuil. Deux points de fonctionnement :
+    - sans_refus_a_tort : seuil = plus petit score d'une question du corpus (aucune refusée) ;
+      part des questions hors corpus alors bloquées ;
+    - tout_bloquer : seuil juste au-dessus du plus haut score hors corpus ; part des questions
+      du corpus alors refusées à tort.
+    """
+    corpus = [q["top_score"] for q in per_question if q["category"] != "hors_corpus"]
+    out = [q["top_score"] for q in per_question if q["category"] == "hors_corpus"]
+    if not corpus or not out:
+        return {}
+    low, high = min(corpus), max(out)
+    return {
+        "sans_refus_a_tort": {
+            "seuil": round(low, 4),
+            "hors_corpus_bloquees": round(sum(s < low for s in out) / len(out), 3),
+        },
+        "tout_bloquer": {
+            "seuil": round(high, 4),
+            "refus_a_tort": round(sum(s <= high for s in corpus) / len(corpus), 3),
+        },
+        "separation_parfaite": high < low,
+    }
+
+
 def run(items: list[GoldenItem], configs: list[Config] = CONFIGS) -> dict:
     db = client()
     sources = {
@@ -102,22 +182,10 @@ def run(items: list[GoldenItem], configs: list[Config] = CONFIGS) -> dict:
     }
     results = {}
     for config in configs:
-        vectors = get_embedder(config.model).embed([i.question for i in items])
+        retriever = Retriever(config.settings, db)
+        all_rows = retriever.search_many([i.question for i in items], k=TOP)
         per_question = []
-        for item, vector in zip(items, vectors, strict=True):
-            rows = (
-                db.rpc(
-                    "match_chunks_dense",
-                    {
-                        "query_embedding": vector_literal(vector),
-                        "match_count": TOP,
-                        "filter_strategy": config.strategy,
-                        "embedding_model": config.model,
-                    },
-                )
-                .execute()
-                .data
-            )
+        for item, rows in zip(items, all_rows, strict=True):
             rank = first_rank(item, rows, sources) if item.expected else None
             per_question.append(
                 {
@@ -131,8 +199,9 @@ def run(items: list[GoldenItem], configs: list[Config] = CONFIGS) -> dict:
                 }
             )
         results[config.name] = {
-            "config": config.__dict__,
+            "config": {"name": config.name, **asdict(config.settings)},
             "summary": summarize(per_question),
+            "gate": gate_analysis(per_question),
             "questions": per_question,
         }
         logger.info(
@@ -161,6 +230,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Évaluation du retrieval")
     parser.add_argument("--validated", action="store_true", help="questions validées uniquement")
     parser.add_argument("--name", default="baseline", help="nom du fichier de résultats")
+    parser.add_argument("--suite", default="phase3", choices=sorted(SUITES), help="configurations")
+    parser.add_argument("--skip", nargs="*", default=[], help="configurations à exclure")
     args = parser.parse_args()
     setup_logging()
 
@@ -170,7 +241,8 @@ def main() -> None:
     if not items:
         raise SystemExit("Golden set vide : lancer python -m app.evaluation.review export")
     logger.info("%d questions évaluées", len(items))
-    results = run(items)
+    configs = [c for c in SUITES[args.suite] if not any(s in c.name for s in args.skip)]
+    results = run(items, configs)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     out = RESULTS_DIR / f"{args.name}.json"
     payload = {

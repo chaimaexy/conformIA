@@ -4,7 +4,9 @@
 - sinon on coupe aux frontières naturelles : paragraphes numérotés (« 2. », « 1 bis. »),
   points d'annexe, intertitres de fiche, thèmes de la liste de vérification ;
 - chaque chunk reçoit un en-tête de contexte (« AI Act > CHAPITRE III > Article 6 - ... »),
-  y compris les morceaux d'un article découpé, qui sinon perdraient leur référence.
+  y compris les morceaux d'un article découpé, qui sinon perdraient leur référence ;
+- l'en-tête liste aussi le titre des chapitres, sections et annexes que le chunk cite
+  (« Renvois : chapitre II (Pratiques interdites en matière d'IA) », voir references.py).
 Un chunk ne mélange jamais deux sections : la citation reste exacte.
 """
 
@@ -12,6 +14,7 @@ import re
 
 from app.chunking.common import PARAGRAPH_START, blocks, header, pack, paragraph_numbers, ref
 from app.chunking.models import Chunk
+from app.chunking.references import ReferenceResolver
 from app.ingestion.models import LegalSection
 
 _HEADING = re.compile(r"^[^-\s].{0,150}[^.;:,]$")  # ligne courte sans ponctuation finale
@@ -27,7 +30,9 @@ def _starts_block(section: LegalSection):
     return lambda line: True  # considérant : chaque alinéa
 
 
-def chunk_section(section: LegalSection, max_chars: int) -> list[Chunk]:
+def chunk_section(
+    section: LegalSection, max_chars: int, resolver: ReferenceResolver | None = None
+) -> list[Chunk]:
     base_header = header(section)
     bodies = pack(blocks(section.text, _starts_block(section)), max_chars)
     is_article = section.section_type == "article"
@@ -44,6 +49,9 @@ def chunk_section(section: LegalSection, max_chars: int) -> list[Chunk]:
             part = f" (partie {i + 1}/{len(bodies)}{where})"
         if numbers:
             current_paragraph = numbers[-1]
+        references = resolver.resolve(body) if resolver else []
+        if references:
+            part += "\nRenvois : " + " ; ".join(references)
         chunks.append(
             Chunk(
                 source_id=section.source_id,
@@ -62,7 +70,8 @@ def chunk_section(section: LegalSection, max_chars: int) -> list[Chunk]:
 
 
 def chunk_document(sections: list[LegalSection], max_chars: int = 2000) -> list[Chunk]:
-    chunks = [c for s in sections for c in chunk_section(s, max_chars)]
+    resolver = ReferenceResolver(sections)  # sections d'un même texte
+    chunks = [c for s in sections for c in chunk_section(s, max_chars, resolver)]
     for i, chunk in enumerate(chunks):
         chunk.chunk_index = i
     return chunks
