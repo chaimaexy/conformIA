@@ -32,6 +32,7 @@ from app.vectordb.store import client
 logger = logging.getLogger("eval.retrieval")
 RESULTS_DIR = EVAL_DIR / "results"
 TOP = 20
+FINAL_K = 4  # chunks envoyés au LLM (config.yaml, retrieval.final_k)
 KS = (1, 4, 8, 20)
 
 
@@ -47,7 +48,11 @@ BGE_RERANK = "BAAI/bge-reranker-v2-m3"
 QWEN3 = "tomaarsen/Qwen3-Reranker-0.6B-seq-cls"
 COHERE = "cohere:rerank-v5.0-pro"
 COHERE_FAST = "cohere:rerank-v5.0-fast"
+VOYAGE = "voyage:rerank-2.5"
+JINA = "jina:jina-reranker-v2-base-multilingual"
 HYBRID = RetrievalSettings("structural", (MISTRAL, BGE), bm25=True)
+# = config.yaml : mistral-embed + BM25, Cohere v5 pro sur 50 candidats (bge-m3 retiré)
+PRODUCTION = replace(HYBRID, dense_models=(MISTRAL,), reranker=COHERE, rerank_candidates=50)
 SUITES = {
     # Phase 3 : stratégies de découpage x modèles d'embedding (recherche dense seule)
     "phase3": [
@@ -83,6 +88,29 @@ SUITES = {
         Config("hybride + reranker Qwen3-0.6B", replace(HYBRID, reranker=QWEN3)),
         Config("hybride + reranker Cohere v5 fast", replace(HYBRID, reranker=COHERE_FAST)),
         Config("hybride + reranker Cohere v5 pro", replace(HYBRID, reranker=COHERE)),
+    ],
+    # Configuration retenue (config.yaml), comparée aux références
+    "production": [
+        Config("dense mistral-embed", RetrievalSettings("structural", (MISTRAL,))),
+        Config("mistral + BM25 (RRF)", replace(HYBRID, dense_models=(MISTRAL,))),
+        Config("production : mistral + BM25 + Cohere v5 pro (50 candidats)", PRODUCTION),
+    ],
+    # Consolidation : bge-m3 est-il encore utile une fois le reranker en place ? (image Docker)
+    "consolidation": [
+        Config("dense mistral-embed", RetrievalSettings("structural", (MISTRAL,))),
+        Config("mistral + BM25 (RRF)", replace(HYBRID, dense_models=(MISTRAL,))),
+        Config("hybride : mistral + bge-m3 + BM25 (RRF)", HYBRID),
+        Config(
+            "mistral + BM25 + Cohere v5 pro (50 candidats)",
+            replace(PRODUCTION, dense_models=(MISTRAL,)),
+        ),
+        Config("production : hybride + Cohere v5 pro (50 candidats)", PRODUCTION),
+    ],
+    # Phase 4 ter : rerankers hébergés concurrents, sur le pipeline de production
+    "rerankers_api": [
+        Config("production : Cohere v5 pro", PRODUCTION),
+        Config("Voyage rerank-2.5", replace(PRODUCTION, reranker=VOYAGE)),
+        Config("Jina reranker v2 multilingue", replace(PRODUCTION, reranker=JINA)),
     ],
     # Rerankers récents : open source (Qwen3) et API commerciale (Cohere)
     "rerankers": [
@@ -131,6 +159,12 @@ def summarize(per_question: list[dict]) -> dict:
     summary["recall@8"] = round(
         sum(q["found@8"] for q in in_corpus) / sum(q["n_expected"] for q in in_corpus), 3
     )
+    if "found_contexte" in in_corpus[0]:  # contexte du LLM : 4 chunks + sections citées
+        expected = sum(q["n_expected"] for q in in_corpus)
+        summary["recall@4"] = round(sum(q["found@4"] for q in in_corpus) / expected, 3)
+        summary["recall_contexte"] = round(
+            sum(q["found_contexte"] for q in in_corpus) / expected, 3
+        )
     summary["mrr@20"] = round(
         statistics.mean(1 / q["rank"] if q["rank"] else 0 for q in in_corpus), 3
     )
@@ -193,6 +227,10 @@ def run(items: list[GoldenItem], configs: list[Config] = CONFIGS) -> dict:
                     "category": item.category,
                     "rank": rank,
                     "found@8": found_refs(item, rows, sources, 8),
+                    "found@4": found_refs(item, rows, sources, FINAL_K),
+                    "found_contexte": found_refs(
+                        item, retriever.with_citations(rows, FINAL_K), sources, 99
+                    ),
                     "n_expected": len(item.expected),
                     "top_score": round(rows[0]["score"], 4) if rows else 0.0,
                     "top_label": rows[0]["metadata"]["label"] if rows else None,

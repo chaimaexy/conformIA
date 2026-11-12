@@ -1,13 +1,13 @@
-"""Phase 2 : chunking + embeddings + indexation.
+"""Chunking + embeddings + indexation.
 
 Usage (depuis backend/) :
-    python -m app.indexing                       # tout : 3 stratégies, 2 modèles, envoi Supabase
+    python -m app.indexing                       # stratégie retenue (config.yaml), envoi Supabase
     python -m app.indexing --no-upload           # calcule et sauvegarde localement seulement
-    python -m app.indexing --strategies structural
+    python -m app.indexing --strategies recursive semantic --no-upload   # expériences phase 3
 
-Plan d'expérience (pour comparer à coût raisonnable sur un PC sans GPU) :
-- les 3 stratégies de chunking sont embarquées avec mistral-embed  -> comparer le chunking
-- la stratégie structurelle l'est AUSSI avec bge-m3 (local, CPU)   -> comparer les modèles
+Seule la stratégie structurelle (choisie en phase 3) est indexée dans Supabase. Les deux
+autres restent disponibles pour refaire la comparaison : chunks et vecteurs sont en cache
+local, les renvoyer ne coûte rien.
 Sorties : data/processed/chunks/{stratégie}.jsonl et data/processed/chunks/stats.json
 """
 
@@ -45,7 +45,11 @@ def build_chunks(strategy: str, docs: list[LegalDocument]) -> tuple[list[Chunk],
     cfg = get_app_config().chunking
     extra: dict = {}
     if strategy == "structural":
-        chunks = [c for d in docs for c in structural.chunk_document(d.sections, cfg.max_chars)]
+        chunks = [
+            c
+            for d in docs
+            for c in structural.chunk_document(d.sections, cfg.max_chars, cfg.article_references)
+        ]
     elif strategy == "recursive":
         chunks = [
             c
@@ -92,7 +96,13 @@ def models_for(strategy: str) -> list[str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Chunking + embeddings + indexation")
-    parser.add_argument("--strategies", nargs="+", choices=STRATEGIES, default=STRATEGIES)
+    parser.add_argument(
+        "--strategies",
+        nargs="+",
+        choices=STRATEGIES,
+        default=[get_app_config().chunking.strategy],
+        help="défaut : la stratégie de config.yaml",
+    )
     parser.add_argument("--no-upload", action="store_true", help="ne pas écrire dans Supabase")
     args = parser.parse_args()
     setup_logging()

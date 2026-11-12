@@ -19,7 +19,7 @@ def test_config_yaml_is_valid():
     assert cfg.embeddings.dimension == 1024
     assert cfg.retrieval.final_k <= cfg.retrieval.rerank_candidates <= cfg.retrieval.candidates
     assert cfg.reranker.model in cfg.reranker.candidates
-    assert 0 < cfg.reranker.answerability_threshold < 1
+    assert 0 < cfg.reranker.answerability_threshold < cfg.reranker.verification_threshold < 1
     assert {s.id for s in cfg.corpus.sources} >= {"ai_act", "rgpd"}
 
 

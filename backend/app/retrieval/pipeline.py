@@ -149,6 +149,46 @@ class Retriever:
         scores = self.reranker.scores(question, [self._row(i, 0)["content"] for i in ids])
         return sorted(zip(ids, scores, strict=True), key=lambda kv: kv[1], reverse=True)
 
+    @cached_property
+    def section_heads(self) -> dict[tuple[str, str], dict]:
+        """(document, « Article 15 ») -> 1er chunk de la section (pour l'expansion)."""
+        heads: dict[tuple[str, str], dict] = {}
+        for chunk in self.chunks.values():
+            meta = chunk["metadata"]
+            key = (chunk["document_id"], meta["label"])
+            first_part = "(partie " not in meta["header"] or "(partie 1/" in meta["header"]
+            if key not in heads or first_part:
+                heads[key] = chunk
+        return heads
+
+    def with_citations(self, rows: list[dict], final_k: int, max_extra: int = 6) -> list[dict]:
+        """Les final_k meilleurs chunks + les sections qu'ils citent (graphe des citations, 1 saut).
+
+        « l'article 83, paragraphe 5, vise les articles 12 à 22 » : l'article 15 (droit d'accès)
+        est joint au contexte. Quand un chunk cite plus de sections que max_extra, on garde
+        celles que le reranker a le mieux notées pour la question (scores des autres lignes de
+        `rows`, déjà calculés : aucun appel de plus) ; les autres suivent l'ordre du texte.
+        Les sections ajoutées gardent ce score, ou None si elles n'ont pas été notées.
+        """
+        context = rows[:final_k]
+        have = {(r["document_id"], r["metadata"]["label"]) for r in context}
+        scored: dict[tuple[str, str], float] = {}
+        for r in rows:
+            key = (r["document_id"], r["metadata"]["label"])
+            if r.get("score") is not None:
+                scored[key] = max(scored.get(key, r["score"]), r["score"])
+        cited: list[tuple[tuple[str, str], str]] = []
+        for row in rows[:final_k]:
+            for label in row["metadata"].get("cites", []):
+                key = (row["document_id"], label)
+                if key not in have and key in self.section_heads and key not in dict(cited):
+                    cited.append((key, row["metadata"]["label"]))
+        cited.sort(key=lambda c: -scored.get(c[0], float("-inf")))  # tri stable : ordre du texte
+        for key, cited_by in cited[:max_extra]:
+            head = self.section_heads[key]
+            context.append({**head, "score": scored.get(key), "cited_by": cited_by})
+        return context
+
     def _row(self, chunk_id: str, score: float) -> dict:
         if chunk_id not in self.chunks:  # chunk ajouté depuis le chargement : relu à la demande
             row = self.db.table("chunks").select("id, document_id, content, metadata")

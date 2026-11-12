@@ -37,6 +37,9 @@ class LegalSection(BaseModel):
     source_date: date | None = None  # fiches CNIL : date de publication / mise à jour
     amended_by: list[str] = Field(default_factory=list)  # CELEX des actes modificatifs
     corrected_by: list[str] = Field(default_factory=list)  # CELEX des rectificatifs appliqués
+    # Considérants : les actes modificatifs ne les mettent jamais à jour (seuls articles et
+    # annexes le sont). Ils peuvent donc contredire la version en vigueur (dates notamment).
+    not_updated_by: list[str] = Field(default_factory=list)  # CELEX des actes non répercutés
 
     @property
     def label(self) -> str:

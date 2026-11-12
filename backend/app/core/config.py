@@ -35,6 +35,8 @@ class Settings(BaseSettings):
 
     mistral_api_key: str | None = None
     cohere_api_key: str | None = None  # reranker Cohere (clé d'essai gratuite)
+    voyage_api_key: str | None = None  # reranker Voyage AI (comparaison, phase 4 ter)
+    jina_api_key: str | None = None  # reranker Jina AI (comparaison, phase 4 ter)
     models_cache_dir: Path | None = None  # cache Hugging Face (défaut : data/cache/hf)
 
     supabase_url: str | None = None
@@ -65,6 +67,7 @@ class RerankerConfig(BaseModel):
     model: str | None = "cohere:rerank-v5.0-pro"  # None : pas de reranking
     candidates: list[str] = Field(default_factory=list)  # comparés en phase 4
     answerability_threshold: float | None = None  # « je ne sais pas » sous ce score
+    verification_threshold: float | None = None  # zone grise en dessous : vérification par le LLM
 
 
 class ChunkingConfig(BaseModel):
@@ -74,10 +77,11 @@ class ChunkingConfig(BaseModel):
     max_chars: int = 2000  # structurel et sémantique : taille maximale d'un chunk
     min_chars: int = 300  # sémantique : fusion des fragments plus courts
     semantic_percentile: float = 90  # sémantique : seuil de coupure (percentile des distances)
+    article_references: bool = False  # structurel : Renvois aussi pour les articles cités
 
 
 class RetrievalConfig(BaseModel):
-    dense_models: list[str] = Field(default_factory=lambda: ["mistral-embed", "local:BAAI/bge-m3"])
+    dense_models: list[str] = Field(default_factory=lambda: ["mistral-embed"])
     bm25: bool = True
     candidates: int = 50  # résultats de chaque retriever avant fusion
     rrf_k: int = 60

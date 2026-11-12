@@ -11,6 +11,7 @@ si même le meilleur chunk a un score faible, l'assistant répond « je ne sais 
 
 Candidats comparés (config.yaml, reranker.candidates) :
 - cohere:<modèle>                 : API Cohere Rerank (référence commerciale)
+- voyage:<modèle>, jina:<modèle>  : API concurrentes (phase 4 ter)
 - Qwen3-Reranker-0.6B (seq-cls)   : LLM Qwen3 affiné pour le reranking, Apache 2.0 (open SOTA)
 - BAAI/bge-reranker-v2-m3         : XLM-RoBERTa large, multilingue, Apache 2.0, 568M
 - crossencoder-camembert-base-mmarcoFR : CamemBERT base, français, MIT, 110M
@@ -148,44 +149,89 @@ class Qwen3Reranker(CrossEncoderReranker):
         return [(q, f"<Document>: {p}{self.SUFFIX}") for p in passages]
 
 
-class CohereReranker(Reranker):
-    """API Cohere Rerank. Clé d'essai : gratuite, limitée (~10 requêtes/min), non commerciale."""
+class ApiReranker(Reranker):
+    """Reranker hébergé : une requête HTTP par question, avec rythme imposé et nouvel essai.
 
-    URL = "https://api.cohere.com/v2/rerank"
-    MIN_INTERVAL = 6.5  # secondes entre deux appels (10 requêtes/min)
+    Cohere, Voyage et Jina exposent la même forme d'API : (modèle, question, documents) ->
+    liste de {index, relevance_score}. Seuls l'URL, la clé et quelques champs changent.
+    """
+
+    PROVIDER = ""
+    URL = ""
+    KEY_SETTING = ""  # attribut de Settings (.env)
+    MIN_INTERVAL = 0.0  # secondes entre deux appels
+    RESULTS = "results"  # champ de la réponse qui contient les scores
 
     def __init__(self, model: str):
-        super().__init__(f"cohere:{model}")
+        super().__init__(f"{self.PROVIDER}:{model}")
         self.model = model
         self._last_call = 0.0
 
+    def _body(self, query: str, passages: list[str]) -> dict:
+        return {"model": self.model, "query": query, "documents": passages}
+
     def _predict(self, query: str, passages: list[str]) -> list[float]:
-        key = get_settings().cohere_api_key
+        key = getattr(get_settings(), self.KEY_SETTING)
         if not key:
-            raise RuntimeError("COHERE_API_KEY manquante : ajoute-la dans le fichier .env")
-        body = {"model": self.model, "query": query, "documents": passages}
+            env = self.KEY_SETTING.upper()
+            raise RuntimeError(f"{env} manquante : ajoute-la dans le fichier .env")
         for _ in range(5):
             time.sleep(max(0.0, self._last_call + self.MIN_INTERVAL - time.monotonic()))
             self._last_call = time.monotonic()
             headers = {"Authorization": f"Bearer {key}"}
-            r = httpx.post(self.URL, headers=headers, json=body, timeout=60)
+            r = httpx.post(self.URL, headers=headers, json=self._body(query, passages), timeout=60)
             if r.status_code == 200:
                 scores = [0.0] * len(passages)
-                for result in r.json()["results"]:
+                for result in r.json()[self.RESULTS]:
                     scores[result["index"]] = result["relevance_score"]
                 return scores
             if r.status_code == 429 or r.status_code >= 500:
-                logger.warning("Cohere %s, nouvel essai dans 60 s", r.status_code)
+                logger.warning("%s %s, nouvel essai dans 60 s", self.PROVIDER, r.status_code)
                 time.sleep(60)
                 continue
             r.raise_for_status()
-        raise RuntimeError("Cohere : échec après 5 essais")
+        raise RuntimeError(f"{self.PROVIDER} : échec après 5 essais")
+
+
+class CohereReranker(ApiReranker):
+    """API Cohere Rerank. Clé d'essai : gratuite, limitée (~10 requêtes/min), non commerciale."""
+
+    PROVIDER = "cohere"
+    URL = "https://api.cohere.com/v2/rerank"
+    KEY_SETTING = "cohere_api_key"
+    MIN_INTERVAL = 6.5  # 10 requêtes/min
+
+
+class VoyageReranker(ApiReranker):
+    """API Voyage AI (MongoDB), ex. rerank-2.5. Facturé au token, quota gratuit à l'inscription."""
+
+    PROVIDER = "voyage"
+    URL = "https://api.voyageai.com/v1/rerank"
+    KEY_SETTING = "voyage_api_key"
+    MIN_INTERVAL = 1.0
+    RESULTS = "data"
+
+
+class JinaReranker(ApiReranker):
+    """API Jina AI, ex. jina-reranker-v2-base-multilingual. Quota gratuit non commercial."""
+
+    PROVIDER = "jina"
+    URL = "https://api.jina.ai/v1/rerank"
+    KEY_SETTING = "jina_api_key"
+    MIN_INTERVAL = 1.0
+
+    def _body(self, query: str, passages: list[str]) -> dict:
+        return {**super()._body(query, passages), "top_n": len(passages)}
+
+
+_API_RERANKERS = {cls.PROVIDER: cls for cls in (CohereReranker, VoyageReranker, JinaReranker)}
 
 
 def get_reranker(spec: str) -> Reranker:
-    """« cohere:<modèle> », un id Qwen3-Reranker, ou tout cross-encodeur Hugging Face."""
-    if spec.startswith("cohere:"):
-        return CohereReranker(spec.removeprefix("cohere:"))
+    """« cohere: / voyage: / jina:<modèle> », un id Qwen3-Reranker, ou un cross-encodeur HF."""
+    provider, _, model = spec.partition(":")
+    if model and provider in _API_RERANKERS:
+        return _API_RERANKERS[provider](model)
     if "Qwen3-Reranker" in spec:
         return Qwen3Reranker(spec)
     return CrossEncoderReranker(spec)

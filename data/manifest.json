@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-09T15:48:50+00:00",
+  "generated_at": "2026-11-11T23:24:51+00:00",
   "note": "Textes consolidés EUR-Lex : outil de documentation, seules les versions publiées au JO font foi. Réutilisation autorisée (décision 2011/833/UE). Fiches CNIL : licence CC-BY-ND 4.0, citer « Source : CNIL » et la date d'extraction.",
   "sources": [
     {
@@ -7,7 +7,7 @@
       "title": "Règlement (UE) 2024/1689 - AI Act (modifié par le règlement (UE) 2026/1744)",
       "freshness": {
         "checked": true,
-        "checked_at": "2026-11-09T15:48:27+00:00",
+        "checked_at": "2026-11-11T23:24:40+00:00",
         "latest_consolidated": "02024R1689-20260727",
         "corrigenda_fr": [
           "32024R1689R(01)"
@@ -73,7 +73,7 @@
           "published": "2025-07-22",
           "sha256": "ec5a3f8aa6c038d0ab19b983cc5144634f4200f586ce8ee739872265db1afdcf",
           "retrieved_at": "2026-11-09T15:26:46+00:00",
-          "characters_verified": 51460
+          "characters_verified": 49582
         },
         {
           "role": "fiche",
@@ -217,7 +217,7 @@
           "published": "2025-07-22",
           "sha256": "c80070f849ac15a567aac3c317431b09feff7b6856bfd9254de994bf00c2b966",
           "retrieved_at": "2026-11-09T15:28:48+00:00",
-          "characters_verified": 35692
+          "characters_verified": 32693
         },
         {
           "role": "liste de vérification (PDF)",
@@ -244,7 +244,7 @@
       "title": "Règlement (UE) 2016/679 - RGPD",
       "freshness": {
         "checked": true,
-        "checked_at": "2026-11-09T15:48:33+00:00",
+        "checked_at": "2026-11-11T23:24:49+00:00",
         "latest_consolidated": "02016R0679-20160504",
         "corrigenda_fr": [
           "32016R0679R(02)"

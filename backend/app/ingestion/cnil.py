@@ -167,6 +167,14 @@ def _render(el: Tag, depth: int = 0) -> list[str]:
         inline.clear()
 
     for child in el.children:
+        if isinstance(child, Tag) and child.name == "a" and child.find("img"):
+            flush()  # schéma cliquable : lien vers le document source (souvent un PDF)
+            lines.extend(
+                f for img in child.find_all("img") if (f := _figure(img, child.get("href")))
+            )
+            if text := clean(child.get_text()):
+                lines.append(text)
+            continue
         if isinstance(child, NavigableString) or child.name in _INLINE:
             inline.append(child)
             continue
@@ -185,12 +193,79 @@ def _render(el: Tag, depth: int = 0) -> list[str]:
                     wrapper = BeautifulSoup("<div></div>", "lxml").div
                     wrapper.append(sub.__copy__())
                     lines.extend(_render(wrapper, depth + 1))
-        elif child.name in {"hr", "img", "figure"}:
+        elif child.name == "table":
+            lines.extend(_render_table(child, depth))
+        elif child.name == "img":
+            if line := _figure(child):
+                lines.append(line)
+        elif child.name == "hr":
             continue
         else:
             lines.extend(_render(child, depth))
     flush()
     return lines
+
+
+FIGURE_PREFIX = "[Schéma"
+
+
+def _figure(img: Tag, href: str | None = None) -> str | None:
+    """Un schéma n'a pas de texte : on garde sa légende (alt) et son lien, pour le citer."""
+    target = href or img.get("src")
+    if not target:
+        return None
+    alt = clean(img.get("alt") or "")
+    return f"{FIGURE_PREFIX}{' : ' + alt if alt else ''} – {urljoin(BASE_URL, target)}]"
+
+
+def table_grid(table: Tag) -> tuple[list[list[str]], int]:
+    """Grille du tableau et nombre de lignes d'en-tête.
+
+    Une cellule fusionnée (rowspan / colspan) est recopiée telle quelle dans chaque case
+    qu'elle couvre : chaque ligne du tableau Markdown se lit alors seule, sans ambiguïté.
+    """
+    cells: dict[tuple[int, int], str] = {}
+    header_rows = 1
+    for r, tr in enumerate(table.find_all("tr")):
+        c = 0
+        for cell in tr.find_all(["td", "th"], recursive=False):
+            while (r, c) in cells:
+                c += 1
+            text = "<br>".join(_render(cell))
+            rows, cols = int(cell.get("rowspan") or 1), int(cell.get("colspan") or 1)
+            if r == 0:
+                header_rows = max(header_rows, rows)
+            for dr in range(rows):
+                for dc in range(cols):
+                    cells[(r + dr, c + dc)] = text
+            c += cols
+    n_rows = max(r for r, _ in cells) + 1
+    n_cols = max(c for _, c in cells) + 1
+    return [[cells.get((r, c), "") for c in range(n_cols)] for r in range(n_rows)], header_rows
+
+
+def _table_cells(table: Tag) -> list[Tag]:
+    return [c for tr in table.find_all("tr") for c in tr.find_all(["td", "th"], recursive=False)]
+
+
+def _render_table(table: Tag, depth: int) -> list[str]:
+    """Tableau à plusieurs colonnes -> tableau Markdown ; à une colonne (encadré) -> texte."""
+    grid, header_rows = table_grid(table)
+    if len(grid[0]) < 2:
+        return [line for cell in _table_cells(table) for line in _render(cell, depth)]
+    header = []
+    for c in range(len(grid[0])):  # en-tête sur plusieurs lignes : « Condition<br>Cas 1 »
+        parts: list[str] = []
+        for r in range(header_rows):
+            if grid[r][c] and grid[r][c] not in parts:
+                parts.append(grid[r][c])
+        header.append("<br>".join(parts))
+    rows = [header, *grid[header_rows:]]
+    return [
+        "| " + " | ".join(rows[0]) + " |",
+        "|" + "---|" * len(header),
+        *("| " + " | ".join(row) + " |" for row in rows[1:]),
+    ]
 
 
 def _render_nodes(nodes: list, depth: int) -> list[str]:
@@ -283,6 +358,8 @@ def parse(html: str, url: str, source_id: str = "cnil_ia") -> list[LegalSection]
 # --------------------------------------------------------------------------- contrôle qualité
 
 _LIST_MARKER = re.compile(r"^\s*- ", re.MULTILINE)
+_TABLE_LINE = re.compile(r"^\|.*\|$", re.MULTILINE)
+_TABLE_SEPARATOR = re.compile(r"^\|(?:---\|)+$")
 
 
 def chars(text: str) -> str:
@@ -290,16 +367,49 @@ def chars(text: str) -> str:
     return re.sub(r"\s+", "", normalize(text))
 
 
+def _fragments_chars(fragments: list[str]) -> set[str]:
+    return {chars(_LIST_MARKER.sub("", f)) for f in fragments if chars(f)}
+
+
+def _table_fidelity(tables: list[Tag], sections: list[LegalSection]) -> str | None:
+    """Tableaux Markdown : mêmes cellules que la source, aucune perdue ni ajoutée."""
+    source: list[str] = []
+    for table in tables:
+        for cell in _table_cells(table):
+            lines = _render(cell)
+            if chars(cell.get_text()) != chars(_LIST_MARKER.sub("", "\n".join(lines))):
+                return f"cellule de tableau mal rendue : « {cell.get_text()[:60]} »"
+            source += lines
+    extracted: list[str] = []
+    for s in sections:
+        for line in _TABLE_LINE.findall(s.text):
+            if not _TABLE_SEPARATOR.match(line):
+                for cell in line.strip("|").split(" | "):
+                    extracted += cell.split("<br>")
+    if _fragments_chars(source) != _fragments_chars(extracted):
+        missing = _fragments_chars(source) - _fragments_chars(extracted)
+        added = _fragments_chars(extracted) - _fragments_chars(source)
+        return f"cellules de tableau différentes : manquantes {missing}, ajoutées {added}"
+    return None
+
+
 def fidelity(html: str, sections: list[LegalSection]) -> tuple[bool, int, str]:
     """Compare caractère par caractère la page source et les sections extraites.
 
     Aucun caractère ajouté, perdu ou déplacé n'est toléré (seuls les espaces et les
-    puces « - » ajoutées pour les listes sont ignorés).
+    puces « - » ajoutées pour les listes sont ignorés). Les tableaux à plusieurs colonnes,
+    rendus en Markdown, sont vérifiés à part, cellule par cellule ; les lignes « [Schéma ...] »
+    ajoutées pour les images sont ignorées.
     Renvoie (identique, nombre de caractères, détail).
     """
     soup = _prepare(html)
-    parts = [soup.select_one(sel) for sel in ("div.page-introduction", *_CONTENT)]
-    source = chars("".join(p.get_text() for p in parts if p))
+    parts = [p for sel in ("div.page-introduction", *_CONTENT) if (p := soup.select_one(sel))]
+    tables = [t for p in parts for t in p.find_all("table") if len(table_grid(t)[0][0]) >= 2]
+    if error := _table_fidelity(tables, sections):
+        return False, 0, error
+    for table in tables:
+        table.decompose()
+    source = chars("".join(p.get_text() for p in parts))
     extracted = ""
     group = None
     for s in sections:
@@ -308,7 +418,12 @@ def fidelity(html: str, sections: list[LegalSection]) -> tuple[bool, int, str]:
             group = s.section
         if s.title and s.title != "Introduction":
             extracted += chars(s.title)
-        extracted += chars(_LIST_MARKER.sub("", s.text))
+        text = "\n".join(
+            line
+            for line in s.text.splitlines()
+            if not _TABLE_LINE.match(line) and not line.startswith(FIGURE_PREFIX)
+        )
+        extracted += chars(_LIST_MARKER.sub("", text))
     if source == extracted:
         return True, len(source), f"{len(source)} caractères identiques"
     i = next(

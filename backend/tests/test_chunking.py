@@ -51,6 +51,37 @@ def test_split_to_fit_and_pack_respect_max():
     assert packed == ["a" * 300 + "\n" + "b" * 300, "c" * 300]
 
 
+def test_long_table_is_split_between_rows_with_its_header():
+    from app.chunking.common import split_tables
+
+    table = ["| A | B |", "|---|---|", *(f"| ligne {i} | {'x' * 30} |" for i in range(6))]
+    pieces = split_tables(["Intro :\n" + "\n".join(table)], max_chars=120)
+    assert pieces[0] == "Intro :"
+    assert len(pieces) > 2
+    for piece in pieces[1:]:
+        assert piece.startswith("| A | B |\n|---|---|\n| ligne") and len(piece) <= 120
+    rows = [line for p in pieces[1:] for line in p.splitlines()[2:]]
+    assert rows == table[2:]  # aucune ligne perdue ni dupliquée
+
+
+def test_recital_header_warns_it_is_not_updated():
+    from app.chunking.common import act_label, header
+    from app.ingestion.models import LegalSection
+
+    recital = LegalSection(
+        source_id="ai_act",
+        section_type="considerant",
+        number="179",
+        text="...",
+        url="u",
+        not_updated_by=["32026R1744"],
+    )
+    assert header(recital).endswith(
+        "Considérant 179 (texte d'origine, non mis à jour par le règlement (UE) 2026/1744)"
+    )
+    assert act_label("32016L0680") == "directive (UE) 2016/680"
+
+
 def test_header_paths():
     assert header(ART5) == (
         "AI Act (règlement (UE) 2024/1689) > CHAPITRE II - PRATIQUES INTERDITES"

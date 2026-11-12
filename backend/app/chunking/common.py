@@ -16,11 +16,27 @@ SOURCE_NAMES = {
 PARAGRAPH_START = re.compile(r"^(\d+(?: [a-z]+)?)\.\s")
 
 
+_CELEX_ACT = re.compile(r"^3(\d{4})([RLD])(\d{4})$")
+_ACT_KINDS = {"R": "règlement", "L": "directive", "D": "décision"}
+
+
+def act_label(celex: str) -> str:
+    """32026R1744 -> « règlement (UE) 2026/1744 »."""
+    m = _CELEX_ACT.match(celex)
+    if not m:
+        return celex
+    return f"{_ACT_KINDS[m.group(2)]} (UE) {m.group(1)}/{int(m.group(3))}"
+
+
 def header(section: LegalSection) -> str:
     """Chemin de contexte placé devant le texte : aide l'embedding ET la lecture du LLM."""
     source = SOURCE_NAMES.get(section.source_id, section.source_id)
     if section.section_type == "considerant":
-        parts = [source, f"Considérant {section.number}"]
+        note = ""
+        if section.not_updated_by:  # le lecteur (et le LLM) doit savoir qu'il peut être périmé
+            acts = ", ".join(act_label(c) for c in section.not_updated_by)
+            note = f" (texte d'origine, non mis à jour par le {acts})"
+        parts = [source, f"Considérant {section.number}{note}"]
     elif section.section_type == "article":
         title = f"Article {section.number}" + (f" - {section.title}" if section.title else "")
         parts = [source, section.chapter, section.section, title]
@@ -95,6 +111,32 @@ def split_to_fit(unit: str, max_chars: int) -> list[str]:
     if len(parts) > 1:
         return [p for s in parts for p in split_to_fit(s, max_chars)]
     return hard_split(unit, max_chars)
+
+
+def split_tables(units: list[str], max_chars: int) -> list[str]:
+    """Isole les tableaux Markdown ; un tableau trop long est coupé entre deux lignes, en
+    répétant l'en-tête dans chaque morceau (une ligne de tableau ne se lit pas sans lui)."""
+    out: list[str] = []
+    for unit in units:
+        runs: list[tuple[bool, list[str]]] = []
+        for line in unit.splitlines():
+            is_table = line.startswith("|") and line.endswith("|")
+            if runs and runs[-1][0] == is_table:
+                runs[-1][1].append(line)
+            else:
+                runs.append((is_table, [line]))
+        for is_table, lines in runs:
+            if not is_table or len("\n".join(lines)) <= max_chars:
+                out.append("\n".join(lines))
+                continue
+            head, rows, current = lines[:2], lines[2:], []
+            for row in rows:
+                if current and len("\n".join([*head, *current, row])) > max_chars:
+                    out.append("\n".join([*head, *current]))
+                    current = []
+                current.append(row)
+            out.append("\n".join([*head, *current]))
+    return out
 
 
 def pack(units: list[str], max_chars: int, sep: str = "\n") -> list[str]:

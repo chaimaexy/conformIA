@@ -101,6 +101,54 @@ def test_reference_resolver():
     assert resolver.resolve("l'annexe II du règlement (UE) 2019/1020") == []
 
 
+def test_article_references():
+    from app.chunking.references import ReferenceResolver
+
+    sections = [
+        _section("article", str(n), title=f"Titre {n}") for n in (5, 12, 15, 22, 50, 99)
+    ] + [_section("article", "4 bis", title="Biais")]
+    off = ReferenceResolver(sections)
+    on = ReferenceResolver(sections, articles=True)
+    text = "Le non-respect de l'article 5 et des articles 12 à 22, ou de l'article 4 bis"
+    assert off.resolve(text) == []  # désactivé par défaut
+    assert on.resolve(text) == [
+        "article 5 (Titre 5)",
+        "article 12 (Titre 12)",
+        "article 15 (Titre 15)",  # dans la plage 12 à 22
+        "article 22 (Titre 22)",
+        "article 4 bis (Biais)",
+    ]
+    assert on.resolve("conformément à l'article 50", own_article="50") == []  # pas soi-même
+    assert on.resolve("l'article 5 du règlement (UE) 2016/679") == []  # autre texte
+    assert on.resolve("l'article 99 du présent règlement") == ["article 99 (Titre 99)"]
+
+
+def test_context_expansion_follows_citations(monkeypatch):
+    from app.retrieval import pipeline
+
+    def chunk(id_, label, header, cites=()):
+        meta = {"label": label, "header": header, "cites": list(cites), "sections": []}
+        return {"id": id_, "document_id": "rgpd", "content": id_, "metadata": meta}
+
+    chunks = {
+        "a83": chunk("a83", "Article 83", "Article 83 (partie 3/4)", ["Article 15", "Article 22"]),
+        "a15": chunk("a15", "Article 15", "Article 15"),
+        "a22b": chunk("a22b", "Article 22", "Article 22 (partie 2/2)"),
+        "a22a": chunk("a22a", "Article 22", "Article 22 (partie 1/2)"),
+        "a6": chunk("a6", "Article 6", "Article 6"),
+    }
+    monkeypatch.setitem(pipeline._CHUNKS, "test", chunks)
+    retriever = pipeline.Retriever(pipeline.RetrievalSettings(strategy="test"), db=object())
+    rows = [{**chunks["a83"], "score": 0.9}, {**chunks["a6"], "score": 0.5}]
+    context = retriever.with_citations(rows, final_k=2)
+    assert [c["id"] for c in context] == ["a83", "a6", "a15", "a22a"]  # 1re partie de l'art. 22
+    assert context[2]["cited_by"] == "Article 83" and context[2]["score"] is None
+    # place limitée : la section citée que le reranker a notée (art. 22, rang 3) passe devant
+    rows.append({**chunks["a22b"], "score": 0.7})
+    context = retriever.with_citations(rows, final_k=2, max_extra=1)
+    assert [c["id"] for c in context] == ["a83", "a6", "a22a"] and context[2]["score"] == 0.7
+
+
 def test_cohere_reranker_maps_scores_by_index(monkeypatch, tmp_path):
     import httpx
 
@@ -124,14 +172,60 @@ def test_cohere_reranker_maps_scores_by_index(monkeypatch, tmp_path):
     assert len(calls) == 1 and calls[0]["model"] == "rerank-test"
 
 
-def test_production_settings_match_phase4_choice():
-    from dataclasses import replace
+@pytest.mark.parametrize(
+    ("spec", "url", "results_field", "extra"),
+    [
+        ("voyage:rerank-2.5", "https://api.voyageai.com/v1/rerank", "data", {}),
+        (
+            "jina:jina-reranker-v2-base-multilingual",
+            "https://api.jina.ai/v1/rerank",
+            "results",
+            {"top_n": 2},
+        ),
+    ],
+)
+def test_other_api_rerankers(monkeypatch, tmp_path, spec, url, results_field, extra):
+    import httpx
 
-    from app.evaluation.retrieval import COHERE, HYBRID
+    from app.retrieval import rerank
+
+    monkeypatch.setattr(rerank.RerankCache.__init__, "__defaults__", (tmp_path / "rr.sqlite",))
+    monkeypatch.setattr(rerank.ApiReranker, "MIN_INTERVAL", 0)
+    reranker = rerank.get_reranker(spec)
+    monkeypatch.setattr(reranker, "MIN_INTERVAL", 0)
+    keys = {"voyage_api_key": "k", "jina_api_key": "k"}
+    monkeypatch.setattr(rerank, "get_settings", lambda: type("S", (), keys))
+    calls = []
+
+    def fake_post(called_url, headers, json, timeout):
+        calls.append((called_url, json))
+        results = [{"index": 0, "relevance_score": 0.3}, {"index": 1, "relevance_score": 0.8}]
+        return httpx.Response(
+            200, json={results_field: results}, request=httpx.Request("POST", called_url)
+        )
+
+    monkeypatch.setattr(rerank.httpx, "post", fake_post)
+    assert reranker.scores("q", ["a", "b"]) == [0.3, 0.8]
+    called_url, body = calls[0]
+    assert called_url == url and body["model"] == spec.split(":", 1)[1]
+    assert body.items() >= {"query": "q", "documents": ["a", "b"], **extra}.items()
+
+
+def test_missing_api_key_is_explicit(monkeypatch, tmp_path):
+    from app.retrieval import rerank
+
+    monkeypatch.setattr(rerank.RerankCache.__init__, "__defaults__", (tmp_path / "rr.sqlite",))
+    monkeypatch.setattr(rerank, "get_settings", lambda: type("S", (), {"voyage_api_key": None}))
+    with pytest.raises(RuntimeError, match="VOYAGE_API_KEY"):
+        rerank.get_reranker("voyage:rerank-2.5").scores("q", ["a"])
+
+
+def test_production_settings_match_phase4_choice():
+    from app.evaluation.retrieval import PRODUCTION
     from app.retrieval.pipeline import RetrievalSettings
 
-    # config.yaml décrit bien la configuration mesurée « hybride + reranker Cohere v5 pro »
-    assert RetrievalSettings.from_config() == replace(HYBRID, reranker=COHERE)
+    # config.yaml décrit bien la configuration mesurée sur le golden set
+    assert RetrievalSettings.from_config() == PRODUCTION
 
 
 def test_qwen3_prompt_format():

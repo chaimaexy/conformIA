@@ -29,6 +29,8 @@ class Chunk(BaseModel):
     source_date: str | None = None
     amended_by: list[str] = Field(default_factory=list)
     corrected_by: list[str] = Field(default_factory=list)
+    not_updated_by: list[str] = Field(default_factory=list)  # considérant : actes non répercutés
+    cites: list[str] = Field(default_factory=list)  # articles / annexes du même texte cités
 
     @property
     def content(self) -> str:
@@ -47,4 +49,6 @@ class Chunk(BaseModel):
             "source_date": self.source_date,
             "amended_by": self.amended_by,
             "corrected_by": self.corrected_by,
+            "not_updated_by": self.not_updated_by,
+            "cites": self.cites,
         }

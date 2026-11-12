@@ -23,6 +23,11 @@ _CHAPTER_SECTIONS = re.compile(
     rf"\bchapitre\s+({ROMAN}),\s+sections?\s+(\d+(?:\s*(?:,|et|à)\s*\d+)*)"
 )
 _ANNEXES = re.compile(rf"\bannexes?\s+({ROMAN}(?:\s*(?:,|et|à)\s*{ROMAN})*)\b")
+# « article 4 bis », « articles 53 et 55 », « articles 12 à 22 » (pas « article 5, paragraphe 1 »)
+_SUFFIX = r"(?:\s+(?:bis|ter|quater|quinquies|sexies|septies|octies))?"
+_ARTICLES = re.compile(rf"\barticles?\s+(\d+{_SUFFIX}(?:\s*(?:,|et|à)\s*\d+{_SUFFIX})*)\b")
+_ARTICLE_NUMBER = re.compile(rf"\d+{_SUFFIX}|à")
+MAX_ARTICLE_RANGE = 15  # « articles 25 à 39 » : au-delà, la plage n'est pas développée
 # renvoi vers un autre acte juste après le numéro : « annexe I du règlement (UE) 2019/1020 »
 _EXTERNAL = re.compile(
     r"^[^.;]{0,40}?\b(?:du|de la|de l’|de l')\s+(?:règlement|directive|décision|traité|charte)",
@@ -70,15 +75,33 @@ def _expand(listing: str, roman: bool) -> list[str]:
     return items
 
 
-class ReferenceResolver:
-    """Titres des chapitres, sections et annexes d'UN texte, pour résoudre ses renvois."""
+def _expand_articles(listing: str) -> list[str]:
+    """« 53 et 55 » -> [53, 55] ; « 12 à 22 » -> [12, ..., 22] ; « 4 bis » reste « 4 bis »."""
+    tokens = [" ".join(t.split()) for t in _ARTICLE_NUMBER.findall(listing)]
+    items: list[str] = []
+    for i, tok in enumerate(tokens):
+        if tok == "à" and items and i + 1 < len(tokens):
+            start, end = items[-1].split()[0], tokens[i + 1].split()[0]
+            if start.isdigit() and end.isdigit() and int(end) - int(start) < MAX_ARTICLE_RANGE:
+                items += [str(n) for n in range(int(start) + 1, int(end))]
+        elif tok != "à":
+            items.append(tok)
+    return items
 
-    def __init__(self, sections: list[LegalSection]):
+
+class ReferenceResolver:
+    """Titres des chapitres, sections, annexes (et articles) d'UN texte, pour ses renvois."""
+
+    def __init__(self, sections: list[LegalSection], articles: bool = False):
         self.chapters: dict[str, str] = {}
         self.sections: dict[tuple[str, str], str] = {}
         self.annexes: dict[str, str] = {}
+        self.articles: dict[str, str] = {}
+        self.resolve_articles = articles
         for s in sections:
             chapter = _TITLE_SPLIT.match(s.chapter or "")
+            if s.section_type == "article" and s.title:
+                self.articles[s.number] = s.title
             if s.section_type == "article" and chapter:
                 self.chapters[chapter[1]] = _sentence_case(chapter[2])
                 if section := _TITLE_SPLIT.match(s.section or ""):
@@ -86,9 +109,19 @@ class ReferenceResolver:
             elif s.section_type == "annexe" and s.title:
                 self.annexes[s.number] = s.title
 
-    def resolve(self, text: str) -> list[str]:
-        """Renvois internes trouvés dans le texte, avec leur titre, dans l'ordre d'apparition."""
+    def resolve(self, text: str, own_article: str | None = None) -> list[str]:
+        """Renvois internes trouvés dans le texte, avec leur titre, dans l'ordre d'apparition.
+
+        `own_article` : numéro de l'article cité depuis lui-même, ignoré.
+        """
         found: list[tuple[int, str]] = []
+        if self.resolve_articles:
+            for m in _ARTICLES.finditer(text):
+                if _EXTERNAL.match(text[m.end() :]):
+                    continue
+                for n in _expand_articles(m[1]):
+                    if n != own_article and (title := self.articles.get(n)):
+                        found.append((m.start(), f"article {n} ({title})"))
         for m in _CHAPTER_SECTIONS.finditer(text):
             for n in _expand(m[2], roman=False):
                 if title := self.sections.get((m[1], n)):
@@ -103,10 +136,32 @@ class ReferenceResolver:
                 for n in _expand(m[1], roman=True):
                     if title := table.get(n):
                         found.append((m.start(), f"{name} {n} ({title})"))
-        seen: set[str] = set()
-        ordered = []
-        for _, ref in sorted(found):
-            if ref not in seen:
-                seen.add(ref)
-                ordered.append(ref)
-        return ordered
+        return _unique(found)
+
+    def cited_sections(self, text: str, own_article: str | None = None) -> list[str]:
+        """Graphe des citations : libellés des articles et annexes du même texte cités
+        (« Article 15 », « Annexe III »), pour joindre ces sections au contexte du LLM."""
+        found: list[tuple[int, str]] = []
+        for m in _ARTICLES.finditer(text):
+            if not _EXTERNAL.match(text[m.end() :]):
+                found += [
+                    (m.start(), f"Article {n}")
+                    for n in _expand_articles(m[1])
+                    if n != own_article and n in self.articles
+                ]
+        for m in _ANNEXES.finditer(text):
+            if not _EXTERNAL.match(text[m.end() :]):
+                annexes = [n for n in _expand(m[1], roman=True) if n in self.annexes]
+                found += [(m.start(), f"Annexe {n}") for n in annexes]
+        return _unique(found)
+
+
+def _unique(found: list[tuple[int, str]]) -> list[str]:
+    """Dans l'ordre d'apparition, sans doublon."""
+    seen: set[str] = set()
+    ordered = []
+    for _, ref in sorted(found):
+        if ref not in seen:
+            seen.add(ref)
+            ordered.append(ref)
+    return ordered

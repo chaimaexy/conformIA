@@ -23,6 +23,7 @@ Category = Literal[
     "reference",  # cite un numéro d'article / d'annexe
     "date",  # calendrier d'application (version consolidée)
     "multi_sources",  # la réponse combine plusieurs textes
+    "renvoi",  # la réponse exige de suivre un renvoi par numéro (« articles 12 à 22 »)
     "cnil_pratique",  # recommandations pratiques CNIL
     "hors_corpus",  # le corpus ne contient pas la réponse : il faut savoir dire « je ne sais pas »
 ]

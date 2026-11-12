@@ -98,6 +98,9 @@ def ingest_source(source: CorpusSource, refresh: bool = False, strict: bool = Fa
         files.append({"role": "rectificatif", **_describe(raw)})
         corrections += corrigenda.parse(raw.path.read_text(encoding="utf-8"), celex)
     report = corrigenda.apply(recitals + body, corrections)
+    amending = sorted({celex for section in body for celex in section.amended_by})
+    for recital in recitals:  # texte d'origine : les modifications ne s'y reportent pas
+        recital.not_updated_by = amending
 
     document = LegalDocument(
         source_id=source.id,

@@ -19,12 +19,14 @@ embeddings:
   dimension: 1024                       # doit correspondre à vector(1024) dans la migration SQL
   # Comparaison en phase 2 avec un encodeur de la famille BERT, local (CPU) et multilingue :
   # BAAI/bge-m3 (XLM-RoBERTa, MIT, 1024 dims -> même schéma SQL).
-  compare_with: ["local:BAAI/bge-m3"]
+  # bge-m3 (local, CPU) comparé en phases 2 à 4 : utile sans reranker, inutile avec Cohere
+  # (même hit@1 et MRR, phase 4 bis). Retiré : image Docker sans torch, réindexation en 1 min.
+  compare_with: []
 
 reranker:
-  # Relit les 20 candidats fusionnés ; son score sert aussi de garde-fou « je ne sais pas ».
-  # Choix phase 4 (README) : meilleure qualité, ~1 s par question, seul à séparer parfaitement
-  # les questions hors corpus. Repli local sans clé : BAAI/bge-reranker-v2-m3 (sans garde-fou fiable).
+  # Relit les 50 candidats fusionnés ; son score sert aussi de garde-fou « je ne sais pas ».
+  # Choix phase 4 (README) : meilleure qualité, < 1 s par question, seul score qui sépare les
+  # questions hors corpus. Repli local sans clé : BAAI/bge-reranker-v2-m3 (sans garde-fou fiable).
   model: cohere:rerank-v5.0-pro
   candidates:                           # comparés sur le golden set en phase 4
     - cohere:rerank-v5.0-fast                             # API (clé d'essai gratuite, non commerciale)
@@ -32,9 +34,15 @@ reranker:
     - tomaarsen/Qwen3-Reranker-0.6B-seq-cls               # Qwen3, Apache-2.0, 0,6B
     - BAAI/bge-reranker-v2-m3                             # XLM-RoBERTa, Apache-2.0, 568M
     - antoinelouis/crossencoder-camembert-base-mmarcoFR   # CamemBERT français, MIT, 110M
-  # Score Cohere pro du 1er chunk : hors corpus <= 0,13, corpus >= 0,43 (golden set).
-  # Seuil au milieu de l'écart : marge des deux côtés. Valable pour ce modèle seulement.
-  answerability_threshold: 0.25
+  # Garde-fou à 3 zones, sur le score du 1er chunk (Cohere pro, 50 candidats, 125 questions) :
+  #   score < 0,20         -> « je ne sais pas » (19 hors corpus sur 23 bloquées, 0 refus à tort)
+  #   0,20 <= score < 0,45 -> zone grise : le LLM vérifie que les sources répondent (phase 5)
+  #                           (4 questions du corpus, dont 3 à renvoi, et 4 hors corpus « limites »)
+  #   score >= 0,45        -> réponse
+  # Hors corpus max 0,297 / corpus min 0,299 : un seuil unique n'aurait aucune marge.
+  # Valable pour ce modèle seulement : à recalibrer si le reranker change.
+  answerability_threshold: 0.20
+  verification_threshold: 0.45
 
 chunking:
   strategy: structural                  # structural | recursive | semantic (comparées en phase 3)
@@ -43,15 +51,16 @@ chunking:
   max_chars: 2000                       # structurel + sémantique : taille maximale
   min_chars: 300                        # sémantique : fusion des fragments plus courts
   semantic_percentile: 90               # sémantique : coupe aux 10 % de transitions les plus « éloignées »
+  article_references: false             # Renvois aussi pour les articles cités (mesuré en phase 4 bis)
 
 retrieval:
-  # Configuration retenue en phase 4 (hybride + reranker), voir le README.
-  dense_models: [mistral-embed, "local:BAAI/bge-m3"]   # 2 recherches denses (pgvector HNSW)
+  # Configuration retenue en phases 4 et 4 bis (hybride + reranker), voir le README.
+  dense_models: [mistral-embed]         # recherche dense (pgvector HNSW) ; bge-m3 retiré (voir plus haut)
   bm25: true                            # + BM25 (racines françaises), fusionnés par RRF
   candidates: 50                        # résultats de chaque retriever avant fusion
   rrf_k: 60                             # constante de Reciprocal Rank Fusion
   multi_query: false                    # mesuré en phase 4 : fait baisser hit@1, brouille le garde-fou
-  rerank_candidates: 20                 # candidats fusionnés relus par le reranker
+  rerank_candidates: 50                 # candidats fusionnés relus par le reranker (20 -> 50 : MRR 0,837 -> 0,859)
   final_k: 4                            # chunks envoyés au LLM
 
 # Versions figées pour la reproductibilité. L'ingestion interroge Cellar et prévient

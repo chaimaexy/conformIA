@@ -3,6 +3,7 @@
     python -m app.evaluation.review export   # -> eval/relecture.csv
     python -m app.evaluation.review import   # relecture.csv -> eval/golden_set.jsonl
     python -m app.evaluation.review import eval/autre.csv   # autre fichier relu
+    python -m app.evaluation.review export-nouvelles        # questions « a_relire » seulement
 
 Dans le CSV, pour chaque question :
 - statut     : a_relire -> « valide » ou « rejete »
@@ -71,19 +72,38 @@ def merged_items() -> list[GoldenItem]:
     return items
 
 
-def export() -> None:
+_KEY = re.compile(r"\d[\d  ]*\d|\d")  # dates, montants, numéros cités dans la réponse
+
+
+def evidence(item: GoldenItem, sections: list) -> str:
+    """Passages des sections attendues qui contiennent les chiffres de la réponse de référence
+    (dates, montants...) ; à défaut, le début de la 1re section. Aide la relecture."""
+    keys = {k for k in _KEY.findall(item.answer) if len(k) >= 2}
+    lines = []
+    for ref in item.expected:
+        match = next((s for s in sections if ref.matches(s.source_id, s.label)), None)
+        if match is None:
+            continue
+        found = [line for line in match.text.splitlines() if any(k in line for k in keys)]
+        lines += [f"[{match.label}] {line}" for line in found[:4]]
+    if not lines and item.expected:
+        ref = item.expected[0]
+        match = next((s for s in sections if ref.matches(s.source_id, s.label)), None)
+        lines = [match.text[:600]] if match else []
+    return "\n".join(lines)
+
+
+def export(path: Path = CSV_PATH, pending_only: bool = False) -> None:
     items = merged_items()
     save(items)
     sections = corpus_sections()
-    with CSV_PATH.open("w", encoding="utf-8-sig", newline="") as f:
+    with path.open("w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=FIELDS, delimiter=";")
         writer.writeheader()
         for item in items:
-            extract = ""
-            if item.expected:
-                ref = item.expected[0]
-                match = next((s for s in sections if ref.matches(s.source_id, s.label)), None)
-                extract = match.text[:600] if match else ""
+            if pending_only and item.status != "a_relire":
+                continue
+            extract = evidence(item, sections)
             writer.writerow(
                 {
                     "id": item.id,
@@ -97,7 +117,7 @@ def export() -> None:
                     "commentaire": "",
                 }
             )
-    print(f"{len(items)} questions exportées -> {CSV_PATH}")
+    print(f"Questions exportées -> {path}")
 
 
 def import_(path: Path = CSV_PATH) -> None:
@@ -135,5 +155,7 @@ if __name__ == "__main__":
     command = sys.argv[1] if len(sys.argv) > 1 else "export"
     if command == "import":
         import_(Path(sys.argv[2]) if len(sys.argv) > 2 else CSV_PATH)
+    elif command == "export-nouvelles":  # seulement les questions à relire
+        export(EVAL_DIR / "relecture_nouvelles.csv", pending_only=True)
     else:
         export()

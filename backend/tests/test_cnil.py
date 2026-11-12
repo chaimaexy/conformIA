@@ -106,6 +106,47 @@ def test_fidelity_ok(sections):
     assert n_chars > 100
 
 
+TABLE_HTML = FICHE_HTML.replace(
+    "<h2>En pratique :</h2>",
+    """<p>Le tableau suivant :</p>
+    <table><tbody>
+      <tr><th rowspan="2">Type</th><th colspan="2">Condition</th></tr>
+      <tr><td>Cas du modèle</td><td>Cas du système</td></tr>
+      <tr><td rowspan="2">Gouvernance</td><td>Dès que l’information existe</td><td>Jamais</td></tr>
+      <tr><td><p>Selon :</p><ul><li>le risque ;</li></ul></td><td>Toujours</td></tr>
+    </tbody></table>
+    <table><tbody><tr><th>Encadré</th></tr><tr><td>Une seule colonne.</td></tr></tbody></table>
+    <p><img src="/sites/default/files/figure_1.png" alt="Figure 1 - Arbre de décision"/></p>
+    <p><a href="/files/schemas.pdf#page=2"><img src="/f/f2.png" alt="Figure 2 - Suite"/></a></p>
+    <h2>En pratique :</h2>""",
+)
+
+
+def test_tables_become_markdown_with_merged_cells_repeated():
+    text = cnil.parse(TABLE_HTML, URL)[0].text.splitlines()
+    assert text[text.index("Le tableau suivant :") + 1 :] == [
+        "| Type | Condition<br>Cas du modèle | Condition<br>Cas du système |",
+        "|---|---|---|",
+        "| Gouvernance | Dès que l’information existe | Jamais |",
+        "| Gouvernance | Selon :<br>- le risque ; | Toujours |",
+        "Encadré",  # tableau d'une colonne : simple texte
+        "Une seule colonne.",
+        "[Schéma : Figure 1 - Arbre de décision – https://www.cnil.fr/sites/default/files/figure_1.png]",
+        "[Schéma : Figure 2 - Suite – https://www.cnil.fr/files/schemas.pdf#page=2]",  # lien du clic
+    ]
+
+
+def test_table_fidelity():
+    sections = cnil.parse(TABLE_HTML, URL)
+    ok, _, detail = cnil.fidelity(TABLE_HTML, sections)
+    assert ok, detail
+    tampered = [
+        s.model_copy(update={"text": s.text.replace("Jamais", "Parfois")}) for s in sections
+    ]
+    ok, _, detail = cnil.fidelity(TABLE_HTML, tampered)
+    assert not ok and "Jamais" in detail
+
+
 def test_fidelity_detects_a_single_changed_character(sections):
     tampered = [s.model_copy() for s in sections]
     tampered[1] = tampered[1].model_copy(update={"text": tampered[1].text.replace("5ème", "6ème")})
