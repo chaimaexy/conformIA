@@ -542,6 +542,80 @@ Jina garde deux atouts à noter : un prix au token plus bas, et ses poids publi�
 Mais leur licence (CC-BY-NC) interdit l'usage commercial : l'auto-hébergement n'est pas une
 option pour un produit.
 
+## Génération sourcée (phase 5)
+
+```bash
+cd backend
+uvicorn app.main:app --reload
+curl -X POST localhost:8000/chat -H "Content-Type: application/json" \
+     -d '{"message": "Quelle amende pour un système de notation sociale ?"}'
+python -m app.evaluation.generation --validated   # chaîne complète sur le golden set
+```
+
+| Endpoint | Réponse |
+|---|---|
+| `POST /chat` | JSON : réponse, sources numérotées (lien EUR-Lex / CNIL, score, citée ou non), zone du garde-fou, résultat de la vérification |
+| `POST /chat/stream` | Server-Sent Events : `statut` (recherche, rédaction) -> `sources` -> `texte` (au fil de l'eau) -> `fin` (réponse définitive et vérification) |
+
+Renvoyer le `session_id` reçu poursuit la conversation : « et pour les PME ? » est réécrit en
+question autonome à partir des 3 derniers échanges.
+
+```
+message ─> routeur LLM (seulement si historique ou message très court) : intention + réécriture
+        ─> recherche de production ─> 4 chunks + sections qu'ils citent
+        ─> garde-fou : score < 0,20 -> refus, sans appel au LLM
+                       0,20 à 0,45 -> contrôle de couverture (appel LLM dédié) -> refus si non couvert
+        ─> réponse Mistral : uniquement à partir des sources, chaque affirmation citée [n]
+        ─> vérification par le code -> avertissement visible si un chiffre n'est pas sourcé
+```
+
+| Brique | Rôle | Choix |
+|---|---|---|
+| **Routeur** (`app/rag/router.py`) | Réécrit la question avec l'historique, détecte salutation / hors sujet | 1 appel JSON, **seulement quand il sert** : avec 2 requêtes/min en offre gratuite, une question complète va directement à la recherche |
+| **Contrôle de couverture** (zone grise) | « Les extraits répondent-ils, sans connaissance extérieure ? » | Appel JSON dédié : une consigne noyée dans le prompt de réponse ne suffisait pas (mesuré) |
+| **Réponse** (`app/prompts/rag.py`) | Rédige à partir des seules sources | 8 règles : citations [n], citations exactes entre « », l'article prime sur un considérant non mis à jour, aucun chiffre ni texte absent des sources, refus par un marqueur fixe (`SOURCES_INSUFFISANTES`) |
+| **Vérification** (`app/rag/verify.py`) | Contrôle par le code, sans LLM | renvois [n] valides ; citations « » retrouvées mot pour mot (morceau par morceau s'il y a « [...] ») ; dates, montants et pourcentages présents dans les sources |
+| **Mémoire** (`app/rag/memory.py`) | 3 derniers échanges par session | en mémoire du processus ; rattachée à l'utilisateur (Supabase) en phase 7 |
+
+### Évaluation de la génération (125 questions)
+
+Toutes les métriques sont calculées par du code, pas par un LLM juge : elles sont exactes,
+reproductibles et gratuites. Détail : [generation.json](backend/eval/results/generation.json).
+
+| Métrique | 1er passage | Après corrections |
+|---|---|---|
+| Questions hors corpus refusées (/23) | 91 % (DSA et cookies répondus **de mémoire**) | **100 %** |
+| Questions du corpus refusées à tort (/102) | 7,8 % | **1,0 %** |
+| Réponses dont toutes les citations sont vérifiées | 94,7 % | **97,0 %** |
+| Citations « » introuvables dans les sources | 6 | 4 |
+| Réponses contenant une date ou un montant **absent des sources** | 3 | **0** |
+| Sections attendues effectivement citées | 85,7 % | 85,7 % |
+| Faits clés de la réponse de référence retrouvés (dates, montants) | 78,6 % | 82,1 % |
+
+Ce que le premier passage a appris :
+- **5 des 8 refus à tort étaient un bug du code**, pas une erreur du modèle : il écrivait le
+  marqueur de refus en fin de réponse pour signaler un point non couvert, et toute réponse qui le
+  contenait était comptée comme un refus. Un refus doit désormais **commencer** par le marqueur.
+- **En zone grise, le modèle répondait de mémoire** (obligations du DSA, cookies) en citant des
+  sources qui n'en parlaient pas. Un appel dédié, plus simple (« les extraits suffisent-ils ? »),
+  bloque désormais les 4 questions hors corpus de la zone grise et laisse passer 3 des 4
+  questions légitimes.
+- **Une date fausse donnée de mémoire** : « 2 août 2026 » au lieu du 2 août 2028 pour un jouet,
+  quand l'article 113 manquait au contexte. Le contrôle des chiffres l'a détectée ; une règle
+  du prompt l'empêche désormais, et le contrôle reste en filet de sécurité (avertissement
+  affiché à l'utilisateur).
+
+Limites connues :
+- Les citations encore signalées sont de vrais défauts : deux phrases fusionnées en une fausse
+  citation, un intitulé inventé, une paraphrase présentée entre guillemets.
+- **Un raisonnement faux sans chiffre échappe aux contrôles par le code.** Exemple : quand
+  l'article 111 manque au contexte, le modèle affirme que la date de marquage des images
+  générées « dépend de l'entrée en vigueur dans votre État membre », ce qui est faux pour un
+  règlement. Détecter ce cas demande un juge (humain ou LLM plus puissant que celui qui
+  répond) : c'est la prochaine étape de l'évaluation.
+- Le modèle de génération est `ministral-8b` (offre gratuite). Le comparer à `mistral-small`
+  sur ces mêmes métriques dira si un modèle payant vaut son prix, comme pour le reranker.
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
@@ -552,7 +626,8 @@ option pour un produit.
 - [x] **Phase 4** : retrieval hybride (2 denses + BM25, RRF), reranker Cohere comparé à 3 rerankers ouverts, Renvois dans les en-têtes, garde-fou « je ne sais pas » calibré (multi-query mesuré puis écarté)
 - [x] **Phase 4 bis** : consolidation : 50 candidats, bge-m3 retiré, tableaux et schémas CNIL, considérants marqués, golden set à 125 questions, graphe des citations, garde-fou à 3 zones
 - [x] **Phase 4 ter** : Cohere comparé à Jina reranker v3 sur le golden set : classement équivalent, garde-fou nettement meilleur avec Cohere, retenu
-- [ ] **Phase 5** : génération Mistral avec citations vérifiées, mémoire conversationnelle, streaming
+- [x] **Phase 5** : génération Mistral avec citations vérifiées par le code, routeur, contrôle de couverture en zone grise, mémoire conversationnelle, streaming (`/chat`, `/chat/stream`), évaluation sur 125 questions
+- [ ] **Phase 5 bis** : juge de fidélité (raisonnements faux sans chiffre), comparaison `ministral-8b` / `mistral-small`
 - [ ] **Phase 6** : agent LangGraph d'analyse de conformité, guidé par la liste de vérification CNIL (human-in-the-loop)
 - [ ] **Phase 7** : frontend Next.js, upload PDF (Celery + Redis), auth
 - [ ] **Phase 8** : déploiement, démo vidéo
