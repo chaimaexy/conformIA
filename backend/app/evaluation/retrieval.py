@@ -48,8 +48,7 @@ BGE_RERANK = "BAAI/bge-reranker-v2-m3"
 QWEN3 = "tomaarsen/Qwen3-Reranker-0.6B-seq-cls"
 COHERE = "cohere:rerank-v5.0-pro"
 COHERE_FAST = "cohere:rerank-v5.0-fast"
-VOYAGE = "voyage:rerank-2.5"
-JINA = "jina:jina-reranker-v2-base-multilingual"
+JINA = "jina:jina-reranker-v3"
 HYBRID = RetrievalSettings("structural", (MISTRAL, BGE), bm25=True)
 # = config.yaml : mistral-embed + BM25, Cohere v5 pro sur 50 candidats (bge-m3 retiré)
 PRODUCTION = replace(HYBRID, dense_models=(MISTRAL,), reranker=COHERE, rerank_candidates=50)
@@ -106,11 +105,10 @@ SUITES = {
         ),
         Config("production : hybride + Cohere v5 pro (50 candidats)", PRODUCTION),
     ],
-    # Phase 4 ter : rerankers hébergés concurrents, sur le pipeline de production
+    # Phase 4 ter : reranker hébergé concurrent (Jina), sur le pipeline de production
     "rerankers_api": [
         Config("production : Cohere v5 pro", PRODUCTION),
-        Config("Voyage rerank-2.5", replace(PRODUCTION, reranker=VOYAGE)),
-        Config("Jina reranker v2 multilingue", replace(PRODUCTION, reranker=JINA)),
+        Config("Jina reranker v3", replace(PRODUCTION, reranker=JINA)),
     ],
     # Rerankers récents : open source (Qwen3) et API commerciale (Cohere)
     "rerankers": [

@@ -35,7 +35,6 @@ class Settings(BaseSettings):
 
     mistral_api_key: str | None = None
     cohere_api_key: str | None = None  # reranker Cohere (clé d'essai gratuite)
-    voyage_api_key: str | None = None  # reranker Voyage AI (comparaison, phase 4 ter)
     jina_api_key: str | None = None  # reranker Jina AI (comparaison, phase 4 ter)
     models_cache_dir: Path | None = None  # cache Hugging Face (défaut : data/cache/hf)
 

@@ -172,52 +172,35 @@ def test_cohere_reranker_maps_scores_by_index(monkeypatch, tmp_path):
     assert len(calls) == 1 and calls[0]["model"] == "rerank-test"
 
 
-@pytest.mark.parametrize(
-    ("spec", "url", "results_field", "extra"),
-    [
-        ("voyage:rerank-2.5", "https://api.voyageai.com/v1/rerank", "data", {}),
-        (
-            "jina:jina-reranker-v2-base-multilingual",
-            "https://api.jina.ai/v1/rerank",
-            "results",
-            {"top_n": 2},
-        ),
-    ],
-)
-def test_other_api_rerankers(monkeypatch, tmp_path, spec, url, results_field, extra):
+def test_jina_reranker(monkeypatch, tmp_path):
     import httpx
 
     from app.retrieval import rerank
 
     monkeypatch.setattr(rerank.RerankCache.__init__, "__defaults__", (tmp_path / "rr.sqlite",))
-    monkeypatch.setattr(rerank.ApiReranker, "MIN_INTERVAL", 0)
-    reranker = rerank.get_reranker(spec)
-    monkeypatch.setattr(reranker, "MIN_INTERVAL", 0)
-    keys = {"voyage_api_key": "k", "jina_api_key": "k"}
-    monkeypatch.setattr(rerank, "get_settings", lambda: type("S", (), keys))
+    monkeypatch.setattr(rerank.JinaReranker, "MIN_INTERVAL", 0)
+    monkeypatch.setattr(rerank, "get_settings", lambda: type("S", (), {"jina_api_key": "k"}))
     calls = []
 
-    def fake_post(called_url, headers, json, timeout):
-        calls.append((called_url, json))
-        results = [{"index": 0, "relevance_score": 0.3}, {"index": 1, "relevance_score": 0.8}]
-        return httpx.Response(
-            200, json={results_field: results}, request=httpx.Request("POST", called_url)
-        )
+    def fake_post(url, headers, json, timeout):
+        calls.append((url, json))
+        results = [{"index": 0, "relevance_score": -0.1}, {"index": 1, "relevance_score": 0.8}]
+        return httpx.Response(200, json={"results": results}, request=httpx.Request("POST", url))
 
     monkeypatch.setattr(rerank.httpx, "post", fake_post)
-    assert reranker.scores("q", ["a", "b"]) == [0.3, 0.8]
-    called_url, body = calls[0]
-    assert called_url == url and body["model"] == spec.split(":", 1)[1]
-    assert body.items() >= {"query": "q", "documents": ["a", "b"], **extra}.items()
+    assert rerank.get_reranker("jina:jina-reranker-v3").scores("q", ["a", "b"]) == [-0.1, 0.8]
+    url, body = calls[0]
+    assert url == "https://api.jina.ai/v1/rerank"
+    assert body == {"model": "jina-reranker-v3", "query": "q", "documents": ["a", "b"], "top_n": 2}
 
 
 def test_missing_api_key_is_explicit(monkeypatch, tmp_path):
     from app.retrieval import rerank
 
     monkeypatch.setattr(rerank.RerankCache.__init__, "__defaults__", (tmp_path / "rr.sqlite",))
-    monkeypatch.setattr(rerank, "get_settings", lambda: type("S", (), {"voyage_api_key": None}))
-    with pytest.raises(RuntimeError, match="VOYAGE_API_KEY"):
-        rerank.get_reranker("voyage:rerank-2.5").scores("q", ["a"])
+    monkeypatch.setattr(rerank, "get_settings", lambda: type("S", (), {"jina_api_key": None}))
+    with pytest.raises(RuntimeError, match="JINA_API_KEY"):
+        rerank.get_reranker("jina:jina-reranker-v3").scores("q", ["a"])
 
 
 def test_production_settings_match_phase4_choice():

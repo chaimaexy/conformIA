@@ -520,6 +520,28 @@ Soit **moins d'un centime par question**. Tarifs relevés sur des comparateurs, 
 les pages officielles avant tout engagement. Le critère décisif sera autant l'hébergement des
 données (un outil de conformité RGPD reçoit des descriptions de projets) que le prix.
 
+### Cohere ou Jina ? (phase 4 ter)
+
+Avant de payer Cohere, comparaison avec un concurrent hébergé, sur le même pipeline (mistral-embed
++ BM25, 50 candidats) et les 125 questions. Voyage AI a été écarté : sans moyen de paiement
+enregistré, sa limite (10 000 tokens par minute) est inférieure à une seule de nos requêtes.
+Détail : [rerankers_api.json](backend/eval/results/rerankers_api.json).
+
+| Reranker | hit@1 | hit@4 | hit@8 | recall@8 | MRR@20 | Latence (50 chunks) | Garde-fou |
+|---|---|---|---|---|---|---|---|
+| **Cohere rerank v5.0 pro** | 0.76 | 0.96 | 0.96 | 0.90 | 0.855 | 0,8 s (20 chunks) | **19 hors corpus sur 23 bloquées sans refus à tort** (seuil 0,20) |
+| Jina reranker v3 | 0.76 | 0.96 | 0.98 | 0.91 | 0.856 | 1,4 s | 13 sur 23 seulement sans refus à tort ; tout bloquer refuserait 21 % des questions légitimes |
+
+**Pour classer, les deux se valent** (MRR 0,856 contre 0,855 : l'écart est dans le bruit).
+**Pour décider s'il faut répondre, Cohere est nettement meilleur** : avec Jina, des questions
+hors corpus obtiennent un score plus élevé que certaines questions légitimes (les sanctions du DMA
+à 0,36, quand une question légitime tombe à 0,10). Or le garde-fou est ce qui empêche
+l'assistant d'inventer une réponse juridique. **Cohere v5 pro reste le reranker retenu.**
+
+Jina garde deux atouts à noter : un prix au token plus bas, et ses poids publiés sur Hugging Face.
+Mais leur licence (CC-BY-NC) interdit l'usage commercial : l'auto-hébergement n'est pas une
+option pour un produit.
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
@@ -529,7 +551,7 @@ données (un outil de conformité RGPD reçoit des descriptions de projets) que 
 - [x] **Phase 3** : golden set (96 questions vérifiées contre les sources, dont 8 hors corpus ; 125 depuis la phase 4 bis) + évaluation de référence
 - [x] **Phase 4** : retrieval hybride (2 denses + BM25, RRF), reranker Cohere comparé à 3 rerankers ouverts, Renvois dans les en-têtes, garde-fou « je ne sais pas » calibré (multi-query mesuré puis écarté)
 - [x] **Phase 4 bis** : consolidation : 50 candidats, bge-m3 retiré, tableaux et schémas CNIL, considérants marqués, golden set à 125 questions, graphe des citations, garde-fou à 3 zones
-- [ ] **Phase 4 ter** : comparaison des rerankers payants et ouverts (Voyage, Jina, mxbai) sur le golden set, avant tout achat
+- [x] **Phase 4 ter** : Cohere comparé à Jina reranker v3 sur le golden set : classement équivalent, garde-fou nettement meilleur avec Cohere, retenu
 - [ ] **Phase 5** : génération Mistral avec citations vérifiées, mémoire conversationnelle, streaming
 - [ ] **Phase 6** : agent LangGraph d'analyse de conformité, guidé par la liste de vérification CNIL (human-in-the-loop)
 - [ ] **Phase 7** : frontend Next.js, upload PDF (Celery + Redis), auth

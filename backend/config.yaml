@@ -31,6 +31,7 @@ reranker:
   candidates:                           # comparés sur le golden set en phase 4
     - cohere:rerank-v5.0-fast                             # API (clé d'essai gratuite, non commerciale)
     - cohere:rerank-v5.0-pro
+    - jina:jina-reranker-v3                               # API (phase 4 ter) : même classement, garde-fou faible
     - tomaarsen/Qwen3-Reranker-0.6B-seq-cls               # Qwen3, Apache-2.0, 0,6B
     - BAAI/bge-reranker-v2-m3                             # XLM-RoBERTa, Apache-2.0, 568M
     - antoinelouis/crossencoder-camembert-base-mmarcoFR   # CamemBERT français, MIT, 110M

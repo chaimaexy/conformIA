@@ -11,7 +11,7 @@ si même le meilleur chunk a un score faible, l'assistant répond « je ne sais 
 
 Candidats comparés (config.yaml, reranker.candidates) :
 - cohere:<modèle>                 : API Cohere Rerank (référence commerciale)
-- voyage:<modèle>, jina:<modèle>  : API concurrentes (phase 4 ter)
+- jina:<modèle>                   : API concurrente (phase 4 ter)
 - Qwen3-Reranker-0.6B (seq-cls)   : LLM Qwen3 affiné pour le reranking, Apache 2.0 (open SOTA)
 - BAAI/bge-reranker-v2-m3         : XLM-RoBERTa large, multilingue, Apache 2.0, 568M
 - crossencoder-camembert-base-mmarcoFR : CamemBERT base, français, MIT, 110M
@@ -152,7 +152,7 @@ class Qwen3Reranker(CrossEncoderReranker):
 class ApiReranker(Reranker):
     """Reranker hébergé : une requête HTTP par question, avec rythme imposé et nouvel essai.
 
-    Cohere, Voyage et Jina exposent la même forme d'API : (modèle, question, documents) ->
+    Cohere et Jina exposent la même forme d'API : (modèle, question, documents) ->
     liste de {index, relevance_score}. Seuls l'URL, la clé et quelques champs changent.
     """
 
@@ -160,7 +160,6 @@ class ApiReranker(Reranker):
     URL = ""
     KEY_SETTING = ""  # attribut de Settings (.env)
     MIN_INTERVAL = 0.0  # secondes entre deux appels
-    RESULTS = "results"  # champ de la réponse qui contient les scores
 
     def __init__(self, model: str):
         super().__init__(f"{self.PROVIDER}:{model}")
@@ -182,7 +181,7 @@ class ApiReranker(Reranker):
             r = httpx.post(self.URL, headers=headers, json=self._body(query, passages), timeout=60)
             if r.status_code == 200:
                 scores = [0.0] * len(passages)
-                for result in r.json()[self.RESULTS]:
+                for result in r.json()["results"]:
                     scores[result["index"]] = result["relevance_score"]
                 return scores
             if r.status_code == 429 or r.status_code >= 500:
@@ -202,33 +201,26 @@ class CohereReranker(ApiReranker):
     MIN_INTERVAL = 6.5  # 10 requêtes/min
 
 
-class VoyageReranker(ApiReranker):
-    """API Voyage AI (MongoDB), ex. rerank-2.5. Facturé au token, quota gratuit à l'inscription."""
-
-    PROVIDER = "voyage"
-    URL = "https://api.voyageai.com/v1/rerank"
-    KEY_SETTING = "voyage_api_key"
-    MIN_INTERVAL = 1.0
-    RESULTS = "data"
-
-
 class JinaReranker(ApiReranker):
-    """API Jina AI, ex. jina-reranker-v2-base-multilingual. Quota gratuit non commercial."""
+    """API Jina AI, ex. jina-reranker-v3 (scores non bornés : ils peuvent être négatifs).
+
+    Quota gratuit non commercial : 100 000 tokens/min ; 50 chunks font ~35 000 tokens.
+    """
 
     PROVIDER = "jina"
     URL = "https://api.jina.ai/v1/rerank"
     KEY_SETTING = "jina_api_key"
-    MIN_INTERVAL = 1.0
+    MIN_INTERVAL = 25.0
 
     def _body(self, query: str, passages: list[str]) -> dict:
         return {**super()._body(query, passages), "top_n": len(passages)}
 
 
-_API_RERANKERS = {cls.PROVIDER: cls for cls in (CohereReranker, VoyageReranker, JinaReranker)}
+_API_RERANKERS = {cls.PROVIDER: cls for cls in (CohereReranker, JinaReranker)}
 
 
 def get_reranker(spec: str) -> Reranker:
-    """« cohere: / voyage: / jina:<modèle> », un id Qwen3-Reranker, ou un cross-encodeur HF."""
+    """« cohere:<modèle> », « jina:<modèle> », un id Qwen3-Reranker, ou un cross-encodeur HF."""
     provider, _, model = spec.partition(":")
     if model and provider in _API_RERANKERS:
         return _API_RERANKERS[provider](model)
