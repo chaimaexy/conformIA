@@ -100,6 +100,7 @@ class RetrievalConfig(BaseModel):
     rerank_candidates: int = 20  # candidats fusionnés relus par le reranker
     final_k: int = 4  # chunks envoyés au LLM
     parent_max_chars: int = 0  # section découpée jointe en entier jusqu'à cette taille (0 : non)
+    temporal_sections: list[str] = Field(default_factory=list)  # ex. « Article 113 »
 
 
 class CorpusSource(BaseModel):

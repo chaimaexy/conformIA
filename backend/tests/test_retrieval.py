@@ -186,6 +186,38 @@ def test_split_sections_get_their_other_parts(monkeypatch):
     ]
 
 
+def test_temporal_provisions_follow_reverse_citations(monkeypatch):
+    from dataclasses import replace
+
+    from app.retrieval import pipeline
+
+    def chunk(id_, label, cites=()):
+        meta = {"label": label, "header": label, "cites": list(cites), "sections": []}
+        return {"id": id_, "document_id": "ai_act", "content": id_, "metadata": meta}
+
+    chunks = {
+        "a101": chunk("a101", "Article 101"),
+        "a113": chunk("a113", "Article 113", ["Article 5", "Article 101"]),
+        "a111": chunk("a111", "Article 111", ["Article 50"]),
+        "a9": chunk("a9", "Article 9"),
+    }
+    monkeypatch.setitem(pipeline._CHUNKS, "test", chunks)
+    settings = pipeline.RetrievalSettings(
+        strategy="test", temporal_sections=("Article 113", "Article 111")
+    )
+    retriever = pipeline.Retriever(settings, db=object())
+    rows = [{**chunks["a101"], "score": 0.8}, {**chunks["a9"], "score": 0.4}]
+    context = retriever.with_citations(rows, final_k=2)
+    # l'article 113 cite l'article 101 (exception de date) : joint ; l'article 111 non
+    assert [c["id"] for c in context] == ["a101", "a9", "a113"]
+    assert context[2]["applies_to"] == "Article 101" and context[2]["score"] is None
+    # déjà dans le contexte : pas de doublon ; désactivé : rien
+    rows.append({**chunks["a113"], "score": 0.3})
+    assert [c["id"] for c in retriever.with_citations(rows, final_k=3)] == ["a101", "a9", "a113"]
+    off = pipeline.Retriever(replace(settings, temporal_sections=()), db=object())
+    assert [c["id"] for c in off.with_citations(rows[:2], final_k=2)] == ["a101", "a9"]
+
+
 def test_cohere_reranker_maps_scores_by_index(monkeypatch, tmp_path):
     import httpx
 

@@ -78,6 +78,7 @@ retrieval:
   rerank_candidates: 50                 # candidats fusionnés relus par le reranker (20 -> 50 : MRR 0,837 -> 0,859)
   final_k: 4                            # chunks envoyés au LLM
   parent_max_chars: 4000                # partie d'un article découpé : section entière jusqu'à 4 000 car., sinon parties voisines
+  temporal_sections: [Article 113, Article 111]  # dates d'application : jointes à toute section qu'elles citent
 
 # Versions figées pour la reproductibilité. L'ingestion interroge Cellar et prévient
 # si une version consolidée plus récente ou un nouveau rectificatif français existe.

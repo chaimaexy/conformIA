@@ -45,6 +45,9 @@ class RetrievalSettings:
     rerank_candidates: int = 20  # candidats fusionnés relus par le cross-encodeur (CPU : coûteux)
     # section découpée : jointe en entier jusqu'à cette taille, sinon parties voisines (0 : non)
     parent_max_chars: int = 0
+    # dispositions d'application dans le temps (« Article 113 ») : jointes à toute section
+    # du contexte qu'elles citent (lien inverse du graphe des citations)
+    temporal_sections: tuple[str, ...] = ()
 
     @classmethod
     def from_config(cls) -> "RetrievalSettings":
@@ -61,6 +64,7 @@ class RetrievalSettings:
             reranker=cfg.reranker.model,
             rerank_candidates=r.rerank_candidates,
             parent_max_chars=r.parent_max_chars,
+            temporal_sections=tuple(r.temporal_sections),
         )
 
 
@@ -235,10 +239,35 @@ class Retriever:
                 if key not in have and key in self.section_heads and key not in dict(cited):
                     cited.append((key, row["metadata"]["label"]))
         cited.sort(key=lambda c: -scored.get(c[0], float("-inf")))  # tri stable : ordre du texte
+        chosen = list(context)  # sections retenues pour la question (avant les renvois)
         for key, cited_by in cited[:max_extra]:
             head = self.section_heads[key]
             context.append({**head, "score": scored.get(key), "cited_by": cited_by})
-        return context
+        return context + self.temporal_for(chosen, context, scored)
+
+    def temporal_for(
+        self, chosen: list[dict], context: list[dict], scored: dict[tuple[str, str], float]
+    ) -> list[dict]:
+        """Dispositions d'application dans le temps qui visent une section du contexte.
+
+        Le graphe des citations va de la section qui cite vers la section citée. Or la date
+        d'application d'un article est écrite ailleurs, dans un article qui le cite : l'article
+        113 dit que le chapitre XII s'applique le 2 août 2025 « à l'exception de l'article 101 ».
+        Quand l'article 101 est dans le contexte, l'article 113 y est donc joint (lien inverse),
+        de même que l'article 111 pour l'article 50 (systèmes déjà sur le marché).
+        """
+        present = {(r["document_id"], r["metadata"]["label"]) for r in context}
+        extra: list[dict] = []
+        for document in dict.fromkeys(r["document_id"] for r in chosen):
+            labels = {r["metadata"]["label"] for r in chosen if r["document_id"] == document}
+            for hub in self.settings.temporal_sections:
+                parts = self.section_parts.get((document, hub), [])
+                cites = {label for p in parts for label in p["metadata"].get("cites", [])}
+                if parts and (document, hub) not in present and cites & labels:
+                    target = sorted(cites & labels)[0]
+                    score = scored.get((document, hub))
+                    extra += [{**p, "score": score, "applies_to": target} for p in parts]
+        return extra
 
     def _row(self, chunk_id: str, score: float) -> dict:
         if chunk_id not in self.chunks:  # chunk ajouté depuis le chargement : relu à la demande

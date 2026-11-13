@@ -1,0 +1,2551 @@
+{
+  "date": "2026-11-13T19:13:44+00:00",
+  "model": "config",
+  "effort": null,
+  "summary": {
+    "questions": 125,
+    "hors_corpus_refusees": 1.0,
+    "corpus_refusees_a_tort": 0.029,
+    "reponses": 99,
+    "citations_valides": 0.949,
+    "renvois_invalides": 0,
+    "citations_inexactes": 5,
+    "sources_attendues_citees": 0.887,
+    "faits_cles_retrouves": 1.0,
+    "reponses_avec_chiffre_non_source": 0,
+    "zones": {
+      "refus": 19,
+      "reponse": 98,
+      "verification": 8
+    }
+  },
+  "questions": [
+    {
+      "id": "m001",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.7569974,
+      "refused": false,
+      "answer": "Les obligations pour les systèmes d’IA à haut risque visés à l’**annexe III, points 1 et 2** (par exemple, biométrie ou infrastructures critiques) s’appliquent **à partir du 2 décembre 2027** pour les systèmes classés comme tels selon l’**article 6, paragraphe 2** [1].\n\nPour les systèmes relevant de l’**annexe I** (ex. : composants de sécurité dans des produits couverts par la législation d’harmonisation de l’UE), les obligations entrent en vigueur **le 2 août 2028** [1].\n\n*Les exceptions et modalités d’application (comme les dérogations ou les procédures d’évaluation) sont détaillées dans les articles 6, 27 et 43 [1][2][4][7].*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "AI Act Article 113",
+        "AI Act Article 27",
+        "AI Act Article 6",
+        "AI Act Article 43"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2027-12-02"
+      ],
+      "facts_found": [
+        "date:2027-12-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m002",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.7065912,
+      "refused": false,
+      "answer": "Les pratiques interdites en matière d’IA, prévues à l’**article 5** du règlement AI Act, s’appliquent **à partir du 2 février 2025**, à l’exception des points **b bis)** et **b ter)** de l’article 5, paragraphe 1, ainsi que des paragraphes **1 bis** et **1 ter**, qui sont applicables à partir du **2 décembre 2026** [1].\n\nLes exceptions concernent notamment les systèmes générant ou manipulant des contenus à caractère sexuel sans consentement [3][6].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "AI Act Article 113",
+        "AI Act Article 5",
+        "AI Act Article 5"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2025-02-02",
+        "date:2026-12-02"
+      ],
+      "facts_found": [
+        "date:2025-02-02",
+        "date:2026-12-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m003",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.7830784,
+      "refused": false,
+      "answer": "Les règles sur les systèmes d’IA à haut risque **couverts par la législation d’harmonisation de l’Union figurant à l’annexe I, section A**, s’appliquent principalement à partir du **2 août 2025** pour les chapitres pertinents (comme le chapitre III, section 4, ou le chapitre V), **sauf exceptions** :\n\n- **Évaluation de la conformité** : Les fournisseurs suivent la procédure d’évaluation de la conformité prévue par la législation d’harmonisation applicable, avec des exigences complémentaires de l’**AI Act** (article 43, paragraphe 3) [4][5].\n- **Application des exigences spécifiques** : Les systèmes visés par l’**article 6, paragraphe 1** (systèmes intégrés à des produits couverts par l’annexe I) entrent en vigueur le **2 août 2028** [1].\n- **Exigences générales** (articles 9 à 15, 17 à 25) peuvent être limitées si la législation d’harmonisation offre un niveau de protection équivalent ou supérieur (article 13) [3].\n\n**Ce qui n’est pas couvert** : Les délais précis pour les systèmes classés comme haut risque selon l’**annexe III** (article 6, paragraphe 2) diffèrent (2 décembre 2027 pour certains, 2 août 2028 pour d’autres) [1].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 113",
+        "AI Act Article 2",
+        "AI Act Article 43",
+        "AI Act Article 43"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2028-08-02"
+      ],
+      "facts_found": [
+        "date:2028-08-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m004",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.7810097,
+      "refused": false,
+      "answer": "Les obligations incombant aux fournisseurs de modèles d’IA à usage général s’appliquent **à compter du 2 août 2025** [1].\n\nLes interdictions et les dispositions générales du règlement (y compris celles relatives aux risques inacceptables) s’appliquent quant à elles dès le **2 février 2025** [1].\n\n*Ce qui n'est pas couvert* : Les dates exactes d'application des obligations spécifiques aux modèles à risque systémique ou les exceptions liées aux licences libres ne sont pas précisées ici.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Considérant 179"
+      ],
+      "expected_cited": 0,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2025-08-02"
+      ],
+      "facts_found": [
+        "date:2025-08-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m005",
+      "category": "reference",
+      "zone": "reponse",
+      "top_score": 0.794338,
+      "refused": false,
+      "answer": "L’**annexe III** du règlement AI Act (règlement (UE) 2024/1689) précise que les systèmes d’IA considérés comme **à haut risque dans le domaine de l’emploi** sont ceux destinés à :\n\n- **Recrutement ou sélection** : publier des offres d’emploi ciblées, analyser et filtrer les candidatures, ou évaluer les candidats [2].\n- **Décisions professionnelles** : influencer les conditions de travail (promotion, licenciement), attribuer des tâches sur la base de traits personnels, ou suivre/evaluer les performances et le comportement des employés [2].\n\nCes systèmes relèvent de l’**article 6, paragraphe 2**, et sont soumis aux obligations du chapitre III, sections 1 à 3 [4][5].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Annexe III",
+        "AI Act Article 6",
+        "AI Act Article 6"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m006",
+      "category": "reference",
+      "zone": "reponse",
+      "top_score": 0.86099815,
+      "refused": false,
+      "answer": "L’**article 22 du RGPD** énonce le **droit de ne pas faire l'objet d'une décision fondée exclusivement sur un traitement automatisé** (y compris le profilage) produisant des effets juridiques significatifs ou l’affectant de manière similaire.\n\n1. **Droit général** : La personne concernée peut s’opposer à une telle décision, sauf exceptions précises [1].\n2. **Exceptions** :\n   - Si la décision est nécessaire à un contrat ou à son exécution [1] ;\n   - Si elle est autorisée par le droit de l’Union ou national, avec des garanties pour les droits de la personne [1] ;\n   - Si elle repose sur son **consentement explicite** [1].\n3. **Mesures de sauvegarde** : Dans les cas contractuels ou consentis, le responsable doit garantir :\n   - Une intervention humaine,\n   - Le droit d’exprimer son point de vue,\n   - Le droit de contester la décision [1].\n4. **Interdiction des données sensibles** : Les décisions automatisées ne peuvent pas reposer sur des **catégories particulières de données** (ex. : santé, origine ethnique) sauf exceptions strictes (consentement explicite ou motifs légaux) et avec des garanties renforcées [1][9].\n\n*Source : [1] RGPD, article 22.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "RGPD Article 22",
+        "RGPD Article 9"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m007",
+      "category": "reference",
+      "zone": "reponse",
+      "top_score": 0.82447106,
+      "refused": false,
+      "answer": "L’**article 50** du règlement (UE) 2024/1689 impose des **obligations de transparence** pour les fournisseurs et déployeurs de systèmes d’IA spécifiques :\n\n1. **Interaction avec les personnes physiques** : Les fournisseurs doivent informer les utilisateurs qu’ils interagissent avec un système d’IA, sauf si cela est évident pour une personne normalement informée [1].\n2. **Marquage des contenus générés par IA** : Les fournisseurs de systèmes produisant des contenus synthétiques (audio, image, vidéo, texte) doivent les marquer comme tels, en format lisible par machine, sauf pour les systèmes d’assistance ou ceux utilisés en prévention pénale [1][2].\n3. **Transparence pour les systèmes biométriques** : Les déployeurs de systèmes de reconnaissance des émotions ou de catégorisation biométrique doivent informer les personnes concernées et respecter le RGPD [2].\n4. **Hypertrucages et contenus manipulés** : Les déployeurs doivent indiquer si les images/vidéos ou textes ont été générés ou modifiés par IA, sauf exceptions (œuvres artistiques, contrôle éditorial humain, ou usage répressif) [3].\n5. **Délai et accessibilité** : Les informations doivent être fournies **au plus tard lors de la première interaction**, de manière claire et accessible [3].\n6. **Exclusions** : Les obligations ne s’appliquent pas aux systèmes utilisés pour la **prévention ou la détection d’infractions pénales**, sous réserve de garanties légales [1][2][3].\n\nLes paragraphes 1 à 4 ne remplacent pas les exigences du **chapitre III** (systèmes à haut risque) ni d’autres obligations de transparence [3].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 50",
+        "AI Act Article 50",
+        "AI Act Article 50"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m008",
+      "category": "reference",
+      "zone": "reponse",
+      "top_score": 0.84181285,
+      "refused": false,
+      "answer": "L’**article 35 du RGPD** prévoit les règles suivantes :\n\n1. **Obligation d’analyse d’impact (AIPD)** : Le responsable de traitement doit réaliser une **analyse d’impact relative à la protection des données (AIPD)** avant tout traitement susceptible d’engendrer un **risque élevé** pour les droits et libertés des personnes, notamment via des **nouvelles technologies** (ex. : profilage automatisé, surveillance systématique) [1].\n\n2. **Cas obligatoires** : L’AIPD est requise pour :\n   - L’**évaluation systématique et approfondie** d’aspects personnels (y compris le profilage) entraînant des **décisions automatisées à effets juridiques ou significatifs** [1] ;\n   - Le **traitement à grande échelle** de **données sensibles** (art. 9) ou de **données pénales** (art. 10) [1][6][7] ;\n   - La **surveillance systématique à grande échelle** d’une zone publique [1].\n\n3. **Contenu de l’AIPD** : Elle doit inclure :\n   - Une **description des opérations** et des finalités [2] ;\n   - Une **évaluation de la nécessité/proportionnalité** et des **risques** [2] ;\n   - Les **mesures correctives** (garanties, sécurité, preuve de conformité) [2] ;\n   - La prise en compte des **codes de conduite approuvés** (art. 40) [2][10].\n\n4. **Exemptions** : L’AIPD n’est pas obligatoire si :\n   - Le traitement repose sur une **base juridique préexistante** (ex. : loi) avec une AIPD déjà réalisée lors de son adoption [3] ;\n   - Les États membres jugent qu’une AIPD n’est pas nécessaire [3].\n\n5. **Autorités de contrôle** : Elles peuvent publier des **listes de traitements nécessitant ou non une AIPD**, après consultation du **comité européen de la protection des données** (art. 68) [1][2][8].\n\n6. **Consultation** : Le responsable peut consulter le **DPO** (délégué à la protection des données) et les **personnes concernées** [3][4].\n\n---\n*Les critères spécifiques pour les systèmes d’IA (ex. : usage innovant, données sensibles) sont détaillés dans les **fiches pratiques de la CNIL** [4][5], mais ne font pas partie de l’article 35 lui-même.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "RGPD Article 35",
+        "RGPD Article 35",
+        "RGPD Article 35",
+        "CNIL CNIL, « IA : Réaliser une analyse d’impact si nécessaire », La réalisation d’une AIPD pour le développement de systèmes d’IA",
+        "CNIL CNIL, « IA : Réaliser une analyse d’impact si nécessaire », La réalisation d’une AIPD pour le développement de systèmes d’IA",
+        "RGPD Article 9",
+        "RGPD Article 10",
+        "RGPD Article 68",
+        "RGPD Article 40"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m009",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.77275497,
+      "refused": false,
+      "answer": "Oui, ce logiciel est **souvent considéré comme un système d’IA à haut risque** selon l’**AI Act**.\n\nEn effet, l’**article 6, paragraphe 2** et l’**annexe III, point 4(a)** du règlement (UE) 2024/1689 précisent que :\n*« Les systèmes d’IA destinés à être utilisés pour le recrutement ou la sélection de personnes physiques, en particulier pour publier des offres d’emploi ciblées, analyser et filtrer les candidatures et évaluer les candidats, sont classés comme systèmes à haut risque. »* [3]\n\n**Cependant**, cette classification dépend de **l’usage opérationnel concret** du logiciel dans votre entreprise. Si le système ne traite que des données anonymisées ou ne prend pas de décision impactant significativement les candidats (ex. : simple tri sans évaluation finale), il pourrait ne pas être concerné. Pour une analyse précise, il faut vérifier :\n- Si le logiciel **prendre des décisions automatisées** influençant l’accès à l’emploi (ex. : rejet automatique de CV).\n- Si les données personnelles sont **collectées et traitées** de manière à risquer des biais discriminatoires (ex. : évaluation des traits de personnalité).\n\nPour une évaluation complète, une **analyse d’impact sur la protection des données (AIPD)** est recommandée, comme le souligne la CNIL [5][8].",
+      "citations_ok": false,
+      "invalid_markers": [],
+      "unverified_quotes": [
+        "Les systèmes d’IA destinés à être utilisés pour le recrutement ou la sélection de personnes physiques, en particulier pour publier des offres d’emploi ciblées, analyser et filtrer les candidatures et évaluer les candidats, sont classés comme systèmes à haut risque."
+      ],
+      "uncited_sentences": 6,
+      "sources_cited": [
+        "AI Act Annexe III",
+        "CNIL CNIL, « IA : Réaliser une analyse d’impact si nécessaire », Les risques liés à l’IA à prendre en compte dans une AIPD",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », Focus : Réaliser une analyse d’impact sur la protection des données (AIPD)"
+      ],
+      "expected_cited": 1,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m010",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.61900663,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m011",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.4732735,
+      "refused": false,
+      "answer": "Oui, votre chatbot de service client doit informer les utilisateurs qu’ils interagissent avec un système d’IA, sauf si cela est évident pour une personne normalement informée et raisonnablement attentive, compte tenu du contexte [1].\n\n**Exemple de cas où l’obligation ne s’applique pas** :\nSi le chatbot est utilisé uniquement pour des **fins de prévention ou de détection des infractions pénales**, sous réserve de garanties appropriées pour les droits des tiers [1].\n\n**Recommandations complémentaires** :\n- L’information doit être **accessible et compréhensible** (ex. : mention claire dans l’interface, message vocal pré-enregistré) [4][6].\n- Pour les **groupes vulnérables** (mineurs, personnes handicapées), l’information doit être adaptée [3].\n\n*Non couvert* : Les modalités précises de communication (ton, placement du message) ne sont pas détaillées dans les sources.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 50",
+        "AI Act Considérant 132",
+        "CNIL CNIL, « IA : Informer les personnes concernées », Comment fournir l’information ?",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 7e étape : Informer les personnes"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m012",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.82340926,
+      "refused": false,
+      "answer": "Une entreprise qui utilise une **pratique interdite en matière d’IA** (article 5) risque une amende administrative pouvant aller jusqu’à **35 000 000 EUR ou 7 % de son chiffre d’affaires annuel mondial total** (le montant le plus élevé étant retenu) [1].\n\nPour les **PME**, le montant maximal est réduit au chiffre le plus faible entre ces deux seuils [1][7].\n\n*Cette réponse ne couvre pas les sanctions spécifiques aux institutions, organes ou organismes de l’Union.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 99",
+        "AI Act Article 99"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "eur:35000000",
+        "pct:7"
+      ],
+      "facts_found": [
+        "eur:35000000",
+        "pct:7"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m013",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.7416427,
+      "refused": false,
+      "answer": "Oui, votre banque doit **évaluer l’impact sur les droits fondamentaux** de son outil d’IA de notation de crédit, car il s’agit d’un **système d’IA à haut risque** au sens de l’**AI Act** [2][11].\n\nEn effet, les systèmes d’IA utilisés pour évaluer la **note de crédit ou la solvabilité des personnes physiques** sont explicitement classés comme à haut risque, car ils déterminent l’accès à des **ressources financières ou services essentiels** (logement, électricité, télécommunications) et peuvent entraîner des **discriminations** ou des **atteintes aux droits fondamentaux** (non-discrimination, protection sociale, recours effectif) [2].\n\nL’**article 27** de l’**AI Act** impose aux déployeurs (comme votre banque) de réaliser une **analyse d’impact sur les droits fondamentaux** avant le déploiement, incluant :\n- les risques spécifiques pour les personnes concernées (ex. : biais discriminatoires) [8][9].\n- les mesures de contrôle humain et de gouvernance [8].\n\nCette obligation s’applique **avant toute première utilisation** et doit être notifiée à l’autorité de surveillance [9].\n\n*Ce qui n’est pas couvert* : les modalités pratiques de l’analyse (ex. : contenu détaillé du rapport) ou les exceptions éventuelles (ex. : systèmes déjà couverts par une analyse RGPD).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Considérant 58",
+        "AI Act Article 27",
+        "AI Act Article 27",
+        "AI Act Article 6"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m014",
+      "category": "reformulee",
+      "zone": "verification",
+      "top_score": 0.44328228,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m015",
+      "category": "multi_sources",
+      "zone": "reponse",
+      "top_score": 0.5827937,
+      "refused": false,
+      "answer": "Oui, un candidat écarté par un algorithme de recrutement peut contester la décision et obtenir des explications, sous certaines conditions :\n\n1. **Droit à l'opposition et à l'explication** :\n   - Le candidat a le droit de ne pas être soumis à une décision fondée sur un traitement automatisé (y compris le profilage) produisant des effets juridiques ou l'affectant significativement, sauf exceptions [3].\n   - Il peut exiger une intervention humaine, exprimer son point de vue et obtenir une explication sur la décision [1][3].\n\n2. **Exigences de transparence et de garanties** :\n   - Le responsable du traitement doit utiliser des méthodes adéquates pour éviter les erreurs et les biais discriminatoires (ex. : origine raciale, orientation sexuelle) [2].\n   - Si le traitement repose sur des **catégories particulières de données** (ex. : données biométriques, santé), il doit être autorisé par le droit de l’Union ou un État membre avec des garanties renforcées [3][7].\n\n3. **Cas spécifique de l’IA (si applicable)** :\n   - Si l’algorithme est un **système d’IA à haut risque** (ex. : biométrie, infrastructures critiques), le candidat peut exiger des explications claires sur le rôle de l’IA dans la décision [4][6].\n   - Ce droit ne s’applique pas si une exception légale (droit de l’Union ou national) le prévoit [4].\n\n**Ce qui n'est pas couvert** : Les modalités pratiques pour contester (procédure, délais) ou les obligations spécifiques du responsable du traitement en cas de recours ne sont pas détaillées ici.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "RGPD Considérant 71",
+        "RGPD Considérant 71",
+        "RGPD Article 22",
+        "AI Act Article 86",
+        "AI Act Annexe III",
+        "RGPD Article 9"
+      ],
+      "expected_cited": 3,
+      "n_expected": 3,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m016",
+      "category": "cnil_pratique",
+      "zone": "reponse",
+      "top_score": 0.8612366,
+      "refused": false,
+      "answer": "La CNIL recommande les précautions suivantes pour le moissonnage de données (web scraping) destiné à entraîner un modèle d’IA :\n\n1. **Exclusions systématiques** :\n   - Établir une liste de sites exclus par défaut (ex. : sites pornographiques, forums de santé, généalogiques) en raison de leur sensibilité [1][4].\n   - Respecter les sites opposés au moissonnage via des mesures techniques (CAPTCHA, *robots.txt*) ou juridiques (CGU) [1][3][4][5].\n\n2. **Minimisation des données** :\n   - Limiter la collecte aux données **librement accessibles** (sans compte) et publiquement visibles [1][3][4].\n   - Exclure les données privées (réseaux sociaux en mode privé, pétitions en ligne) ou ambiguës [1][3].\n\n3. **Garanties renforcées** :\n   - **Informer largement** les personnes (articles, réseaux sociaux) et publier une liste des sites concernés [2][4].\n   - **Droit d’opposition discrétionnaire** avant collecte, avec mécanismes techniques (ex. : listes \"repoussoir\") [2][4].\n   - **Anonymisation/pseudonymisation immédiate** après collecte, en empêchant le recoupement d’identifiants [2][4].\n\n4. **Respect du RGPD** :\n   - Justifier la nécessité des données sensibles et appliquer des mesures renforcées (pseudonymisation, suppression automatique des données sensibles incidentes) [5].\n\n*Ce qui n’est pas couvert* : Les modalités précises de mise en œuvre des garanties selon le type d’IA ou l’usage spécifique du modèle.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, « La base légale de l’intérêt légitime : fiche focus sur les mesures à prendre en cas de collecte des données par moissonnage (web scraping) », Les garanties supplémentaires",
+        "CNIL CNIL, « La base légale de l’intérêt légitime : fiche focus sur les mesures à prendre en cas de collecte des données par moissonnage (web scraping) », Les garanties supplémentaires",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3ème étape (bis) : Adapter les garanties au moissonnage des données",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3ème étape (bis) : Adapter les garanties au moissonnage des données",
+        "CNIL CNIL, liste de vérification IA, point 5 « Limiter les données traitées à celles qui sont pertinentes et nécessaires (minimisation des données) »"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m017",
+      "category": "cnil_pratique",
+      "zone": "reponse",
+      "top_score": 0.8403424,
+      "refused": false,
+      "answer": "Oui, **l’intérêt légitime peut être mobilisé pour entraîner un modèle d’IA sur des données personnelles**, sous réserve du respect de **trois conditions cumulatives** :\n\n1. **Légitimité de l’intérêt** : L’objectif doit être légal (ex. : recherche scientifique, développement commercial proportionné, détection de fraudes) et clairement défini, sans être contraire au droit (RGPD ou Règlement IA) [5][7].\n2. **Nécéssité du traitement** : Les données personnelles doivent être **indispensables** à l’entraînement (ex. : impossibilité d’utiliser des données anonymes ou synthétiques) et le traitement doit respecter le principe de minimisation [1][5][9].\n3. **Absence d’atteinte disproportionnée** : Les droits et libertés des personnes doivent être préservés, en tenant compte de leurs **attentes raisonnables** (ex. : exclusion des données sensibles, pseudonymisation, transparence) [1][2][5].\n\n**Exemple validé** : La collecte de commentaires publics sur des œuvres d’art pour un système d’évaluation de l’appréciation du public est jugée légitime, car nécessaire et proportionnée [3].\n**Exemple rejeté** : Un système prédisant le profil psychologique à des fins commerciales est considéré comme disproportionné [2].\n\n*Ce qui n’est pas couvert* : Les modalités précises pour évaluer l’**atteinte disproportionnée** dans des cas concrets (ex. : seuils de données sensibles) ou les exceptions pour les organismes publics [7].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Assurer que le traitement est licite - Définir une base légale », La base légale de l’intérêt légitime",
+        "CNIL CNIL, « IA : Assurer que le traitement est licite - Définir une base légale », La base légale de l’intérêt légitime",
+        "CNIL CNIL, « IA : Assurer que le traitement est licite - Définir une base légale », La base légale de l’intérêt légitime",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3e étape : Définir la « base légale » qui vous autorise à traiter des données personnelles",
+        "CNIL CNIL, « IA : Mobiliser la base légale de l’intérêt légitime pour développer un système d’IA », Introduction",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3e étape : Définir la « base légale » qui vous autorise à traiter des données personnelles"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m018",
+      "category": "cnil_pratique",
+      "zone": "reponse",
+      "top_score": 0.8796855,
+      "refused": false,
+      "answer": "**Réponse :**\n\nUn modèle d’IA entraîné sur des données personnelles **est généralement soumis au RGPD**, sauf si une analyse spécifique démontre qu’il peut être considéré comme anonyme [1][4][5].\n\nPour qu’il soit exclu du champ d’application du RGPD, il faut que :\n- La réidentification des personnes à partir de ses paramètres soit **très peu vraisemblable** (notamment via des attaques en « white-box »), et\n- L’extraction des données personnelles par des requêtes soit également **très peu probable** [5].\n\nÀ défaut, le modèle contient des données personnelles et relève du RGPD [1][4][5].\n\n*Ce qui n’est pas couvert* : Les critères précis pour prouver l’anonymat d’un modèle (méthodes techniques ou seuils de risque).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 3,
+      "sources_cited": [
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 10e étape : Analyser le statut d’un modèle d’IA",
+        "CNIL CNIL, « IA : Analyser le statut d’un modèle d’IA au regard du RGPD », De quoi parle-t-on ?",
+        "CNIL CNIL, « IA : Analyser le statut d’un modèle d’IA au regard du RGPD », De quoi parle-t-on ?"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m019",
+      "category": "cnil_pratique",
+      "zone": "reponse",
+      "top_score": 0.85281307,
+      "refused": false,
+      "answer": "Lors de l’annotation des données d’entraînement, les règles suivantes doivent être respectées :\n\n1. **Minimisation** :\n   - Limiter les annotations aux données **adéquates, pertinentes et nécessaires** à la finalité du modèle [1][3].\n   - Éviter les informations non pertinentes ou indirectement liées, sauf si leur utilité pour les performances est **prouvée ou suffisamment plausible** [1][3][4].\n   - Pour les jeux de données préexistants, justifier le recours à des annotations non pertinentes et supprimer celles inutiles [1][4].\n\n2. **Exactitude et loyauté** :\n   - Les annotations doivent être **objectives, exactes et à jour** pour éviter des sorties erronées ou discriminatoires [1][3].\n   - Exclure les termes **dégradants, dépréciatifs ou relevant de jugements de valeur** [6].\n\n3. **Données sensibles** :\n   - L’annotation de données sensibles (article 9 du RGPD) est **en principe interdite**, sauf exceptions (recherche en santé avec autorisation CNIL ou engagement méthodologique) [2].\n   - Si mobilisées, les annotations doivent être **objectives, factuelles et limitées aux données existantes**, avec des mesures renforcées de sécurité et d’analyse des risques de régurgitation [2].\n\n4. **Procédure d’annotation** :\n   - Documenter une **procédure claire**, avec attribution des tâches aux personnes habilitées [6].\n   - Prévoir des **retours d’expérience** et une **phase de validation** (accord inter-annotateurs, échantillonnage aléatoire) [6][7].\n   - Mettre en place une **vérification continue** (audits, panels, journalisation des modifications) [5][7].\n\n5. **Outils et anonymisation** :\n   - Utiliser des **outils fiables et sécurisés**, adaptés à la finalité [6][7].\n   - Évaluer l’impact des labels sur l’anonymisation pour éviter la réidentification [6].\n\n*Les règles spécifiques à l’**AI Act** ne sont pas couvertes dans ces sources.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 11e étape : Respecter les principes du RGPD lors de la phase d’annotation",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 11e étape : Respecter les principes du RGPD lors de la phase d’annotation",
+        "CNIL CNIL, « IA : Annoter les données », Les enjeux de l’annotation pour les droits et libertés des personnes",
+        "CNIL CNIL, « IA : Annoter les données », Les enjeux de l’annotation pour les droits et libertés des personnes",
+        "CNIL CNIL, « IA : Annoter les données », Garantir la qualité de l’annotation",
+        "CNIL CNIL, « IA : Annoter les données », Garantir la qualité de l’annotation",
+        "CNIL CNIL, « IA : Annoter les données », Garantir la qualité de l’annotation"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m020",
+      "category": "multi_sources",
+      "zone": "reponse",
+      "top_score": 0.8958819,
+      "refused": false,
+      "answer": "Une **analyse d’impact sur la protection des données (AIPD)** est obligatoire pour le développement d’un système d’IA dans les cas suivants :\n\n1. **Si le traitement est susceptible d’engendrer un risque élevé** pour les droits et libertés des personnes (article 35 du RGPD) [3].\n2. **Si au moins deux des critères suivants sont remplis** (liste du CEPD) :\n   - Collecte de **données sensibles** ou hautement personnelles (ex. données de localisation, financières) [3] ;\n   - Collecte **à large échelle** de données personnelles [1][3] ;\n   - Collecte de données de **personnes vulnérables** (mineures, handicapées, etc.) [1][3] ;\n   - **Croissement ou combinaison d’ensembles de données** [1][3] ;\n   - **Usage innovant** ou mise en œuvre de **nouvelles solutions technologiques** (évalué par rapport à l’état des connaissances, pas seulement au contexte) [4].\n\n3. **Si des risques importants existent** (mésusage, violation, discrimination), même sans remplir deux critères [1][4].\n\n**Cas particuliers** :\n- Pour les **systèmes d’IA à haut risque** (règlement UE sur l’IA), une AIPD est **en principe nécessaire** [1].\n- Si l’objectif du système est **déjà défini** (usage opérationnel connu), l’AIPD couvre **l’ensemble du cycle de vie** (développement + déploiement) [2].\n- Si le système est **à usage général**, l’AIPD ne porte **qu’au développement** et doit être fournie aux utilisateurs [2].\n\n*Les systèmes d’IA ne relèvent pas systématiquement de l’usage innovant, sauf si la technique est novatrice au regard des connaissances technologiques actuelles* [4].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », Focus : Réaliser une analyse d’impact sur la protection des données (AIPD)",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », Focus : Réaliser une analyse d’impact sur la protection des données (AIPD)",
+        "CNIL CNIL, « IA : Réaliser une analyse d’impact si nécessaire », La réalisation d’une AIPD pour le développement de systèmes d’IA",
+        "CNIL CNIL, « IA : Réaliser une analyse d’impact si nécessaire », La réalisation d’une AIPD pour le développement de systèmes d’IA"
+      ],
+      "expected_cited": 2,
+      "n_expected": 3,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m021",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.86210895,
+      "refused": false,
+      "answer": "Les obligations des déployeurs de systèmes d’IA à haut risque, selon l’**AI Act**, sont les suivantes :\n\n1. **Respect de la notice d’utilisation** : Utiliser le système conformément à la notice d’utilisation, avec des mesures techniques et organisationnelles adaptées [4][5].\n2. **Contrôle humain** : Assurer un contrôle humain par des personnes compétentes, formées et autorisées [4][5].\n3. **Surveillance du fonctionnement** : Surveiller le système et, en cas de risque ou d’incident grave, informer le fournisseur/distributeur et l’autorité de surveillance, puis suspendre l’utilisation [1].\n4. **Tenue de registres** : Conserver les journaux automatiques générés par le système pendant **au moins six mois** (ou selon le droit applicable) [2].\n5. **Information des travailleurs** : Avant utilisation sur le lieu de travail, informer les représentants et travailleurs concernés [2].\n6. **Vérification de l’enregistrement** : Pour les autorités publiques, vérifier que le système est enregistré dans la base de données de l’UE et ne pas l’utiliser s’il ne l’est pas [2].\n7. **Analyse d’impact RGPD** : Utiliser les informations de l’**article 13** pour réaliser une analyse d’impact RGPD si nécessaire [3].\n8. **Autorisation pour l’identification biométrique** : Obtenir une autorisation préalable (ou sans retard injustifié) pour les systèmes d’IA à haut risque utilisés en enquête pénale, sous contrôle judiciaire [3].\n\n*Non couvert* : Les obligations spécifiques aux **établissements financiers** (exemptions ou adaptations) ou les détails sur les **autorités répressives** (exclusion des données sensibles) [1][2].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 26",
+        "AI Act Article 26",
+        "AI Act Article 26",
+        "AI Act Article 26",
+        "AI Act Considérant 91"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m022",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8672169,
+      "refused": false,
+      "answer": "Les fournisseurs de modèles d’IA à usage général ont les obligations suivantes :\n\n1. **Documentation technique** :\n   - Élaborer et tenir à jour une documentation technique détaillée (annexe XI), incluant le processus d’entraînement, les essais et les résultats d’évaluation, à fournir sur demande au Bureau de l’IA et aux autorités nationales [1][8].\n\n2. **Transparence pour les intégrateurs** :\n   - Fournir des informations et une documentation aux fournisseurs en aval (annexe XII) pour qu’ils comprennent les capacités et limites du modèle et respectent leurs obligations [1][9].\n\n3. **Respect du droit d’auteur** :\n   - Mettre en place une politique pour identifier et respecter les droits de propriété intellectuelle, y compris via des technologies adaptées [1].\n\n4. **Résumé public du contenu d’entraînement** :\n   - Publier un résumé détaillé du contenu utilisé pour entraîner le modèle, selon un modèle fourni par le Bureau de l’IA [1].\n\n5. **Coopération avec les autorités** :\n   - Collaborer avec la Commission et les autorités nationales compétentes [2].\n\n6. **Preuves de conformité** :\n   - Pouvoir s’appuyer sur des codes de bonne pratique (article 56) ou des normes harmonisées pour démontrer leur conformité, sinon justifier d’autres moyens appropriés [2][10].\n\n**Exclusion partielle** :\nLes obligations des points *a)* et *b)* ne s’appliquent pas aux modèles sous licence libre et ouverte (avec paramètres publics), sauf s’ils présentent un risque systémique [2][6].\n\n*Les obligations spécifiques aux modèles présentant un risque systémique (évaluations, gestion des incidents, cybersécurité) ne sont pas couvertes ici.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 53",
+        "AI Act Article 53",
+        "AI Act Article 54",
+        "AI Act Annexe XI",
+        "AI Act Annexe XII",
+        "AI Act Article 56"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m023",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8726687,
+      "refused": false,
+      "answer": "Un modèle d’IA à usage général est considéré comme présentant un **risque systémique** dans les cas suivants :\n\n1. **Capacités à fort impact** :\n   Il est classé comme tel s’il dispose de capacités à fort impact, évaluées via des méthodologies et outils techniques appropriés (incluant des indicateurs et critères de référence), ou si la quantité cumulée d’opérations en virgule flottante (FLOPs) utilisée pour son entraînement dépasse **10²⁵** [3].\n\n2. **Décision de la Commission** :\n   La Commission peut le désigner comme présentant un risque systémique si, sur la base d’une évaluation globale des critères de l’**annexe XIII** (ex. : nombre de paramètres, qualité des données, nombre d’utilisateurs, autonomie, etc.), il possède des capacités ou un impact équivalents à ceux mentionnés ci-dessus [1][2][3].\n\n*Les critères de l’annexe XIII incluent aussi des éléments comme la taille du jeu de données, la multimodalité, l’impact sur le marché intérieur (ex. : 10 000 utilisateurs professionnels) ou le nombre d’utilisateurs finaux [7].*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Considérant 111",
+        "AI Act Considérant 111",
+        "AI Act Article 51",
+        "AI Act Annexe XIII"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m024",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8554824,
+      "refused": false,
+      "answer": "Selon le RGPD et les recommandations de la CNIL, les bases légales possibles pour traiter des données personnelles sont les suivantes :\n\n1. **Le consentement** : libre, spécifique, éclairé et univoque, notamment lorsque les données sont collectées directement auprès des personnes [1][3].\n\n2. **Le respect d’une obligation légale** : lorsque le traitement est nécessaire pour respecter une obligation légale à laquelle le responsable du traitement est soumis [1][3].\n\n3. **L’exécution d’un contrat** : si le traitement est nécessaire pour exécuter un contrat auquel la personne concernée est partie ou pour des mesures précontractuelles à sa demande [1][3].\n\n4. **L’exécution d’une mission d’intérêt public** : pour les acteurs publics, si le traitement s’inscrit dans leur mission telle que prévue par un texte [1][2].\n\n5. **La sauvegarde des intérêts vitaux** : lorsque le traitement est nécessaire pour protéger les intérêts vitaux de la personne concernée ou d’une autre personne physique [1].\n\n6. **La poursuite d’un intérêt légitime** : si trois conditions sont remplies :\n   - l’intérêt est légitime, légal et précis ;\n   - le traitement est nécessaire et proportionné ;\n   - il ne porte pas atteinte disproportionnée à la vie privée [1][4].\n\n*Les bases légales du contrat et de l’obligation légale sont plus exceptionnelles et nécessitent une démonstration spécifique [2].*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3e étape : Définir la « base légale » qui vous autorise à traiter des données personnelles",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3e étape : Définir la « base légale » qui vous autorise à traiter des données personnelles",
+        "RGPD Considérant 40",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3e étape : Définir la « base légale » qui vous autorise à traiter des données personnelles"
+      ],
+      "expected_cited": 0,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m025",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.87297374,
+      "refused": false,
+      "answer": "Les jeux de données d’entraînement des systèmes d’IA à haut risque doivent satisfaire aux exigences suivantes :\n\n1. **Qualité et représentativité** : Ils doivent être pertinents, suffisamment représentatifs, exempts d’erreurs et complets au regard de la destination du système, avec des propriétés statistiques adaptées aux personnes ou groupes concernés ([1][3]).\n\n2. **Gouvernance et gestion des données** :\n   - Respect des choix de conception pertinents ([1][a]).\n   - Traçabilité de la collecte (origine, finalité initiale pour les données personnelles) et des traitements (annotation, nettoyage, etc.) ([1][b][c]).\n   - Évaluation des biais pouvant porter atteinte à la santé, aux droits fondamentaux ou générer des discriminations ([1][f]).\n   - Mesures pour détecter, prévenir et atténuer ces biais ([1][g]).\n   - Détection des lacunes ou déficiences et solutions pour les combler ([1][h]).\n\n3. **Adéquation contextuelle** : Prise en compte des spécificités géographiques, contextuelles ou fonctionnelles du cadre d’utilisation ([1][4]).\n\n4. **Transparence RGPD** : Respect des principes de protection des données, notamment pour les données à caractère personnel ([3]).\n\n*Les exigences relatives aux données de test et validation sont identiques pour les systèmes utilisant l’entraînement de modèles, mais limitées aux données de test pour les autres systèmes ([1][6]).*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 10",
+        "AI Act Considérant 67",
+        "AI Act Considérant 67",
+        "AI Act Annexe IV"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m026",
+      "category": "multi_sources",
+      "zone": "reponse",
+      "top_score": 0.85061693,
+      "refused": false,
+      "answer": "Oui, un fournisseur peut exceptionnellement traiter des **catégories particulières de données à caractère personnel** (dites \"données sensibles\") pour détecter et corriger les biais de son système d'IA **uniquement** s'il s'agit d'un **système d'IA à haut risque**, sous réserve de conditions strictes :\n\n1. Le traitement doit être **strictement nécessaire** et ne pas pouvoir être réalisé avec d'autres données (y compris anonymisées ou synthétiques) [1][2].\n2. Les données doivent être **limitées techniquement** (pseudonymisation, restrictions d'usage) et protégées par des mesures de sécurité renforcées [1][2].\n3. Les données doivent être **supprimées dès que le biais est corrigé** ou à l'expiration de leur période de conservation [1][2].\n4. Les registres de traitement doivent documenter la justification de ce traitement [1][2].\n\n**Limites** :\n- Cette exception ne s'applique **pas** aux autres systèmes d'IA (hors haut risque) [2].\n- Le fournisseur n'est **pas obligé** de détecter ou corriger les biais [2].\n\n[Source : Articles 4 bis (par. 1 et 2) et 10 (par. 1, points f) et g)) de l'AI Act (règlement (UE) 2024/1689).]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 4 bis",
+        "AI Act Article 4 bis"
+      ],
+      "expected_cited": 1,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m027",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.78198266,
+      "refused": false,
+      "answer": "Le fournisseur doit signaler **immédiatement** l’incident grave aux autorités de surveillance du marché des États membres concernés, dès qu’il établit un lien de causalité avec le système d’IA ou dès qu’il en soupçonne un, mais au plus tard :\n\n- **15 jours** après avoir eu connaissance de l’incident, sauf si l’ampleur de l’incident justifie un délai plus long ([1]).\n- **2 jours** maximum en cas d’**infraction de grande ampleur** ou d’incident grave au sens de l’article 3, point 49) b) ([1]).\n- **10 jours maximum** en cas de **décès d’une personne**, dès qu’un lien de causalité est établi ou suspecté ([1]).\n\nLe fournisseur doit aussi :\n- **Mener sans délai des investigations** sur l’incident et le système concerné, en coopérant avec les autorités compétentes ([2]).\n- **Évaluer les risques et mettre en œuvre des mesures correctives** ([2]).\n- **Ne pas modifier le système d’IA** avant d’informer les autorités des mesures envisagées ([2]).\n\nSi le fournisseur ne peut pas joindre le déployeur, il applique les règles du signalement **mutatis mutandis** ([4]).\n\nSOURCES_INSUFFISANTES pour préciser les modalités de preuve du lien de causalité ou les obligations spécifiques en cas d’absence de décès.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 73",
+        "AI Act Article 73",
+        "AI Act Article 26"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m028",
+      "category": "cnil_pratique",
+      "zone": "reponse",
+      "top_score": 0.85348433,
+      "refused": false,
+      "answer": "Voici les points à vérifier pour la durée de conservation des données dans un projet d’IA, selon les sources :\n\n1. **Définir une durée spécifique par phase** :\n   - Développement, maintenance ou amélioration du produit [1][2][3].\n   - Justifier la durée en fonction de l’objectif (ex. : durée itérative pour l’apprentissage en continu) [4].\n\n2. **Phase de développement** :\n   - Planifier et suivre la conservation des données [1][3].\n   - Informer les personnes concernées (via les mentions d’information) [1].\n   - Supprimer ou archiver les données à la fin de la phase, sauf si nécessaire pour la maintenance/amélioration [2].\n\n3. **Maintenance ou amélioration** :\n   - Documenter la nécessité de conserver les données [2].\n   - Stockage sécurisé sur un support cloisonné, accès restreint aux personnes habilitées [1][2].\n   - Mettre en place un plan de suppression automatique après amélioration [2].\n\n4. **Mesures de sécurité renforcées** :\n   - Conservation limitée aux données strictement nécessaires [1].\n   - Traçabilité des données (ex. : outils de gouvernance pour suppression automatique) [4].\n\n5. **Cas particuliers** :\n   - Archivage définitif pour les données à valeur historique/scientifique (sous conditions RGPD) [5].\n   - Respect des durées dans les mentions d’information [1][5].\n\n**Non couvert** : Les modalités précises pour les données publiques ou les obligations spécifiques des organismes publics (hors archivage).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 6e étape : Définir une durée de conservation",
+        "CNIL CNIL, liste de vérification IA, point 6 « Définir et encadrer la durée de conservation des données »",
+        "CNIL CNIL, « IA : Tenir compte de la protection des données dans la collecte et la gestion des données », Conservation des données",
+        "CNIL CNIL, « IA : Tenir compte de la protection des données dans la collecte et la gestion des données », Conservation des données",
+        "CNIL CNIL, « IA : Tenir compte de la protection des données dans la collecte et la gestion des données », Conservation des données"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m029",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.0063857366,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m030",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.009007727,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m031",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.1045098,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m032",
+      "category": "hors_corpus",
+      "zone": "verification",
+      "top_score": 0.29723242,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m033",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.034322612,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m034",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.004005344,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m035",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.017806599,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m036",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.012704789,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "g001",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8255047,
+      "refused": false,
+      "answer": "Les obligations du fournisseur concernant les **mesures de contrôle humain** pour les systèmes d’IA à haut risque sont définies comme suit :\n\n1. **Conception et intégration** : Le fournisseur doit intégrer, lorsque cela est techniquement possible, des **mesures de contrôle humain** dans le système avant sa mise sur le marché ou sa mise en service, afin d’assurer un contrôle effectif par des personnes physiques pendant son utilisation ([3][a]).\n\n2. **Proportionnalité** : Ces mesures doivent être **proportionnées aux risques**, au niveau d’autonomie du système et à son contexte d’utilisation ([3]).\n\n3. **Fourniture aux déployeurs** : Le système doit être fourni de manière à permettre aux personnes chargées du contrôle humain de :\n   - Comprendre les capacités et limites du système ([4][a]).\n   - Surveiller son fonctionnement et détecter les anomalies ([4][a]).\n   - Éviter les biais d’automatisation et interpréter correctement les sorties ([4][b][c]).\n   - Décider d’ignorer, remplacer ou inverser les sorties du système ([4][d]).\n   - Intervenir ou arrêter le système via un mécanisme sécurisé ([4][e]).\n\n4. **Documentation** : La **notice d’utilisation** doit inclure une description des **mesures de contrôle humain pertinentes**, y compris celles visant à faciliter l’interprétation des sorties ([7][9][c]).\n\n**Ce qui n’est pas couvert** : Les obligations spécifiques des déployeurs (ex. : mise en œuvre des mesures identifiées par le fournisseur) ou les exigences supplémentaires pour les systèmes biométriques à haut risque (ex. : vérification par deux personnes physiques) ne relèvent pas uniquement du fournisseur ([1][2]).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Considérant 73",
+        "AI Act Considérant 73",
+        "AI Act Article 14",
+        "AI Act Article 14",
+        "AI Act Considérant 72",
+        "AI Act Article 13"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g002",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.71633035,
+      "refused": false,
+      "answer": "Pour votre système d’IA à haut risque utilisé dans des **décisions médicales critiques**, l’**Article 14** de l’**AI Act** impose les exigences suivantes concernant le **contrôle humain** :\n\n1. **Conception et développement** : Le système doit permettre un **contrôle effectif par les médecins** via des interfaces adaptées, afin de prévenir ou réduire les risques pour la santé ou les droits fondamentaux [1].\n2. **Mesures proportionnées** : Intégrez des mécanismes **techniquement possibles** (ex. : alertes, boutons d’arrêt sécurisés) ou documentés pour le **déployeur** (ex. : procédures d’intervention) [1].\n3. **Compétences et transparence** : Les médecins doivent pouvoir :\n   - **Comprendre les limites du système** et surveiller son fonctionnement (détection d’anomalies) [2a].\n   - **Éviter le biais d’automatisation** (ex. : ne pas se fier aveuglément aux sorties) [2b].\n   - **Interpréter les sorties** (avec outils d’aide à l’interprétation) [2c].\n   - **Refuser ou inverser** une décision du système si nécessaire [2d].\n   - **Intervenir ou arrêter** le système via un mécanisme sécurisé (ex. : bouton d’arrêt) [2e].\n\n**Cas particulier** : Si votre système utilise l’**identification biométrique** (ex. : reconnaissance faciale pour des diagnostics), une **vérification distincte par au moins deux médecins** est requise, sauf si le droit national considère cette exigence disproportionnée [3].\n\n**Source non couverte** : Les modalités précises de la documentation technique (registres, journaux) ne sont pas détaillées ici, mais l’**Article 14** et le **Considérant 71** soulignent leur importance pour la traçabilité [6].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 7,
+      "sources_cited": [
+        "AI Act Article 14",
+        "AI Act Article 14",
+        "AI Act Considérant 71"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g003",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.87702936,
+      "refused": false,
+      "answer": "Les obligations des **fournisseurs et déployeurs** en matière de maîtrise de l’IA par leur personnel et les autres utilisateurs sont définies comme suit :\n\n1. **Fournisseurs** :\n   Ils doivent prendre des mesures pour favoriser le développement de la maîtrise de l’IA par leur personnel et les personnes utilisant leurs systèmes, en tenant compte de leurs compétences, de leur expérience et du contexte d’utilisation. Cette obligation vise à garantir que les acteurs de la chaîne de valeur disposent des connaissances nécessaires pour respecter et appliquer correctement les systèmes d’IA, sans imposer un niveau spécifique de maîtrise par individu [1].\n\n2. **Deployeurs** :\n   - Ils doivent s’assurer que les personnes chargées de mettre en œuvre la notice d’utilisation et d’exercer le contrôle humain sur les systèmes d’IA à haut risque possèdent les **compétences, la formation et l’autorité nécessaires** [2][5].\n   - Pour les systèmes à haut risque, ils doivent confier le contrôle humain à des personnes physiques dotées des ressources adéquates [5].\n   - Les États membres et la Commission soutiennent ces efforts, notamment via des **activités de sensibilisation et de formation adaptées aux PME** [7][2].\n\n**Ce qui n’est pas couvert** : Les obligations spécifiques des *personnes concernées* (utilisateurs finaux) ne sont pas détaillées dans les sources fournies.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 3,
+      "sources_cited": [
+        "AI Act Article 4",
+        "AI Act Considérant 91",
+        "AI Act Article 26",
+        "AI Act Article 62"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g004",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.6898919,
+      "refused": false,
+      "answer": "Pour garantir que vos employés maîtrisent correctement l’utilisation de votre système d’IA, vous devez respecter les obligations du **déployeur** définies par l’**AI Act** :\n\n1. **Formation et compétences** : Vous devez prendre des **mesures techniques et organisationnelles** pour vous assurer que les personnes chargées de l’utilisation du système d’IA possèdent les **compétences, la formation et l’autorité nécessaires** [5].\n   - Cela inclut une **maîtrise adéquate** de l’IA, adaptée à leur rôle et au contexte d’utilisation [2][3].\n   - Les employés doivent comprendre les **notions techniques** (développement, utilisation, interprétation des sorties) et les **risques associés** [3].\n\n2. **Contrôle humain** : Les employés doivent être formés pour exercer un **contrôle humain efficace**, conformément à la notice d’utilisation du système [5].\n\n3. **Sensibilisation et soutien** : La Commission et les États membres encouragent la **formation** via des **exemples pratiques** (publiés sur la plateforme d’information unique) et des **codes de conduite volontaires** [1][4].\n\n**Ce qui n’est pas couvert** : Les modalités précises de la formation (durée, contenu, évaluation) ne sont pas détaillées dans les sources. Seules les obligations générales de compétence et de maîtrise sont mentionnées.\n\n*Exemple de référence* : L’**article 4** et le **considérant 20** soulignent l’importance d’une **maîtrise adaptée** aux utilisateurs finaux.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 4,
+      "sources_cited": [
+        "AI Act Article 4",
+        "AI Act Considérant 91",
+        "AI Act Considérant 20",
+        "AI Act Considérant 20",
+        "AI Act Article 26"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g005",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.845545,
+      "refused": false,
+      "answer": "Le **Bureau de l’IA**, après consultation du **Comité IA**, peut procéder à des évaluations d’un modèle d’IA à usage général sur les bases suivantes :\n\n1. **Pour évaluer le respect des obligations** par le fournisseur lorsque les informations recueillies en vertu de l’article 91 sont insuffisantes [1].\n2. **Pour enquêter sur des risques systémiques** au niveau de l’Union, notamment après une alerte qualifiée du groupe scientifique (article 90, paragraphe 1, point a) [1][6].\n\nLa Commission peut aussi désigner des **experts indépendants** (y compris du groupe scientifique) pour réaliser ces évaluations [1].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 92",
+        "AI Act Article 90"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g006",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.7547106,
+      "refused": false,
+      "answer": "Le **Bureau de l’IA**, agissant pour le compte de la **Commission européenne**, peut vous demander des informations ou un accès à votre modèle d’IA à usage général dans les cas suivants :\n\n1. **Sur demande du groupe scientifique** :\n   - Le groupe scientifique peut adresser une **alerte qualifiée** au Bureau de l’IA s’il suspecte un risque systémique (art. 90, par. 1) ou une classification en tant que modèle à risque systémique (art. 51) [7].\n   - La Commission peut alors **exiger des informations** via l’article 91, par. 3, si ces informations sont nécessaires pour évaluer ces risques [6].\n\n2. **Sur initiative du Bureau de l’IA** :\n   - Le Bureau peut procéder à une **évaluation directe** de votre modèle si :\n     - Les informations recueillies via l’article 91 sont insuffisantes (art. 92, par. 1a) ;\n     - Une alerte qualifiée du groupe scientifique a été émise (art. 92, par. 1b) [1].\n   - La Commission peut **demander l’accès au modèle** (via API ou code source) pour vérifier la conformité (art. 92, par. 3) [1].\n\n**Bases juridiques des demandes** :\n- La demande doit être **dûment motivée**, préciser l’objet et les motifs, et indiquer les **amendes encourues** en cas de non-respect (art. 91, par. 4 et art. 92, par. 4) [1][6].\n- Le fournisseur (ou son représentant légal) est **obligé de fournir les informations ou l’accès** sous peine de sanctions (art. 91, par. 5 et art. 92, par. 5) [1][6].\n\n*Ce qui n’est pas couvert* : Les modalités pratiques de la demande (délais, procédures d’appel) dépendent des **actes d’exécution** adoptés par la Commission (art. 92, par. 6) [2].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 3,
+      "sources_cited": [
+        "AI Act Article 92",
+        "AI Act Article 92",
+        "AI Act Article 91",
+        "AI Act Article 90"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g007",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8504517,
+      "refused": false,
+      "answer": "Un organisme notifié qui décide de cesser ses activités d’évaluation de la conformité pour les systèmes d’IA à haut risque doit :\n\n1. Informer **l’autorité notifiante et les fournisseurs concernés dès que possible**, et, en cas d’arrêt prévu, **au moins un an avant la fin effective de ses activités** [1].\n\n2. Les certificats délivrés restent valables **pendant neuf mois après l’arrêt des activités**, à condition qu’un autre organisme notifié confirme par écrit qu’il prendra en charge les systèmes concernés et réalise une **évaluation complète** avant la fin de cette période [1].\n\n3. L’autorité notifiante retire la désignation de l’organisme notifié après son arrêt [1].\n\n*Non couvert* : Les modalités de transition pour les systèmes en cours d’évaluation ou de certification au moment de l’arrêt.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 36"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g008",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.8278709,
+      "refused": false,
+      "answer": "Votre organisme notifié doit respecter les obligations suivantes pour cesser ses activités d’évaluation de la conformité des systèmes d’IA à haut risque :\n\n1. **Informer l’autorité notifiante et les fournisseurs concernés** dès que possible, et **au moins un an avant l’arrêt prévu** de ses activités [1].\n\n2. **Garantir la validité des certificats existants** pendant **neuf mois** après l’arrêt, à condition qu’un autre organisme notifié confirme par écrit qu’il prendra en charge les systèmes concernés et réalise une **évaluation complète** avant la fin de cette période [1].\n\n3. **Retrait de la désignation** par l’autorité notifiante après la cessation effective des activités [1].\n\n**Ce qui n’est pas couvert** : Les modalités précises pour transférer les dossiers ou les procédures de transition avec l’organisme notifié successeur ne sont pas détaillées dans les sources.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 36"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g009",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8392253,
+      "refused": false,
+      "answer": "Les garanties pour éviter tout conflit d’intérêts entre les autorités notifiantes et les organismes d’évaluation de la conformité sont les suivantes :\n\n1. Les autorités notifiantes doivent être **organisées et gérées de manière à éviter tout conflit d’intérêts** avec les organismes d’évaluation de la conformité, en garantissant leur **objectivité et impartialité** [1].\n\n2. Les décisions concernant la notification des organismes d’évaluation de la conformité doivent être prises par des **personnes compétentes différentes** de celles ayant réalisé leur évaluation [1].\n\n3. Les autorités notifiantes **ne proposent ni ne fournissent** d’activités réalisées par les organismes d’évaluation de la conformité, ni de services de conseil sur une base commerciale ou concurrentielle [1].\n\n4. Les autorités notifiantes doivent respecter la **confidentialité** des informations obtenues, conformément à l’article 78 [1][6].\n\n**Ce qui n'est pas couvert** : Les garanties spécifiques liées à l'indépendance des organismes notifiés eux-mêmes (ex. : leur relation avec les fournisseurs) ne sont pas abordées ici, mais sont détaillées à l’article 31 [3].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 28",
+        "AI Act Article 31",
+        "AI Act Article 78"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g010",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.7547993,
+      "refused": false,
+      "answer": "Pour garantir que les autorités notifiantes ne soient pas influencées par des intérêts commerciaux ou concurrentiels lors de l’évaluation de votre demande de notification, voici les exigences clés à respecter :\n\n1. **Indépendance des autorités notifiantes** : Les autorités notifiantes doivent être organisées et gérées pour éviter tout conflit d’intérêts avec les organismes d’évaluation de la conformité, garantissant ainsi leur objectivité et impartialité ([3], paragraphe 3).\n\n2. **Séparation des rôles** : Les décisions concernant la notification des organismes d’évaluation de la conformité doivent être prises par des personnes compétentes différentes de celles ayant réalisé l’évaluation initiale ([3], paragraphe 4).\n\n3. **Interdiction de services commerciaux** : Les autorités notifiantes ne doivent ni proposer ni fournir d’activités réalisées par les organismes d’évaluation de la conformité, ni offrir de services de conseil sur une base commerciale ou concurrentielle ([3], paragraphe 5).\n\n4. **Confidentialité des informations** : Les autorités notifiantes garantissent la confidentialité des informations obtenues, conformément à l’article 78, ce qui limite les risques de fuites ou d’influences externes ([3], paragraphe 6).\n\n---\n*Ce qui n'est pas couvert* : Les modalités pratiques pour vérifier *in situ* l’absence de conflits d’intérêts au sein des autorités notifiantes (ex. : audits indépendants) ou les procédures de recours en cas de suspicion de partialité.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 28"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g011",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.86282516,
+      "refused": false,
+      "answer": "Les informations minimales obligatoires concernant les **capacités et les limites de performance** d’un système d’IA à haut risque dans la notice d’utilisation sont les suivantes :\n\n- **Destination** du système (article 13, paragraphe 3, point b) i) [1] ;\n- **Niveau d’exactitude** (incluant les indicateurs utilisés), de **robustesse** et de **cybersécurité** visé à l’article 15, ainsi que les circonstances connues ou prévisibles pouvant affecter ces niveaux (article 13, paragraphe 3, point b) ii) [1] ;\n- **Circuits connus ou prévisibles** liés à l’utilisation du système (conforme à sa destination ou en cas de mauvaise utilisation raisonnablement prévisible) pouvant entraîner des risques pour la santé, la sécurité ou les droits fondamentaux (article 13, paragraphe 3, point b) iii) [1] ;\n- **Capacités et caractéristiques techniques** pour expliquer ses sorties (article 13, paragraphe 3, point b) iv) [1] ;\n- **Performance spécifique** pour des personnes ou groupes de personnes ciblés (article 13, paragraphe 3, point b) v) [1].\n\n*Ce qui n'est pas couvert* : les exigences détaillées sur la **documentation technique** (Annexe IV) ou les **mesures de contrôle humain** (article 14) ne sont pas incluses dans la notice d’utilisation mais relèvent d’autres obligations.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 13"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g012",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.73279387,
+      "refused": false,
+      "answer": "Dans la notice d’utilisation de votre système d’IA à haut risque destiné à l’évaluation de candidatures professionnelles, vous devez obligatoirement inclure les éléments suivants :\n\n- **Les caractéristiques, capacités et limites de performance** :\n  - **Destination** : préciser clairement que le système est conçu pour évaluer des candidatures professionnelles [1](a)(i)].\n  - **Niveau d’exactitude** : indiquer les indicateurs utilisés pour mesurer l’exactitude (ex. taux de faux positifs/négatifs), ainsi que les circonstances connues ou prévisibles pouvant affecter cette précision (ex. biais liés à des groupes spécifiques) [1](b)(i) et [8](par. 3).\n  - **Circuits connus ou prévisibles de mauvaise utilisation** : décrire les risques pour les droits fondamentaux (ex. discrimination) ou la santé/sécurité liés à une utilisation non conforme [1](b)(iii).\n  - **Performance par groupes spécifiques** : si le système est destiné à certains profils (ex. candidats issus de milieux divers), mentionner ses performances différenciées [1](b)(v).\n\n- **Mesures de contrôle humain** : expliquer les mécanismes mis en place pour faciliter l’interprétation des sorties par les déployeurs (ex. outils d’explicabilité) [1](d).\n\n*Les risques liés à la protection des données (ex. biais, confidentialité) ne sont pas couverts par l’**AI Act** mais relèvent du **RGPD** et de l’**AIPD** (voir [5][6]).*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 13",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », Focus : Réaliser une analyse d’impact sur la protection des données (AIPD)",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », Focus : Réaliser une analyse d’impact sur la protection des données (AIPD)",
+        "AI Act Article 15"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g013",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.83906966,
+      "refused": false,
+      "answer": "Une autorité de surveillance du marché peut exiger qu’un fournisseur arrête une non-conformité concernant le marquage CE ou la déclaration UE de conformité dans les cas suivants :\n\n- Lorsque **le marquage CE a été apposé en violation de l’article 48** [1].\n- Lorsque **le marquage CE n’a pas été apposé** [1].\n- Lorsque **la déclaration UE de conformité visée à l’article 47 n’a pas été établie** [1].\n- Lorsque **la déclaration UE de conformité visée à l’article 47 n’a pas été établie correctement** [1].\n\nL’autorité invite alors le fournisseur à mettre fin à cette non-conformité dans un délai qu’elle peut prescrire [1].\n\n*(Les autres situations de non-conformité, comme l’absence d’enregistrement dans la base de données de l’UE ou l’absence de mandataire, ne concernent pas spécifiquement le marquage CE ou la déclaration UE de conformité.)*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 83"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g014",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.68380636,
+      "refused": false,
+      "answer": "Selon l’**AI Act**, votre équipe s’expose aux risques suivants :\n\n1. **Non-conformité formelle** : L’absence d’enregistrement dans la base de données de l’UE (article 71) et le défaut de désignation d’un mandataire (article 22) constituent des manquements aux obligations légales. L’autorité de surveillance du marché peut alors :\n   - Inviter à mettre fin à la non-conformité dans un délai prescrit (article 83, points e et g) ;\n   - Si le manquement persiste, prendre des mesures proportionnées, comme restreindre ou interdire la mise à disposition du système sur le marché, ou ordonner son retrait (article 83, paragraphe 2) [1].\n\n2. **Risques pour les importateurs et déployeurs** :\n   - Les importateurs doivent vérifier la conformité du système (article 23, paragraphe 1) et ne peuvent le mettre sur le marché sans mise en conformité préalable [5].\n   - Les déployeurs publics (autorités, institutions de l’UE) ne peuvent utiliser un système non enregistré (article 49, paragraphe 3) et doivent en informer le fournisseur [3].\n\n**Ce qui n’est pas couvert** : Les sanctions financières ou pénales spécifiques (peines encourues par les personnes morales ou physiques) ne sont pas détaillées dans les sources fournies. Seules les mesures administratives et les obligations de conformité sont précisées.\n\n[1] AI Act, article 83 ; [3] AI Act, article 49 ; [5] AI Act, article 23.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 5,
+      "sources_cited": [
+        "AI Act Article 83",
+        "AI Act Article 26",
+        "AI Act Article 23"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g015",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.85341257,
+      "refused": false,
+      "answer": "Les informations à fournir et à mettre à jour concernant les essais en conditions réelles d’un système d’IA à haut risque lors de son enregistrement sont les suivantes :\n\n1. Un numéro d’identification unique à l’échelle de l’Union pour les essais en conditions réelles ;\n2. Le nom et les coordonnées du fournisseur ou fournisseur potentiel et des déployeurs participant aux essais ;\n3. Une brève description du système d’IA et de sa destination, ainsi que d’autres informations nécessaires à son identification ;\n4. Une synthèse des caractéristiques principales du plan d’essais en conditions réelles ;\n5. Des informations sur la suspension ou la cessation des essais en conditions réelles [1].\n\nCes informations sont enregistrées dans la partie non publique de la base de données de l’UE, sauf exceptions précisées à l’article 60 [3][12].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 5,
+      "sources_cited": [
+        "AI Act Annexe IX",
+        "AI Act Article 60",
+        "AI Act Article 71"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g016",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.6133838,
+      "refused": false,
+      "answer": "Pour l’enregistrement des **essais en conditions réelles** d’un système d’IA à haut risque médical (visé à l’**annexe III**), vous devez fournir les informations suivantes, conformément à l’**article 60** et à l’**annexe IX** de l’**AI Act** :\n\n1. Un **numéro d’identification unique à l’échelle de l’Union** pour les essais ;\n2. Le **nom et les coordonnées** du fournisseur (ou fournisseur potentiel) et des **déployeurs participants** ;\n3. Une **brève description du système**, de sa destination et des éléments d’identification ;\n4. Une **synthèse des caractéristiques principales du plan d’essais** (contenu détaillé précisé par la Commission via des actes d’exécution) ;\n5. Des **informations sur la suspension ou la cessation des essais** [1].\n\n---\n*Les garanties éthiques et juridiques (consentement éclairé, protection des données, etc.) sont requises séparément, mais ne figurent pas dans l’annexe IX* [8][9][11].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 5,
+      "sources_cited": [
+        "AI Act Annexe IX",
+        "AI Act Considérant 141",
+        "AI Act Considérant 141",
+        "AI Act Article 60"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g017",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8269054,
+      "refused": false,
+      "answer": "Les pratiques suivantes sont explicitement interdites par l’**AI Act** en raison de leur caractère néfaste, abusif et contraire aux valeurs fondamentales de l’Union :\n\n1. **Manipulation subliminale ou trompeuse** :\n   Tout système d’IA utilisant des techniques subliminales ou délibérément manipulatrices pour altérer substantiellement le comportement d’une personne, l’empêchant de prendre une décision éclairée, et causant ou risquant un **préjudice important** (physique, psychologique ou financier) [2, a] [4].\n\n2. **Exploitation des vulnérabilités** :\n   L’utilisation d’un système d’IA exploitant les vulnérabilités liées à l’âge, au handicap ou à la situation sociale/economique d’une personne pour altérer son comportement de manière préjudiciable [2, b] [5].\n\n3. **Contenu deepfake à caractère sexuel non consenti** :\n   La génération ou manipulation d’images/vidéos réalistes représentant des activités sexuellement explicites sans le **consentement libre, spécifique, éclairé, univoque et explicite** de la personne [2, b bis].\n\n4. **Note sociale discriminatoire** :\n   L’évaluation ou classification des personnes en fonction de leur comportement social ou de traits de personnalité pour aboutir à un **traitement préjudiciable ou disproportionné**, hors contexte initial des données [2, c].\n\n5. **Prédiction de risques pénaux par profilage** :\n   L’utilisation d’un système d’IA pour évaluer le risque de commission d’une infraction pénale **uniquement sur la base du profilage** (sauf si étayé par des faits objectifs liés à une activité criminelle avérée) [2, d].\n\n6. **Moissonnage non ciblé pour reconnaissance faciale** :\n   La création ou le développement de bases de données de reconnaissance faciale par **moissonnage non ciblé** d’images (Internet, vidéosurveillance) [2, e].\n\n**Justification** :\nCes interdictions visent à protéger la **dignité humaine, la liberté, l’égalité et les droits fondamentaux** (droit à la non-discrimination, vie privée, protection des données), en ciblant les pratiques qui **altèrent l’autonomie individuelle** ou exploitent des **vulnérabilités spécifiques** [1][5]. Le texte souligne que ces systèmes peuvent compromettre le libre arbitre et causer des **préjudices accumulés** (ex. : santé psychologique, exploitation économique) [4][5].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 5,
+      "sources_cited": [
+        "AI Act Considérant 28",
+        "AI Act Considérant 29",
+        "AI Act Considérant 29"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g018",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.7463217,
+      "refused": false,
+      "answer": "L’utilisation d’un système d’IA conçu pour **altérer substantiellement le comportement d’une personne ou d’un groupe en portant atteinte à sa capacité à prendre une décision éclairée** est **interdite** dans les cas suivants :\n\n- Si l’outil utilise des **techniques subliminales ou délibérément manipulatrices** (ex. : stimuli invisibles, interfaces trompeuses) pour altérer le comportement et causer un **préjudice important** (physique, psychologique ou financier) [1][3].\n- Si l’outil exploite les **vulnérabilités spécifiques** (âge, handicap, situation économique) pour altérer le comportement de manière préjudiciable [1][4].\n\n**Ce qui n’est pas couvert** :\nLes limites précises pour les systèmes *non* manipulatoires ou les cas où l’altération du comportement est justifiée par un objectif légitime (ex. : thérapie comportementale encadrée) ne sont pas détaillées ici. Vérifiez si votre outil relève d’une exception ou d’un cadre autorisé (ex. : systèmes à haut risque avec obligations de transparence [5][6]).\n\n[Source : Article 5(1)(a) et (b) de l’**AI Act**]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 5",
+        "AI Act Considérant 29",
+        "AI Act Considérant 29",
+        "AI Act Considérant 72",
+        "AI Act Considérant 72"
+      ],
+      "expected_cited": 1,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g019",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.85162425,
+      "refused": false,
+      "answer": "Le groupe scientifique peut soumettre des alertes qualifiées au Bureau de l’IA dans les deux cas suivants :\n\n1. Lorsqu’il a des raisons de soupçonner qu’un modèle d’IA à usage général présente un **risque concret identifiable au niveau de l’Union** [1][2].\n2. Lorsqu’il a des raisons de soupçonner qu’un modèle d’IA à usage général **remplit les conditions de classification en tant que modèle d’IA à usage général présentant un risque systémique**, conformément à l’article 51 [1][3].\n\nCes alertes doivent être dûment motivées et inclure des éléments comme le point de contact du fournisseur, une description des faits et les motifs de l’alerte [1].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 90",
+        "AI Act Considérant 163",
+        "AI Act Considérant 113"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g020",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.8204111,
+      "refused": false,
+      "answer": "Le **groupe scientifique d’experts indépendants** peut alerter le Bureau de l’IA lorsqu’il a des raisons de soupçonner qu’un modèle d’IA à usage général présente un **risque concret identifiable au niveau de l’Union** [1].\n\nCette alerte, appelée **alerte qualifiée**, doit être motivée et inclure :\n- le point de contact du fournisseur concerné ;\n- une description des faits et des motifs ;\n- toute information pertinente, y compris celles recueillies de sa propre initiative [1].\n\nLe groupe scientifique agit ainsi pour soutenir les activités de surveillance du Bureau de l’IA, comme le précise le **considérant 163** [2].\n\n*Ce mécanisme ne couvre pas les alertes émanant d’autres acteurs (comme les autorités nationales ou les citoyens).*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 90",
+        "AI Act Considérant 163"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g021",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.83625346,
+      "refused": false,
+      "answer": "Les fournisseurs de **très grandes plateformes en ligne ou de très grands moteurs de recherche en ligne** doivent :\n\n1. **Évaluer les risques systémiques** découlant de la conception, du fonctionnement et de l’utilisation de leurs services, y compris ceux liés aux systèmes algorithmiques intégrés, ainsi que les risques liés à leur **mauvaise utilisation** [1].\n\n2. **Prendre des mesures d’atténuation appropriées** pour garantir le respect des **droits fondamentaux**, notamment en cas de diffusion de contenus générés ou manipulés par l’IA [1].\n\n3. **Recenser et atténuer les risques systémiques** liés à la diffusion de contenus générés ou manipulés par l’IA, en particulier ceux affectant les **processus démocratiques, le débat public et les processus électoraux** (ex. : désinformation) [2][3].\n\n4. **Étiqueter les contenus générés par l’IA** pour faciliter la transparence, sans influencer l’évaluation de leur légalité [2].\n\n*Les obligations spécifiques de mise en œuvre (ex. : procédures de signalement, surveillance post-commercialisation) ne sont pas détaillées dans les sources fournies.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Considérant 118",
+        "AI Act Considérant 136",
+        "AI Act Considérant 120"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g022",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.72964656,
+      "refused": false,
+      "answer": "Les fournisseurs de **très grandes plateformes en ligne** intégrant des modèles d’IA doivent appliquer les règles de l’**AI Act** **uniquement si des risques systémiques non couverts par le règlement (UE) 2022/2065** (DSA) apparaissent.\n\nLe **Considérant 118** précise :\n*« Il devrait être présumé que les obligations correspondantes du présent règlement sont remplies, à moins que des risques systémiques importants non couverts par le règlement (UE) 2022/2065 n’apparaissent et ne soient recensés dans de tels modèles. »* [1]\n\nAinsi, **aucune obligation supplémentaire** ne s’applique automatiquement. Vous devez **évaluer les risques systémiques** liés à la conception, au fonctionnement et à l’usage de vos services, y compris ceux découlant des modèles d’IA intégrés, et **atténuer ces risques** si nécessaire, notamment pour garantir les droits fondamentaux [1].\n\n*Ce qui n’est pas couvert* : Les modalités précises de cette évaluation ou les seuils de risque systémiques ne sont pas détaillés dans les sources fournies.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 3,
+      "sources_cited": [
+        "AI Act Considérant 118"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g023",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8394313,
+      "refused": false,
+      "answer": "Les données à caractère personnel doivent respecter les conditions suivantes pour être traitées de manière **licite et loyale** :\n\n1. **Transparence** : Le traitement doit être **licite, loyal et transparent** au regard de la personne concernée, avec une information claire sur les finalités, les risques et les droits associés [3][1].\n2. **Finalités déterminées** : Les données doivent être collectées pour des **finalités explicites, légitimes et déterminées à l’avance**, sans traitement ultérieur incompatible (sauf exceptions comme l’archivage, la recherche scientifique ou les statistiques) [3][1].\n3. **Minimisation des données** : Elles doivent être **adéquates, pertinentes et limitées au strict nécessaire** pour les finalités visées [3][1].\n4. **Exactitude** : Les données doivent être **exactes et tenues à jour**, avec obligation de correction ou suppression si inexactes [3][2].\n5. **Durée limitée** : Conservation **strictement proportionnée** aux finalités, avec effacement ou réexamen périodique [3][2].\n6. **Sécurité** : Protection contre les accès non autorisés, pertes ou destructions accidentelles, via des **mesures techniques/organisationnelles appropriées** [4][2].\n\n**Source non couverte** : Les conditions de licéité (consentement, contrat, obligation légale, etc.) sont détaillées à l’**article 6**, non demandé ici [5].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "RGPD Considérant 39",
+        "RGPD Considérant 39",
+        "RGPD Article 5",
+        "RGPD Article 5",
+        "RGPD Article 6"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g024",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.6511772,
+      "refused": false,
+      "answer": "Votre entreprise doit respecter les obligations suivantes en matière de **transparence** et de **finalité du traitement** pour l’envoi de newsletters promotionnelles :\n\n1. **Finalité déterminée, explicite et légitime** :\n   Les données doivent être collectées pour une finalité **spécifique et claire** (ici, l’envoi de newsletters promotionnelles). Cette finalité doit être **définie dès la conception du projet** et ne peut pas être modifiée ultérieurement de manière incompatible [3][4].\n\n2. **Transparence envers les personnes concernées** :\n   - **Informations obligatoires** (à fournir dès la collecte) :\n     - L’identité et les coordonnées du responsable de traitement (votre entreprise) [6(a)].\n     - La **finalité du traitement** (ex. : « envoyer des newsletters promotionnelles ») et la **base juridique** (consentement de l’utilisateur, art. 6.1(a) RGPD) [6(c)].\n     - La durée de conservation des données ou les critères pour la déterminer [7(a)].\n     - Les droits des personnes (accès, rectification, opposition, effacement) [7(b)].\n     - L’absence de traitement automatisé à risque (sauf si applicable) [7(f)].\n   - **Loyauté et simplicité** : Les informations doivent être **claires, accessibles et compréhensibles** [1][3][6].\n\n3. **Licéité du traitement** :\n   Le traitement doit être fondé sur une **base juridique valable**, comme le **consentement explicite** de l’utilisateur (art. 6.1(a) RGPD) [8(a)]. Ce consentement doit être **libre, spécifique et informé** [1].\n\n4. **Minimisation des données** :\n   Les données collectées doivent être **adéquates, pertinentes et limitées** à la finalité (ex. : adresse e-mail uniquement, pas de données sensibles inutiles) [4(c)][3].\n\n**Ce qui n’est pas couvert** :\nLes modalités pratiques pour obtenir le consentement (ex. : formulaire type) ou les sanctions en cas de non-respect ne sont pas détaillées ici. Pour ces aspects, consulter les **fiches pratiques de la CNIL** ou les **lignes directrices de l’EDPB**.",
+      "citations_ok": false,
+      "invalid_markers": [],
+      "unverified_quotes": [
+        "envoyer des newsletters promotionnelles"
+      ],
+      "uncited_sentences": 11,
+      "sources_cited": [
+        "RGPD Considérant 39",
+        "CNIL CNIL, « IA : Définir une finalité », Le principe",
+        "RGPD Article 5",
+        "RGPD Article 13"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g025",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.85483795,
+      "refused": false,
+      "answer": "Selon le RGPD, une **personne physique identifiable** est une personne physique qui peut être identifiée, directement ou indirectement, notamment par référence à un identifiant tel qu’un nom, un numéro d’identification, des **données de localisation, un identifiant en ligne** (comme une adresse IP ou un cookie), ou à un ou plusieurs éléments spécifiques propres à son identité physique, physiologique, génétique, psychique, économique, culturelle ou sociale [1].\n\nLe considérant **26** précise que l’identifiabilité dépend de **l’ensemble des moyens raisonnablement susceptibles d’être utilisés** (coût, temps, technologies disponibles) pour lier les données à une personne, y compris le **ciblage** ou la combinaison d’informations [3]. Les données pseudonymisées restent couvertes si elles peuvent être réidentifiées avec des informations supplémentaires [3].\n\nLes données **anonymes** (non réidentifiables) ou rendues **irréversiblement anonymes** ne relèvent pas du RGPD [3].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "RGPD Article 4",
+        "RGPD Considérant 26"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g026",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.743337,
+      "refused": false,
+      "answer": "Oui, selon le RGPD, les adresses IP et les cookies peuvent permettre d’identifier une personne physique, directement ou indirectement, et constituent donc des **données à caractère personnel** [3].\n\nLe **considérant 30** précise que ces identifiants en ligne, combinés à d'autres données (comme des identifiants uniques ou des informations reçues par les serveurs), peuvent servir à créer des profils et à identifier les personnes concernées.\n\nLe **considérant 26** ajoute que la détermination de l’identifiabilité doit tenir compte de tous les moyens raisonnablement susceptibles d’être utilisés, y compris le ciblage ou l’association avec d’autres données. Ainsi, même si une adresse IP ou un cookie ne permet pas une identification *explicite*, leur combinaison avec d’autres éléments peut rendre la personne identifiable.\n\n**Ce qui n’est pas couvert** : Les critères précis pour évaluer si une combinaison spécifique de données (comme une adresse IP + cookies) dépasse le seuil d’identifiabilité (ex. : coût, temps, technologies disponibles) ne sont pas détaillés dans les sources fournies.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 4,
+      "sources_cited": [
+        "RGPD Article 4"
+      ],
+      "expected_cited": 1,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g027",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.85958064,
+      "refused": false,
+      "answer": "Les éléments obligatoires à mentionner dans la notification d'une violation de données à caractère personnel à l'autorité de contrôle sont les suivants :\n\n- La **nature de la violation**, incluant, si possible, les **catégories et le nombre approximatif de personnes concernées** ainsi que les **catégories et le nombre approximatif d’enregistrements de données à caractère personnel affectés** [1][3] ;\n- Le **nom et les coordonnées du délégué à la protection des données (DPO) ou d’un autre point de contact** pour obtenir des informations complémentaires [1] ;\n- Les **conséquences probables de la violation** [1] ;\n- Les **mesures prises ou envisagées pour y remédier**, incluant celles visant à atténuer les éventuels effets négatifs [1].\n\nSi certaines informations ne peuvent pas être fournies immédiatement, elles peuvent être communiquées de manière échelonnée sans retard supplémentaire [1].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "RGPD Article 33",
+        "RGPD Considérant 87"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g028",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.661678,
+      "refused": false,
+      "answer": "Voici les éléments **obligatoires** à transmettre à la CNIL dans les **72 heures** (ou avec justification du retard) [1][7] :\n\n1. **Description de la violation** :\n   - Nature de la fuite (ex. : type de données sensibles concernées, catégories approximatives de personnes et d’enregistrements touchés) [1(a)].\n   - *Exemple* : « Fuite de données biométriques (empreintes digitales) pour 500 personnes ».\n\n2. **Coordonnées du DPO** (ou point de contact) [1(b)] :\n   - Nom et coordonnées du délégué à la protection des données (DPO) ou autre interlocuteur.\n\n3. **Conséquences probables** :\n   - Risques identifiés pour les droits/libertés des personnes (ex. : usurpation d’identité, discrimination) [1(c)].\n\n4. **Mesures correctives** :\n   - Actions déjà prises ou prévues pour remédier à la fuite (ex. : blocage du système, notification aux personnes concernées) [1(d)].\n\n**Si certaines informations manquent** :\n- Vous pouvez les transmettre **échelonnément**, sans retard supplémentaire [1(4)].\n\n---\n*Ce qui n’est pas couvert* : Les modalités de notification aux personnes concernées (article 34 RGPD) ou l’analyse de la responsabilité de l’entreprise, qui dépendent de la gravité de la fuite et des risques pour les droits des personnes [6][5].",
+      "citations_ok": false,
+      "invalid_markers": [],
+      "unverified_quotes": [
+        "Fuite de données biométriques (empreintes digitales) pour 500 personnes"
+      ],
+      "uncited_sentences": 6,
+      "sources_cited": [
+        "RGPD Article 33",
+        "CNIL CNIL, « IA : Analyser le statut d’un modèle d’IA au regard du RGPD », Mise en œuvre de l’analyse",
+        "RGPD Considérant 86",
+        "RGPD Article 55"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g029",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.78877246,
+      "refused": false,
+      "answer": "Le rapport annuel du **comité européen de la protection des données (CEPD)** contient principalement :\n1. Un **bilan de l'application pratique** des lignes directrices, recommandations et bonnes pratiques publiées en vertu de l’**article 70, paragraphe 1, point l)** [1].\n2. Un **bilan des décisions contraignantes** adoptées en application de l’**article 65** [1].\n\nLe rapport est rendu public et communiqué au Parlement européen, au Conseil et à la Commission [1].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "RGPD Article 71"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g030",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.78620803,
+      "refused": false,
+      "answer": "Le **Comité européen de la protection des données (CEPD)** publie un **rapport annuel** sur la protection des données dans l'UE, incluant notamment :\n\n- Un **bilan de l’application pratique** des lignes directrices, recommandations et bonnes pratiques qu’il a publiées (notamment sur les violations de données, les transferts internationaux, les clauses types, les règles d’entreprise contraignantes, les codes de conduite, les certifications, etc.) [1][2][3][5][8][11][12].\n- Une analyse des **décisions contraignantes** adoptées en cas de litiges entre autorités de contrôle (ex. : compétences, respect des obligations) [1][9].\n\nLe rapport est **public** et adressé au Parlement européen, au Conseil et à la Commission [1].\n\n*Non couvert* : les détails méthodologiques ou les évaluations sectorielles spécifiques (ex. : par pays ou par type de traitement).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "RGPD Article 71",
+        "RGPD Article 70",
+        "RGPD Article 70",
+        "RGPD Article 70",
+        "RGPD Article 64",
+        "RGPD Article 65",
+        "RGPD Article 40",
+        "RGPD Article 42"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g031",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.856375,
+      "refused": false,
+      "answer": "La directive 95/46/CE a été jugée insuffisante pour garantir une protection homogène des données à caractère personnel dans l’Union européenne en raison de plusieurs problèmes majeurs :\n\n1. **Fragmentation de la mise en œuvre** : Les différences dans l’application et l’interprétation de la directive entre les États membres ont créé des disparités dans le niveau de protection des droits et libertés des personnes [1].\n\n2. **Insécurité juridique et sentiment de vulnérabilité** : Le public percevait des risques persistants, notamment dans l’environnement en ligne, en raison de ces divergences [1].\n\n3. **Obstacles aux flux de données** : Les écarts de protection entre États membres ont entravé la libre circulation des données à caractère personnel au sein de l’UE, faussant la concurrence et limitant les activités économiques [1].\n\n4. **Charge administrative disproportionnée** : L’obligation générale de notification des traitements, sans distinction, générait des coûts administratifs et financiers sans amélioration systématique de la protection [2].\n\n5. **Absence de ciblage des risques élevés** : La directive ne distinguait pas les traitements à haut risque (comme ceux utilisant de nouvelles technologies ou non analysés via une *DPIA*), alors que ces derniers nécessitaient une attention particulière [2].\n\n[Les considérants 9, 89 et 10 du RGPD détaillent ces insuffisances.]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "RGPD Considérant 9",
+        "RGPD Considérant 89"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g032",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.7224404,
+      "refused": false,
+      "answer": "Les différences de règles entre États membres peuvent compliquer votre déploiement pour les raisons suivantes :\n\n1. **Fragmentation juridique** : Les divergences dans la mise en œuvre du RGPD entre États membres peuvent entraîner des niveaux de protection inégaux des données personnelles, créant des obstacles aux flux transfrontaliers de données [1].\n\n2. **Marges nationales** : Certains États membres peuvent compléter le RGPD par des dispositions sectorielles ou préciser des conditions de traitement (ex. : données sensibles), ce qui peut varier selon les pays [3].\n\n3. **Application incohérente** : Malgré le RGPD, des interprétations ou pratiques différentes peuvent persister, rendant l’application des règles moins homogène [3].\n\n**Ce qui n’est pas couvert** : Les sources ne précisent pas *comment* ces différences se manifestent concrètement (ex. : exemples de règles nationales divergentes) ni les mécanismes pour les harmoniser au-delà du cadre RGPD.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "RGPD Considérant 9",
+        "RGPD Considérant 10"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g033",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.5908888,
+      "refused": false,
+      "answer": "Le RGPD prévoit d’adopter via la **procédure d’examen** (article 93, paragraphe 2) les mesures ou outils suivants pour renforcer la protection des données personnelles :\n\n1. **Clauses contractuelles types** entre responsables de traitement et sous-traitants, ou entre sous-traitants [1].\n2. **Codes de conduite** pour préciser l’application du RGPD [1][10].\n3. **Normes techniques** pour les mécanismes de certification, labels et marques en matière de protection des données [5].\n4. **Formats et procédures** pour l’échange d’informations électroniques entre responsables de traitement, sous-traitants et autorités de contrôle [1].\n5. **Clauses types de protection des données** adoptées par la Commission pour les transferts vers des pays tiers [2][9].\n6. **Mécanismes de certification** et leurs exigences techniques [4][5].\n\nLa procédure d’examen est définie par le règlement (UE) no 182/2011 [9].\n\n*(Les mécanismes de contrôle de la cohérence et les décisions d’adéquation ne relèvent pas de cette procédure, mais d’autres articles du RGPD.)*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "RGPD Considérant 168",
+        "RGPD Article 46",
+        "RGPD Article 43",
+        "RGPD Article 43",
+        "RGPD Article 93",
+        "RGPD Article 40"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g034",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.71006685,
+      "refused": false,
+      "answer": "Pour sécuriser vos relations contractuelles avec les sous-traitants selon le **RGPD**, vous pouvez utiliser les outils et documents standardisés suivants :\n\n1. **Clauses contractuelles types** :\n   - La **Commission européenne** ou une **autorité de contrôle** (via le mécanisme de cohérence, art. 63) peut adopter des clauses contractuelles types pour encadrer les obligations des sous-traitants (art. 28, par. 7 et 8) [4][5].\n   - Ces clauses peuvent être intégrées dans un contrat plus large ou complétées par des garanties supplémentaires, sans les contredire (art. 6, consid. 109) [6].\n\n2. **Codes de conduite approuvés** :\n   - Un sous-traitant peut appliquer un **code de conduite approuvé** (art. 40) pour démontrer son respect des obligations RGPD, y compris en matière de sécurité et de gestion des données [1][8].\n\n3. **Mécanismes de certification approuvés** :\n   - Une **certification conforme à l’art. 42** peut attester que le sous-traitant respecte les exigences du RGPD, servant de preuve des garanties suffisantes (art. 28, par. 5) [1][7].\n\n**Obligations complémentaires** :\nLe contrat doit préciser l’objet, la durée, les finalités du traitement, les types de données et les responsabilités du sous-traitant (art. 28, par. 3) [1][3]. Les sous-traitants doivent aussi garantir la confidentialité, la sécurité des données et la traçabilité (art. 28, par. 3, let. b à h) [3].\n\n*Ce qui n’est pas couvert* : Les modalités pratiques d’audit ou de vérification des sous-traitants (hors obligations générales d’art. 28).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "RGPD Considérant 81",
+        "RGPD Article 28",
+        "RGPD Article 28",
+        "RGPD Article 28",
+        "RGPD Considérant 109",
+        "RGPD Article 42",
+        "RGPD Article 40"
+      ],
+      "expected_cited": 1,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g035",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8604156,
+      "refused": false,
+      "answer": "Les critères pour considérer que les traitements de données en phase de développement relèvent du même régime juridique que ceux en phase de déploiement, notamment dans le cadre du régime **« police-justice »**, sont les suivants :\n\n1. **Usage opérationnel identifié dès la phase de développement** : l’usage opérationnel du système d’IA doit être défini dès le développement, et les traitements en phase de développement doivent poursuivre **exclusivement la même finalité** que ceux en phase de déploiement [1].\n\n2. **Finalité exclusive liée à la police-justice** : le système d’IA développé doit être utilisé **uniquement** à des fins de :\n   - prévention et détection des infractions pénales,\n   - enquêtes et poursuites en matière pénale,\n   - exécution de sanctions pénales,\n   - protection contre les menaces pour la sécurité publique ou prévention de telles menaces [1].\n\n3. **Responsable du traitement compétent** : le responsable du traitement en phase de développement doit être une **« autorité compétente »** [1].\n\n*Ce critère ne s’applique pas si l’usage opérationnel n’est pas défini dès la phase de développement (ex. : systèmes d’IA à usage général).* [1][2]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Déterminer le régime juridique applicable », En pratique",
+        "CNIL CNIL, « IA : Déterminer le régime juridique applicable », En pratique"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g036",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.82509816,
+      "refused": false,
+      "answer": "Votre situation relève du **Cas n°1** décrit par la CNIL, mais avec des nuances selon le régime applicable :\n\n1. **Si l’usage opérationnel (détection de comportements suspects) est clairement défini dès la phase de développement** et que votre entreprise est une **autorité compétente**, les traitements en phase de développement peuvent être soumis au **régime « police-justice »** (titre III de la loi *Informatique et libertés*), **à condition que** :\n   - Les données soient utilisées **exclusivement** pour des fins de prévention/détection d’infractions pénales ou de protection de la sécurité publique [1].\n   - Le système soit conçu pour ces finalités dès sa conception [1].\n\n2. **Si l’usage opérationnel n’est pas encore précis** (ex. : développement d’un modèle générique), les données d’entraînement relèvent **généralement du RGPD**, même pour une autorité compétente [1][2]. Le régime « police-justice » ne s’appliquera qu’en phase de déploiement, **uniquement si** le système est effectivement utilisé pour des finalités répressives [2].\n\n**Ce qui n’est pas couvert** :\n- L’application éventuelle de l’**AI Act** (bac à sable réglementaire) n’est pas abordée ici, car votre question porte sur le RGPD et le régime police-justice. Pour l’IA Act, il faudrait vérifier si votre projet entre dans les exceptions du **Chapitre VI** (ex. : traitement dans un environnement isolé et sécurisé) [4][5].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 3,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Déterminer le régime juridique applicable », En pratique",
+        "CNIL CNIL, « IA : Déterminer le régime juridique applicable », En pratique",
+        "AI Act Article 59",
+        "AI Act Article 59"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g037",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.83391625,
+      "refused": false,
+      "answer": "Pour garantir que les mentions d’information relatives à l’IA soient facilement distinguables des autres informations (comme les CGU ou mentions légales), la CNIL recommande de :\n\n- **Séparer clairement les contenus** : Les mentions d’information sur l’IA doivent être **distinguées visuellement** des autres informations sans lien avec la protection des données. Par exemple, en les regroupant dans une section dédiée ou en les mettant en évidence (titres distincts, icônes, couleurs, etc.) [1].\n\n- **Préciser les destinataires** : Les mentions doivent indiquer explicitement **à quelles catégories de personnes elles s’appliquent** (ex. : utilisateurs du site, personnes impliquées dans le développement ou le déploiement de l’IA), pour éviter toute confusion [1].\n\n- **Éviter le mélange** : Les informations relatives à l’IA ne doivent pas être noyées dans des documents génériques comme les CGU ou les mentions légales, qui traitent d’autres sujets (ex. : conditions de service, politique de confidentialité générale) [1].\n\n---\n**Ce qui n’est pas couvert** : Les sources ne précisent pas de méthode technique ou de modèle de mise en forme exacte (ex. : placement dans un onglet dédié, utilisation de pop-ups, etc.).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 3,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Informer les personnes concernées », Comment fournir l’information ?"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g038",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.817012,
+      "refused": false,
+      "answer": "Pour éviter que les utilisateurs ne confondent les informations sur la protection des données avec les **conditions générales d’utilisation (CGU)**, la CNIL recommande de **distinguér clairement les deux types de mentions** :\n\n- **Séparation visuelle et logique** : Les mentions d’information relatives à la protection des données doivent être **physiquement séparées** des CGU et des autres informations sans lien avec le RGPD. Par exemple, en les plaçant dans une section dédiée, avec un titre explicite comme *« Informations sur la protection des données »* ou *« Mentions légales RGPD »* [1].\n\n- **Clarté des destinataires** : Si votre site web traite plusieurs catégories de personnes (utilisateurs finaux, contributeurs aux données d’entraînement, etc.), précisez **qui est concerné par quelles informations** (ex. : distinction entre les données collectées pour le service et celles utilisées pour l’apprentissage de l’IA) [1].\n\n- **Accessibilité et intelligibilité** : Les informations doivent être **faciles à repérer** (liens clairs, icônes, ou onglets dédiés) et formulées en termes **simples et accessibles**, même pour des publics non techniques (ex. : schémas pour expliquer le fonctionnement du système d’IA) [1][2][3].\n\n---\n*Ce qui n’est pas couvert* : Les sources ne précisent pas de méthode technique spécifique (ex. : mise en page HTML recommandée) ni les sanctions en cas de non-respect de cette séparation.",
+      "citations_ok": false,
+      "invalid_markers": [],
+      "unverified_quotes": [
+        "Informations sur la protection des données"
+      ],
+      "uncited_sentences": 3,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Informer les personnes concernées », Comment fournir l’information ?",
+        "CNIL CNIL, « IA : Informer les personnes concernées », Comment fournir l’information ?",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 7e étape : Informer les personnes"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g039",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.85521924,
+      "refused": false,
+      "answer": "Le RGPD s'applique à **toute organisation**, publique ou privée, quelle que soit sa taille, incluant :\n- les entreprises (y compris les sociétés de personnes ou associations économiques) [3][1] ;\n- les administrations et collectivités publiques [1] ;\n- les associations [1].\n\nIl couvre aussi les **sous-traitants** et les **établissements** de ces organisations situés dans l’Union européenne, même si le traitement a lieu hors UE [6][1].\n\n**Exclusions partielles** :\n- Les traitements relevant de la directive « police-justice » ou de la sûreté de l’État ne sont pas couverts par les fiches pratiques de la CNIL, mais restent soumis au RGPD [2].\n\n[Sources : [1], [3], [6]]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "CNIL CNIL, « Quel est le périmètre des fiches pratiques sur l’IA ? », Textes applicables",
+        "CNIL CNIL, « Quel est le périmètre des fiches pratiques sur l’IA ? », Textes applicables",
+        "RGPD Article 4",
+        "RGPD Article 3"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g040",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.7436497,
+      "refused": false,
+      "answer": "Oui, le RGPD s’applique à votre entreprise en tant que **PME française** utilisant des données personnelles pour améliorer ses algorithmes d’IA, sous réserve des conditions suivantes :\n\n- Votre entreprise est **établie sur le territoire de l’Union européenne** et traite des données personnelles dans le cadre de ses activités [1].\n- Le traitement concerne des **données personnelles** (même si elles proviennent de sources externes) et est effectué dans le cadre de vos activités en UE [1][2].\n- Les traitements liés à la **sûreté de l’État ou à la défense nationale** sont exclus, mais votre cas ne semble pas concerné [2].\n\n**Ce qui n’est pas couvert** : Les obligations spécifiques liées à l’**IA Act** (règlement 2024/1689) ou à d’autres réglementations sectorielles (santé, finance, etc.) ne sont pas abordées ici [2].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "CNIL CNIL, « Quel est le périmètre des fiches pratiques sur l’IA ? », Textes applicables",
+        "CNIL CNIL, « Quel est le périmètre des fiches pratiques sur l’IA ? », Textes applicables"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g041",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8440709,
+      "refused": false,
+      "answer": "Les deux critères essentiels pour justifier qu’un traitement de données repose sur la base légale de la **« mission d’intérêt public »** sont :\n\n1. **La mission doit être prévue par un texte normatif applicable** au responsable du traitement (ex. : loi, décret) [1][3].\n2. **L’utilisation des données doit permettre d’exercer spécifiquement cette mission de manière pertinente et appropriée** [1][3].\n\n[Exemple : un laboratoire public peut traiter des données pour des recherches linguistiques si cette activité est liée à sa mission légale [1].]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Assurer que le traitement est licite - Définir une base légale », La base légale de la mission d’intérêt public",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3e étape : Définir la « base légale » qui vous autorise à traiter des données personnelles"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g042",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.8406535,
+      "refused": false,
+      "answer": "Oui, votre laboratoire public peut invoquer la **mission d’intérêt public** comme base légale pour ce traitement, sous réserve de deux conditions cumulatives :\n\n1. La mission de recherche doit être **prévue par un texte normatif applicable** au laboratoire (ex. : loi, décret, ou statut).\n2. L’utilisation des données (commentaires en ligne) doit être **pertinente et appropriée** pour exercer cette mission, comme le précise la CNIL :\n   *« l’utilisation des données permet d’exercer spécifiquement cette mission de manière pertinente et appropriée »* [1].\n\n**Exemple conforme** : La CNIL cite les chercheurs d’un laboratoire public analysant l’évolution de la langue en ligne via des commentaires anonymisés, car cela sert une mission scientifique d’intérêt général [1].\n\n---\n*Ce qui n'est pas couvert* : La vérification que votre laboratoire dispose effectivement d’un texte normatif le désignant comme investi d’une telle mission.",
+      "citations_ok": false,
+      "invalid_markers": [],
+      "unverified_quotes": [
+        "l’utilisation des données permet d’exercer spécifiquement cette mission de manière pertinente et appropriée"
+      ],
+      "uncited_sentences": 4,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Assurer que le traitement est licite - Définir une base légale », La base légale de la mission d’intérêt public"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g043",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.86986876,
+      "refused": false,
+      "answer": "Les personnes concernées peuvent exercer **tous les droits du RGPD** sur leurs données dans les modèles d’IA, sous réserve de leur proportionnalité, notamment :\n- **Droit d’accès** : Confirmation de la mémorisation des données (si identifiables) ou indication qu’une mémorisation *n’est pas exclue* (en raison des limites techniques) [1][5]. Transmission des investigations et des sorties génératives les concernant [5].\n- **Droit de rectification** : Correction des données dans le modèle, si possible par réentraînement [3][9].\n- **Droit à l’effacement** : Suppression des données du modèle, mais **non absolue** : le responsable peut invoquer un *motif légitime et impérieux* (ex. : atteinte disproportionnée à la liberté d’entreprendre) [6][9].\n- **Droit d’opposition** : Suspension du traitement pour des raisons personnelles, sauf motif impérieux [9].\n- **Droit à la limitation** : Restriction du traitement si contesté [1].\n\n**Particularités** :\n- **Réentraînement** souvent nécessaire pour appliquer ces droits, mais peut être **proportionné** (ex. : délai de 3 mois, versions mises à jour) ou **exclu** si disproportionné (coûts techniques/financiers) [3][6].\n- **Filtres** ou pseudonymisation peuvent être utilisés comme alternative au réentraînement [3].\n- **Notification aux destinataires** des données (ex. : réutilisateurs) si possible, via des API ou des licences contractuelles [4][10].\n\n*Ce qui n’est pas couvert* : Les modalités précises d’application dans les modèles d’IA à usage général (hors RGPD) ou les obligations spécifiques de l’**AI Act** (non cité dans les sources).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », Rappel général sur les droits applicables",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 8e étape : Assurer l’exercice des droits",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 8e étape : Assurer l’exercice des droits",
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », En matière de développement de modèles ou de systèmes d’IA : comment répondre aux demandes d’exercice de droits ?",
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », En matière de développement de modèles ou de systèmes d’IA : comment répondre aux demandes d’exercice de droits ?",
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », En matière de développement de modèles ou de systèmes d’IA : comment répondre aux demandes d’exercice de droits ?",
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », En matière de développement de modèles ou de systèmes d’IA : comment répondre aux demandes d’exercice de droits ?"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g044",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.8148885,
+      "refused": false,
+      "answer": "Pour garantir l’exercice des droits (dont l’effacement) sur un modèle d’IA entraîné sur des données sensibles, tout en évitant des contraintes disproportionnées, voici les recommandations de la CNIL :\n\n1. **Réentraînement périodique** : Si les données d’entraînement sont conservées, le réentraînement du modèle permet d’effacer ou de rectifier les données concernées. Ce processus peut être planifié pour traiter plusieurs demandes simultanément, avec un délai maximal de **3 mois** (informé à l’avance aux personnes concernées) [2][7].\n\n2. **Mesures alternatives si le réentraînement est disproportionné** : En l’absence de réentraînement possible, appliquez des **filtres** sur les sorties du modèle pour bloquer la régurgitation des données sensibles. Ces filtres doivent être **robustes et non contournables** (ex : règles générales de détection/pseudonymisation plutôt qu’une liste noire) [2][7][8].\n\n3. **Proportionnalité** : Évaluez la demande au cas par cas en tenant compte :\n   - De la **sensibilité des données** et des risques pour la personne (ex : préjudice lié à des hallucinations ou inexactitudes) [5].\n   - De l’**impact sur la liberté d’entreprendre** (coûts techniques, humains, environnementaux du réentraînement) [5][7].\n   *Exemple* : Un modèle fournissant des informations sur des personnalités publiques peut refuser une demande d’effacement si le réentraînement est trop coûteux [5].\n\n4. **Transparence et documentation** :\n   - Informer les utilisateurs des **destinataires du modèle**, de sa **durée de conservation** et des **droits exercibles** [1][4].\n   - Mettre à jour contractuellement les utilisateurs pour qu’ils utilisent une version actualisée du modèle [2][7].\n\n5. **Anonymisation en amont** : La CNIL recommande prioritairement d’**anonymiser les données d’entraînement** ou de s’assurer que le modèle est anonyme dès sa conception [8].\n\n**Ce qui n’est pas couvert** : Les modalités précises pour évaluer la \"disproportionnalité\" dans un contexte spécifique (ex : seuils financiers ou techniques) ou les obligations liées à l’**IA Act** (hors RGPD) pour les modèles à haut risque.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 5,
+      "sources_cited": [
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 8e étape : Assurer l’exercice des droits",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 8e étape : Assurer l’exercice des droits",
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », En matière de développement de modèles ou de systèmes d’IA : comment répondre aux demandes d’exercice de droits ?",
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », En matière de développement de modèles ou de systèmes d’IA : comment répondre aux demandes d’exercice de droits ?",
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », En matière de développement de modèles ou de systèmes d’IA : comment répondre aux demandes d’exercice de droits ?",
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », En matière de développement de modèles ou de systèmes d’IA : comment répondre aux demandes d’exercice de droits ?"
+      ],
+      "expected_cited": 0,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g045",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8029936,
+      "refused": false,
+      "answer": "Les mesures pour garantir la confidentialité des données obtenues lors des inspections ou audits liés à l’**AI Act** sont les suivantes :\n\n1. **Accès strictement nécessaire** : Les autorités (Commission, autorités de surveillance du marché, organismes notifiés) ne peuvent demander que les **données strictement nécessaires** à l’évaluation du risque posé par les systèmes d’IA et à l’exercice de leurs pouvoirs [1][2][4].\n\n2. **Mesures de cybersécurité** : Elles doivent mettre en place des **mesures de cybersécurité adéquates et efficaces** pour protéger la sécurité et la confidentialité des informations [1][2].\n\n3. **Suppression des données** : Les données collectées sont supprimées dès qu’elles ne sont plus nécessaires à leurs fins initiales, conformément au droit de l’Union ou national [1][2].\n\n4. **Protection des secrets d’affaires** : La confidentialité couvre notamment les **droits de propriété intellectuelle, les secrets commerciaux et le code source**, sauf exceptions prévues par la directive (UE) 2016/943 [1].\n\n5. **Accès limité au code source** : L’accès au code source est accordé uniquement sur demande motivée, si :\n   - Il est **nécessaire** pour évaluer la conformité avec les exigences du chapitre III, section 2 ;\n   - Les vérifications fondées sur les données et la documentation communiquées ont été **insuffisantes** [4].\n\n6. **Respect des règles spécifiques pour les systèmes à haut risque** :\n   - Pour les systèmes d’IA à haut risque utilisés par les autorités répressives ou d’asile, les informations échangées sont protégées et ne peuvent être divulguées sans consultation préalable des autorités concernées [2].\n   - La documentation technique reste sous la responsabilité des autorités répressives ou d’asile, avec un accès restreint aux autorités de surveillance du marché (via habilitation de sécurité) [2].\n\n**Ce qui n’est pas couvert** : Les mesures de sécurité *interne* des systèmes d’IA (comme l’anonymisation des données d’entraînement ou les audits de sécurité) relèvent du RGPD et des recommandations de la CNIL, non de l’**AI Act** [6][7].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 4,
+      "sources_cited": [
+        "AI Act Article 78",
+        "AI Act Article 78",
+        "AI Act Article 74",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 9e étape : Sécuriser son système d’IA",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 9e étape : Sécuriser son système d’IA"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g046",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.7865491,
+      "refused": false,
+      "answer": "Les autorités de surveillance du marché accèdent à la **documentation technique** d’un système d’IA à haut risque utilisé par les **services de l’immigration** selon les règles suivantes :\n\n1. **Localisation de la documentation** : La documentation technique reste **dans les locaux des autorités répressives, des services de l’immigration ou des autorités compétentes en matière d’asile** [2].\n2. **Accès sur demande** : Ces autorités doivent permettre aux autorités de surveillance du marché d’y accéder **immédiatement sur demande**, ou d’en obtenir une copie [2].\n3. **Accès restreint** : Seuls les **membres du personnel de l’autorité de surveillance du marché disposant d’une habilitation de sécurité au niveau approprié** peuvent consulter la documentation [2].\n4. **Confidentialité** : Toute information obtenue est traitée conformément aux obligations de confidentialité de l’**article 78** [5].\n\n**Ce qui n’est pas couvert** : Les règles spécifiques pour l’accès au **code source** ou aux **données opérationnelles sensibles** ne sont pas détaillées ici. Pour ces aspects, se référer aux articles 78 et 12 [5][6].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 78",
+        "AI Act Article 74",
+        "AI Act Considérant 159"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g047",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8348631,
+      "refused": false,
+      "answer": "Les obligations de confidentialité du personnel des organismes notifiés sont les suivantes :\n\n- Le personnel est lié par le **secret professionnel** pour toutes les informations obtenues dans l’exercice de ses fonctions au titre de l’**AI Act**, sauf à l’égard des **autorités notifiantes** de l’État membre où il exerce ses activités [1][2][4].\n\n- Les organismes notifiés doivent disposer de **procédures documentées** pour garantir que leur personnel, leurs sous-traitants et les organismes associés préservent la confidentialité des informations, conformément à l’**article 78** [1][2].\n\n- Les informations ne peuvent être divulguées qu’en cas de **requête légale** (ex. : procédures pénales ou administratives) [4].\n\n- Les données collectées doivent être **supprimées dès qu’elles ne sont plus nécessaires** [4].\n\n- Les échanges d’informations sensibles (ex. : systèmes d’IA à haut risque utilisés par les autorités répressives) sont **strictement encadrés** et ne peuvent être divulgués sans consultation préalable des autorités concernées [5].\n\n[Les obligations spécifiques aux données opérationnelles sensibles des autorités répressives ne sont pas couvertes ici.]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 31",
+        "AI Act Article 31",
+        "AI Act Article 78",
+        "AI Act Article 78"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g048",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.80007434,
+      "refused": false,
+      "answer": "Vous devez respecter les règles suivantes pour protéger les informations sensibles :\n\n1. **Confidentialité obligatoire** : Le personnel de l’organisme notifié est lié par le secret professionnel pour toutes les informations obtenues dans l’exercice de ses fonctions, sauf vis-à-vis des autorités notifiantes de l’État membre concerné [1][3][10].\n\n2. **Protocoles documentés** : Les organismes notifiés doivent disposer de procédures documentées pour garantir la confidentialité des informations, y compris celles communiquées à des sous-traitants ou partenaires externes [2].\n\n3. **Protection des données** : Les informations sensibles (y compris les données personnelles ou les secrets d’affaires) doivent être traitées conformément à l’**article 78** de l’**AI Act**, qui impose de respecter la confidentialité des données obtenues dans le cadre des activités d’évaluation [1][2][10].\n\n4. **Transparence limitée** : Les informations sensibles ne peuvent être divulguées qu’aux autorités notifiantes ou dans les cas strictement légaux [1][2][10].\n\n*Les règles spécifiques à la protection des données personnelles (RGPD) ne sont pas couvertes ici.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Article 31",
+        "AI Act Article 31",
+        "AI Act Article 31",
+        "AI Act Article 78"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g049",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8595867,
+      "refused": false,
+      "answer": "Les fournisseurs de systèmes d’IA à haut risque doivent inclure dans leur système de gestion de la qualité, **au minimum**, les éléments suivants, conformément à l’**article 17, paragraphe 1** :\n\na) Une **stratégie de respect de la réglementation**, incluant les procédures d’évaluation de la conformité et de gestion des modifications ;\nb) Des **techniques et procédures systématiques** pour la **conception** et le **contrôle** de la conception ;\nc) Des **techniques et procédures systématiques** pour le **développement** et l’**assurance qualité** ;\nd) Des **procédures d’examen, de test et de validation** (avant, pendant et après le développement), avec leur **fréquence** ;\ne) Des **spécifications techniques** (normes ou alternatives) pour répondre aux exigences de la **section 2** ;\nf) Des **procédures de gestion des données** (acquisition, stockage, analyse, etc.) ;\ng) Le **système de gestion des risques** (article 9) ;\nh) Un **système de surveillance après commercialisation** (article 72) ;\ni) Des **procédures de signalement d’incidents graves** (article 73) ;\nj) Des **mécanismes de communication** avec les autorités, clients et parties prenantes ;\nk) Des **systèmes de conservation** des documents et informations pertinents ;\nl) Une **gestion des ressources** (y compris la sécurité d’approvisionnement) ;\nm) Un **cadre de responsabilisation** définissant les rôles du personnel.\n\n[1]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 13,
+      "sources_cited": [
+        "AI Act Article 17"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g050",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.8400072,
+      "refused": false,
+      "answer": "Pour un système d’IA à haut risque, les processus **obligatoirement documentés et mis en œuvre** sont les suivants :\n\n1. **Système de gestion de la qualité** (art. 17) :\n   - Une **stratégie de conformité réglementaire** (procédures d’évaluation et gestion des modifications) ;\n   - Des **techniques de conception, développement et contrôle qualité** (art. 17, points b à d) ;\n   - Des **procédures de test et validation** (avant, pendant et après développement) ;\n   - La **gestion des données** (acquisition, stockage, traitement) ;\n   - Un **système de gestion des risques** (art. 9) ;\n   - Un **plan de surveillance après commercialisation** (art. 72) ;\n   - Des **procédures de signalement des incidents** (art. 73) ;\n   - La **conservation des documents** (art. 17, point k) [2][8].\n\n2. **Système de gestion des risques** (art. 9) :\n   - Identification, analyse et évaluation des risques **conformément à la destination du système** ;\n   - Mesures d’atténuation **proportionnées et ciblées** (élimination/reduction des risques, formation des déployeurs) ;\n   - **Tests réguliers** (y compris en conditions réelles si pertinent) pour vérifier la conformité [4][5].\n\n3. **Documentation technique** (art. 11 + annexe IV) :\n   - Description **exhaustive** du système (destination, algorithmes, données d’entraînement, limites) ;\n   - Traçabilité des **versions, mises à jour et modifications** ;\n   - Preuves de conformité aux exigences du règlement (ex. : tests, analyses de risques) ;\n   - **Mise à jour continue** tout au long du cycle de vie [1][6][9].\n\n**Ce qui n’est pas couvert** : Les modalités pratiques d’application (ex. : seuils de risques acceptables, détails des tests) dépendent des **orientations de la Commission** ou des **normes harmonisées** (annexe I), non détaillées ici [10].\n\n*Sources : [1][2][4][5][6][8][9].*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 12,
+      "sources_cited": [
+        "AI Act Considérant 71",
+        "AI Act Article 17",
+        "AI Act Article 9",
+        "AI Act Article 9",
+        "AI Act Article 11",
+        "AI Act Article 72",
+        "AI Act Annexe IV",
+        "AI Act Annexe I"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g051",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8523487,
+      "refused": false,
+      "answer": "Les informations sur les données utilisées pour l'entraînement, les essais et la validation doivent inclure au minimum les éléments suivants dans la documentation technique d'un modèle d'IA à usage général :\n\n- Le **type et la provenance des données** [1][2][4].\n- Les **méthodes d'organisation** appliquées (p. ex. nettoyage, filtrage) [1][2][4].\n- Le **nombre de points de données**, leur **portée** et leurs **principales caractéristiques** [1][2].\n- La **manière dont les données ont été obtenues et sélectionnées** [1][2].\n- Les **mesures visant à détecter l'inadéquation des sources de données** et les **méthodes pour identifier les biais identifiables** [1][2].\n\nCes exigences s'appliquent à la fois pour la documentation technique destinée aux autorités (annexe XI) et aux fournisseurs en aval (annexe XII), mais avec des nuances sur la granularité selon le contexte [1][2][4].\n\n*Les détails sur les essais contradictoires ou les adaptations post-entraînement ne sont pas couverts ici.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "AI Act Annexe XI",
+        "AI Act Annexe XI",
+        "AI Act Annexe XII"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g052",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.75087637,
+      "refused": false,
+      "answer": "Pour un modèle d'IA à usage général intégré dans votre application, les informations techniques sur les **limites des entrées** (comme la taille maximale d'un texte ou d'une image) doivent être documentées selon les exigences suivantes :\n\n1. **Annexe XII (documentation pour les fournisseurs en aval)** :\n   - Le point **1.2.b** exige une description des **modalités et formats des entrées**, incluant leur **taille maximale** (ex. : taille de la fenêtre de contexte pour le texte, dimensions pour les images) [1].\n\n2. **Annexe XI (documentation technique du fournisseur du modèle)** :\n   - Le point **1.1.b** (description générale) et **2.1.b** (spécifications détaillées) mentionnent les **modalités et formats des entrées**, incluant leur taille maximale [2][3].\n   - Le fournisseur doit fournir ces informations pour permettre une **bonne compréhension des capacités et limites** du modèle [9].\n\n**Ce qui n'est pas couvert** : Les sources ne précisent pas si ces limites doivent être **vérifiées ou testées** par vous-même en tant qu'intégrateur, ni comment documenter les éventuels dépassements de ces limites dans votre application.\n\n[1][2][3][9]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 4,
+      "sources_cited": [
+        "AI Act Annexe XII",
+        "AI Act Annexe XI",
+        "AI Act Annexe XI",
+        "AI Act Article 53"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g053",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8448159,
+      "refused": false,
+      "answer": "Le responsable du traitement doit répondre à une demande d’exercice des droits (accès, rectification, effacement, etc.) **dans les meilleurs délais et au plus tard dans un délai d’un mois** à compter de la réception de la demande, conformément à l’**article 12, paragraphe 3, du RGPD** [6].\n\nCe délai peut être **prolongé de deux mois supplémentaires**, compte tenu de la complexité ou du nombre de demandes, à condition que la personne concernée en soit informée dans le mois suivant la réception de la demande [6].\n\nSi le responsable ne donne pas suite, il doit informer la personne **sans tarder et au plus tard dans un mois** des motifs de son inaction [6].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "RGPD Article 12"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g054",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.7422027,
+      "refused": false,
+      "answer": "Selon le RGPD, si vous avez des **doutes raisonnables** sur l’identité de la personne demandant la suppression de ses données, vous pouvez demander des **informations supplémentaires** pour confirmer son identité, conformément à l’**article 12, paragraphe 6** [5].\n\nVous devez aussi :\n- **Informer la personne** de cette demande d’identification, sans retard ni délai maximal précis (mais dans le cadre du délai global de réponse, soit **1 mois**, prolongeable de 2 mois si nécessaire) [4].\n- **Ne pas refuser systématiquement** la demande si l’identité est confirmée par des preuves (ex. : image, pseudonyme, document justificatif) [2].\n\nSi l’identité est avérée, vous devez traiter la demande de suppression conformément à l’**article 17** [7][8], sauf si une exception s’applique (ex. : liberté d’expression, mission publique).\n\n*Non couvert* : Les modalités précises de preuve à exiger (ex. : type de document) ou les cas où la demande peut être refusée malgré une identité confirmée.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Respecter et faciliter l’exercice des droits des personnes concernées », En matière de développement de modèles ou de systèmes d’IA : comment répondre aux demandes d’exercice de droits ?",
+        "RGPD Article 12",
+        "RGPD Article 12",
+        "RGPD Article 17",
+        "RGPD Article 17"
+      ],
+      "expected_cited": 1,
+      "n_expected": 2,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g055",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8301794,
+      "refused": false,
+      "answer": "Pour les entreprises de moins de 250 employés, **l’obligation de tenir un registre des activités de traitement ne s’applique pas**, sauf dans trois cas précis :\n- si le traitement est **susceptible de comporter un risque pour les droits et libertés des personnes concernées** [1][2][3] ;\n- si le traitement **n’est pas occasionnel** [1][2][3] ;\n- si le traitement porte sur **des catégories particulières de données** (art. 9, par. 1) ou des **données relatives à des condamnations pénales** (art. 10) [1][2][7][8].\n\nLe registre doit alors inclure les informations prévues à l’**article 30, par. 1** (identité des acteurs, finalités, catégories de données, etc.) [1]. Les exceptions sont justifiées par la volonté de soulager les **micro, petites et moyennes entreprises** (PME) tout en garantissant une protection minimale [3].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "RGPD Article 30",
+        "RGPD Article 30",
+        "RGPD Considérant 13",
+        "RGPD Article 9",
+        "RGPD Article 10"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g056",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.82886493,
+      "refused": false,
+      "answer": "Oui, un sous-traitant doit mentionner **dans son registre** une description générale des mesures de sécurité techniques et organisationnelles mises en œuvre, conformément à l’**article 30, paragraphe 2, point d)** du RGPD.\n\n*« d) dans la mesure du possible, une description générale des mesures de sécurité techniques et organisationnelles visées à l’article 32, paragraphe 1 »* [2].\n\nCette obligation s’applique sous réserve des exceptions prévues à l’**article 30, paragraphe 5** (entreprises de moins de 250 salariés, sauf exceptions).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "RGPD Article 30"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g057",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.8609518,
+      "refused": false,
+      "answer": "Voici les éléments clés à sécuriser selon les bonnes pratiques de la CNIL pour le **développement** et l’**utilisation** d’un système d’IA :\n\n---\n**1. Données d’entraînement et de test**\n- **Intégrité et qualité** : Vérifier régulièrement leur fiabilité, détecter les tentatives d’empoisonnement (ex. : *active learning*) et journaliser les versions [2][4].\n- **Confidentialité** : Anonymiser/pseudonymiser, chiffrer les sauvegardes et communications, et cloisonner les données sensibles [2][5].\n- **Substitution** : Utiliser des données fictives ou synthétiques pour les tests (ex. : audits, intégration) [2][4].\n\n**2. Développement logiciel et infrastructure**\n- **Conception sécurisée** : Intégrer la protection des données dès la conception (ex. : minimisation des données) et utiliser des outils/librairies vérifiés (ex. : *safetensors*) [2][6].\n- **Environnement contrôlé** : Déployer un cadre reproductible, avec des procédures d’intégration continue et des audits de sécurité (ex. : *red teaming*) [2][7].\n- **Traçabilité** : Documenter la conception, les équipements et les mesures de protection (ex. : chiffrement, gestion des accès) [7].\n\n**3. Fonctionnement et sorties du système**\n- **Transparence** : Informer l’utilisateur sur les limitations du système et fournir des explications sur les résultats (ex. : scores de confiance, cartes de saillance) [3][8].\n- **Contrôle des sorties** : Filtrer les productions (ex. : *RLHF*), appliquer du *watermarking* ou limiter les risques de fuites de données personnelles [3][8].\n- **Arrêt d’urgence** : Prévoir des mécanismes pour stopper le système [3].\n\n**4. Mesures organisationnelles et transversales**\n- **Plan d’action** : Documenter les risques et les mesures correctives (ex. : *rollback plan* en cas d’incident) [9].\n- **Compétences** : Constituer une équipe pluridisciplinaire (ex. : juristes, ingénieurs, experts en données) et former les développeurs aux bonnes pratiques [9].\n- **Gestion des accès** : Restreindre les habilitations, tracer les actions (ex. : logs) et analyser les anomalies [9].\n\n---\n**Non couvert** : Les mesures spécifiques liées à la **phase de déploiement** (ex. : sécurité opérationnelle post-lancement) et les obligations liées à l’**AI Act** (hors RGPD) ne sont pas abordées ici.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 9e étape : Sécuriser son système d’IA",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 9e étape : Sécuriser son système d’IA",
+        "CNIL CNIL, « IA : Garantir la sécurité du développement d’un système d’IA », Les mesures de sécurité à envisager pour le développement d’un système d’IA",
+        "CNIL CNIL, « IA : Garantir la sécurité du développement d’un système d’IA », Les mesures de sécurité à envisager pour le développement d’un système d’IA",
+        "CNIL CNIL, « IA : Garantir la sécurité du développement d’un système d’IA », Les mesures de sécurité à envisager pour le développement d’un système d’IA",
+        "CNIL CNIL, « IA : Garantir la sécurité du développement d’un système d’IA », Les mesures de sécurité à envisager pour le développement d’un système d’IA",
+        "CNIL CNIL, « IA : Garantir la sécurité du développement d’un système d’IA », Les mesures de sécurité à envisager pour le développement d’un système d’IA",
+        "CNIL CNIL, « IA : Garantir la sécurité du développement d’un système d’IA », Les mesures de sécurité à envisager pour le développement d’un système d’IA"
+      ],
+      "expected_cited": 0,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g058",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.77610415,
+      "refused": false,
+      "answer": "La CNIL recommande plusieurs solutions pour limiter les duplications de données et assurer leur traçabilité :\n\n- **Filtrage des doublons** : Procéder à la déduplication des données d’apprentissage (exactes ou approximatives) avant leur utilisation pour éviter leur mémorisation prioritaire par le modèle [2].\n- **Outils dédiés** : Utiliser des outils comme **NB Defense, Octopii ou PiiCatcher**, ou des techniques (expressions régulières, reconnaissance d’entités nommées) pour détecter et tracer les données personnelles dans les jeux de données [4].\n- **Cloisonnement et chiffrement** : Appliquer un chiffrement distinct pour les données sensibles et des accès restreints (niveaux d’habilitation différenciés) pour limiter les risques de duplication ou de perte de contrôle [6].\n- **Journalisation et traçabilité** : Mettre en place des **méthodes de journalisation** (conformes à la recommandation CNIL) et des **mesures de tatouage numérique** pour suivre les exports et partages de données [7].\n\n*Les solutions pour atténuer le risque de mémorisation lié aux duplications ne couvrent pas les aspects liés à la confidentialité différentielle ou aux techniques d’anonymisation post-entraînement.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, « IA : Analyser le statut d’un modèle d’IA au regard du RGPD », Mise en œuvre de l’analyse",
+        "CNIL CNIL, « IA : Tenir compte de la protection des données dans la collecte et la gestion des données », Sécurité",
+        "CNIL CNIL, « IA : Garantir la sécurité du développement d’un système d’IA », Les mesures de sécurité à envisager pour le développement d’un système d’IA",
+        "CNIL CNIL, « IA : Garantir la sécurité du développement d’un système d’IA », Les mesures de sécurité à envisager pour le développement d’un système d’IA"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g059",
+      "category": "directe",
+      "zone": "reponse",
+      "top_score": 0.880854,
+      "refused": false,
+      "answer": "Pour éviter la collecte excessive de données lors d’un moissonnage (web scraping), voici les mesures spécifiques à mettre en œuvre :\n\n1. **Définir des critères précis de collecte en amont** pour cibler uniquement les données nécessaires [1][3][5][7].\n2. **Exclure les catégories de données non pertinentes** :\n   - Par filtrage technique (ex. : éviter les données de transaction ou de géolocalisation inutiles) [5].\n   - En excluant certains sites structurellement riches en données sensibles (ex. : forums de santé, réseaux sociaux pour mineurs) [3][5].\n3. **Supprimer immédiatement les données non pertinentes** collectées par erreur (ex. : pseudonymes sur un forum alors que seul le contenu est utile) [1][5][7].\n4. **Respecter les oppositions techniques** : ignorer les sites utilisant des **robots.txt** ou des **CAPTCHA** pour bloquer le moissonnage [1][5][6].\n5. **Limiter la collecte aux données librement accessibles** (sans compte requis) et publiquement conscientes de leur caractère public [2][3][7].\n\n**Non couvert** : Les mesures supplémentaires comme l’anonymisation post-collecte ou l’information des personnes, qui relèvent d’autres garanties (voir [2]).",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3ème étape (bis) : Adapter les garanties au moissonnage des données",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3ème étape (bis) : Adapter les garanties au moissonnage des données",
+        "CNIL CNIL, liste de vérification IA, point 5 « Limiter les données traitées à celles qui sont pertinentes et nécessaires (minimisation des données) »",
+        "CNIL CNIL, « La base légale de l’intérêt légitime : fiche focus sur les mesures à prendre en cas de collecte des données par moissonnage (web scraping) », Les mesures obligatoires",
+        "CNIL CNIL, « La base légale de l’intérêt légitime : fiche focus sur les mesures à prendre en cas de collecte des données par moissonnage (web scraping) », Les mesures obligatoires",
+        "CNIL CNIL, « IA : Tenir compte de la protection des données dans la collecte et la gestion des données », Collecte"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "g060",
+      "category": "reformulee",
+      "zone": "reponse",
+      "top_score": 0.85922426,
+      "refused": false,
+      "answer": "Pour limiter le risque de collecte accidentelle de données sensibles lors d’un web scraping, voici les actions concrètes recommandées par la CNIL :\n\n1. **Exclure automatiquement les sites sensibles** : Établir une liste de sites par défaut à exclure (forums de santé, sites généalogiques, etc.) en raison de leur contenu structurellement sensible [3][6].\n\n2. **Appliquer des filtres techniques** : Utiliser des filtres pour bloquer la collecte de catégories de données sensibles (ex. : mots-clés liés à la santé, à l’origine ethnique, etc.) dès la phase de moissonnage [1][8].\n\n3. **Respecter les oppositions techniques** : Ne pas collecter sur les sites opposés au scraping (via *robots.txt*, CAPTCHA ou CGU) [1][5].\n\n4. **Supprimer immédiatement les données sensibles incidentes** : Mettre en place des mécanismes automatisés pour détecter et supprimer les données sensibles collectées par erreur dès leur identification [1][8].\n\n5. **Pseudonymiser/anonymiser en amont** : Appliquer des techniques de protection dès la collecte (ex. : remplacement des identifiants par des pseudonymes aléatoires) pour limiter l’exposition des données [2][4].\n\n*Ce qui n’est pas couvert* : Les modalités précises pour justifier la nécessité de traiter des données sensibles *si elles sont inévitables* (hors exceptions RGPD) ou les critères exacts pour évaluer leur caractère \"incident\" vs. \"résiduel\".",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 2,
+      "sources_cited": [
+        "CNIL CNIL, liste de vérification IA, point 5 « Limiter les données traitées à celles qui sont pertinentes et nécessaires (minimisation des données) »",
+        "CNIL CNIL, liste de vérification IA, point 5 « Limiter les données traitées à celles qui sont pertinentes et nécessaires (minimisation des données) »",
+        "CNIL CNIL, « La base légale de l’intérêt légitime : fiche focus sur les mesures à prendre en cas de collecte des données par moissonnage (web scraping) », Les garanties supplémentaires",
+        "CNIL CNIL, « La base légale de l’intérêt légitime : fiche focus sur les mesures à prendre en cas de collecte des données par moissonnage (web scraping) », Les garanties supplémentaires",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3ème étape (bis) : Adapter les garanties au moissonnage des données",
+        "CNIL CNIL, « Développement des systèmes d’IA : les recommandations de la CNIL pour respecter le RGPD », 3ème étape (bis) : Adapter les garanties au moissonnage des données",
+        "CNIL CNIL, « IA : Assurer que le traitement est licite - Définir une base légale », La base légale du contrat"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [],
+      "facts_found": [],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m037",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.71684146,
+      "refused": false,
+      "answer": "Vous avez jusqu’au **2 août 2027** pour vous mettre en conformité avec les obligations de l’**AI Act**, car votre modèle d’IA à usage général a été mis sur le marché avant le **2 août 2025** [1].\n\n[1] : *Article 111, paragraphe 3* : *\"Les fournisseurs de modèles d’IA à usage général qui ont été mis sur le marché avant le 2 août 2025 prennent les mesures nécessaires pour se conformer aux obligations prévues par le présent règlement au plus tard le 2 août 2027.\"*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "AI Act Article 111"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2025-08-02",
+        "date:2027-08-02"
+      ],
+      "facts_found": [
+        "date:2025-08-02",
+        "date:2027-08-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m038",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.75323886,
+      "refused": false,
+      "answer": "Selon l’**article 111, paragraphe 2** du règlement AI Act :\n*« Les fournisseurs et les déployeurs de systèmes d’IA à haut risque destinés à être utilisés par des autorités publiques prennent les mesures nécessaires pour se conformer aux exigences et obligations prévues dans le présent règlement au plus tard le **2 août 2030** »* [1].\n\n**Source** : [1]\n\n*(Cette réponse ne couvre pas les systèmes à haut risque non utilisés par des autorités publiques, ni les modifications substantielles postérieures à la mise en service.)*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 111"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2030-08-02"
+      ],
+      "facts_found": [
+        "date:2030-08-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m039",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.45125195,
+      "refused": false,
+      "answer": "D'après l’**article 111, paragraphe 4** [8], les fournisseurs de systèmes d’IA générant des contenus de synthèse (comme vos images) mis sur le marché **avant le 2 août 2026** doivent se conformer à l’**obligation de marquage prévue à l’article 50, paragraphe 2**, **au plus tard le 2 décembre 2026**.\n\nVotre générateur, commercialisé en **2025**, relève donc de cette disposition et doit être marqué dès cette date limite.\n\n*Source :* [8]",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 111"
+      ],
+      "expected_cited": 1,
+      "n_expected": 2,
+      "facts_expected": [
+        "date:2026-08-02",
+        "date:2026-12-02"
+      ],
+      "facts_found": [
+        "date:2026-08-02",
+        "date:2026-12-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m040",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.8134179,
+      "refused": false,
+      "answer": "Les systèmes d’IA qui sont des **composants des systèmes d’information à grande échelle** énumérés à l’annexe X et **mis sur le marché ou mis en service avant le 2 août 2027** doivent être mis en conformité avec l’**AI Act au plus tard le 31 décembre 2030** [1].\n\nCette conformité s’applique **sans préjudice des exigences énoncées dans le règlement** lors des évaluations de ces systèmes d’information à grande échelle [1].\n\n---\n*Ce délai ne couvre pas les systèmes d’IA à haut risque non intégrés dans ces systèmes d’information, ni les autres catégories de systèmes visés par d’autres articles de l’article 111.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 111"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2027-08-02",
+        "date:2030-12-31"
+      ],
+      "facts_found": [
+        "date:2027-08-02",
+        "date:2030-12-31"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m041",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.835376,
+      "refused": false,
+      "answer": "Chaque État membre doit avoir au moins un bac à sable réglementaire de l’IA **opérationnel au plus tard le 2 août 2027** [1].\n\n[1] AI Act (règlement (UE) 2024/1689), Article 57, paragraphe 1.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "AI Act Article 57"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2027-08-02"
+      ],
+      "facts_found": [
+        "date:2027-08-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m042",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.80852383,
+      "refused": false,
+      "answer": "Le RGPD est applicable **à partir du 25 mai 2018** [1].\n\n[1] RGPD (règlement (UE) 2016/679) > Article 99, paragraphe 2.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "RGPD Article 99"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2018-05-25"
+      ],
+      "facts_found": [
+        "date:2018-05-25"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m043",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.83053017,
+      "refused": false,
+      "answer": "Les codes de bonne pratique pour les fournisseurs de modèles d’IA à usage général devaient être **prêts au plus tard le 2 mai 2025** [3].\n\nLe Bureau de l’IA devait ensuite inviter les fournisseurs à y adhérer à partir de cette date [3]. Si un code n’était pas finalisé ou jugé inapproprié, la Commission pouvait adopter des règles communes via des actes d’exécution à partir du **2 août 2025** [3].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "AI Act Article 56"
+      ],
+      "expected_cited": 1,
+      "n_expected": 2,
+      "facts_expected": [
+        "date:2025-05-02",
+        "date:2025-08-02"
+      ],
+      "facts_found": [
+        "date:2025-05-02",
+        "date:2025-08-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m044",
+      "category": "renvoi",
+      "zone": "reponse",
+      "top_score": 0.62079835,
+      "refused": false,
+      "answer": "L'amende maximale pour un **non-respect des droits d'accès des personnes concernées** (article 15 RGPD) est fixée à **20 000 000 EUR ou 4 % du chiffre d'affaires annuel mondial total de l'exercice précédent**, selon l’article 83, paragraphe 5, point **b)** [2].\n\nCette violation concerne les **droits des personnes concernées** (articles 12 à 22 RGPD), y compris le droit d’accès (article 15) [2][11].\n\n*La source ne précise pas si le non-respect d'une injonction spécifique (article 58, paragraphe 2) aggrave la sanction.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "RGPD Article 83",
+        "RGPD Article 15"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [
+        "eur:20000000",
+        "pct:4"
+      ],
+      "facts_found": [
+        "eur:20000000",
+        "pct:4"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m045",
+      "category": "renvoi",
+      "zone": "verification",
+      "top_score": 0.2998702,
+      "refused": false,
+      "answer": "L’amende maximale pour un fournisseur de système d’IA interagissant directement avec des personnes physiques **sans informer les utilisateurs qu’ils interagissent avec une IA** (violation de l’**article 50, paragraphe 1**) est fixée à **15 000 000 EUR** ou **3 % de son chiffre d’affaires annuel mondial total** (le montant le plus élevé étant retenu) **[6][g]**.\n\nCette sanction s’applique aux **opérateurs** (dont les fournisseurs) en cas de non-respect des obligations de transparence prévues à l’article 50 **[6]**.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "AI Act Article 99"
+      ],
+      "expected_cited": 1,
+      "n_expected": 2,
+      "facts_expected": [
+        "eur:15000000",
+        "pct:3"
+      ],
+      "facts_found": [
+        "eur:15000000",
+        "pct:3"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m046",
+      "category": "renvoi",
+      "zone": "reponse",
+      "top_score": 0.71216863,
+      "refused": false,
+      "answer": "La Commission peut infliger des amendes aux fournisseurs de modèles d’IA à usage général **à partir du 2 août 2026**, conformément à l’article 101 du règlement [2][12].\n\nCependant, les obligations générales des fournisseurs de modèles d’IA à usage général (comme celles prévues aux articles 53 et 55) s’appliquent dès le **2 août 2025** [1][12], mais les sanctions spécifiques (article 101) ne sont pas mentionnées comme applicables avant cette date dans les sources fournies.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "AI Act Considérant 179",
+        "AI Act Article 101",
+        "AI Act Article 113"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [
+        "date:2025-08-02",
+        "date:2026-08-02"
+      ],
+      "facts_found": [
+        "date:2025-08-02",
+        "date:2026-08-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m047",
+      "category": "renvoi",
+      "zone": "reponse",
+      "top_score": 0.48293957,
+      "refused": false,
+      "answer": "Les systèmes d’IA utilisés pour évaluer la solvabilité des personnes physiques sont considérés comme **à haut risque** dès leur mise sur le marché ou leur mise en service, conformément à l’**article 6, paragraphe 2**, et à l’**annexe III, point 5b)** de l’**AI Act** [5][11].\n\nLes obligations applicables aux systèmes d’IA à haut risque s’appliquent **à partir du 2 décembre 2027** pour les systèmes visés par l’annexe III [10].\n\n*Ce délai ne couvre pas les systèmes déjà en service avant cette date et non modifiés de manière significative.*",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Annexe III",
+        "AI Act Article 113",
+        "AI Act Article 6"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [
+        "date:2027-12-02"
+      ],
+      "facts_found": [
+        "date:2027-12-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m048",
+      "category": "renvoi",
+      "zone": "reponse",
+      "top_score": 0.7291779,
+      "refused": false,
+      "answer": "Oui, un système d’IA utilisé comme **composant de sécurité dans un jouet** est considéré comme **à haut risque** au sens de l’**AI Act** [2][9].\n\nLa classification s’applique si :\n- Le jouet est soumis à une **évaluation de conformité par un tiers** conformément à la **directive 2009/48/CE** (sécurité des jouets) [1][9] ;\n- Le système d’IA est **destiné à assurer la sécurité** (ex. : prévention de risques pour la santé ou la sécurité) [2][1 ter].\n\n**Date d’application** :\nLes exigences pour ces systèmes (article 6, paragraphe 1) entrent en vigueur **au 2 août 2028** [11][c][ii].\n\n---\n*Non couvert* : Les modalités précises de l’évaluation de conformité (procédure, organismes notifiés) dépendent des détails techniques du jouet et ne sont pas détaillés ici.",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Considérant 50",
+        "AI Act Article 6",
+        "AI Act Annexe I",
+        "AI Act Article 113"
+      ],
+      "expected_cited": 3,
+      "n_expected": 3,
+      "facts_expected": [
+        "date:2028-08-02"
+      ],
+      "facts_found": [
+        "date:2028-08-02"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m049",
+      "category": "renvoi",
+      "zone": "verification",
+      "top_score": 0.33052766,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m050",
+      "category": "renvoi",
+      "zone": "verification",
+      "top_score": 0.29880655,
+      "refused": false,
+      "answer": "La **mise en service ou l’utilisation d’un système d’IA de notation sociale** est **interdite** par l’**article 5, paragraphe 1, point c)** de l’**AI Act** [3].\n\nLe **non-respect de cette interdiction** est sanctionné par une **amende administrative** pouvant atteindre :\n- **35 000 000 EUR**, **ou**\n- **7 % du chiffre d’affaires annuel mondial total** de l’entreprise (le montant le plus élevé étant retenu) [5].\n\nCette sanction s’applique aux violations de l’**article 5** (pratiques interdites), y compris la notation sociale [5].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 1,
+      "sources_cited": [
+        "AI Act Article 5",
+        "AI Act Article 99"
+      ],
+      "expected_cited": 2,
+      "n_expected": 2,
+      "facts_expected": [
+        "eur:35000000",
+        "pct:7"
+      ],
+      "facts_found": [
+        "eur:35000000",
+        "pct:7"
+      ],
+      "facts_unsourced": []
+    },
+    {
+      "id": "m051",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.024555892,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m052",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.07036992,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m053",
+      "category": "hors_corpus",
+      "zone": "verification",
+      "top_score": 0.25165224,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m054",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.1875196,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m055",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.1614403,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m056",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.0035846038,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m057",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.033793174,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m058",
+      "category": "hors_corpus",
+      "zone": "verification",
+      "top_score": 0.27089468,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m059",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.058452845,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m060",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.0038456572,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m061",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.009003808,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m062",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.013475658,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m063",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.02046757,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m064",
+      "category": "hors_corpus",
+      "zone": "refus",
+      "top_score": 0.0064046676,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m065",
+      "category": "hors_corpus",
+      "zone": "verification",
+      "top_score": 0.2642467,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    }
+  ]
+}

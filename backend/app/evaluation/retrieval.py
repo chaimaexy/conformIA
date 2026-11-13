@@ -52,7 +52,12 @@ JINA = "jina:jina-reranker-v3"
 HYBRID = RetrievalSettings("structural", (MISTRAL, BGE), bm25=True)
 # = config.yaml : mistral-embed + BM25, Cohere v5 pro sur 50 candidats (bge-m3 retiré)
 PRODUCTION = replace(
-    HYBRID, dense_models=(MISTRAL,), reranker=COHERE, rerank_candidates=50, parent_max_chars=4000
+    HYBRID,
+    dense_models=(MISTRAL,),
+    reranker=COHERE,
+    rerank_candidates=50,
+    parent_max_chars=4000,
+    temporal_sections=("Article 113", "Article 111"),
 )
 SUITES = {
     # Phase 3 : stratégies de découpage x modèles d'embedding (recherche dense seule)

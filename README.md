@@ -773,6 +773,42 @@ manque.
 Restent faux : les renvois que la recherche ne suit pas (article 113 pour m046 et m048, article 111
 pour m039) et des erreurs de lecture du modèle (m026 : « uniquement les systèmes à haut risque »).
 
+## Renvois inverses : les dates d'application (phase 5 quater)
+
+Les questions de date restaient fausses parce que **le lien existait, mais dans l'autre sens**.
+Le graphe des citations va de la section qui cite vers la section citée. Or la date d'application
+d'un article est écrite ailleurs, dans un article qui le cite : l'article 113 dit que le chapitre
+XII s'applique le 2 août 2025 « à l'exception de l'article 101 », et l'article 111 fixe au 2
+décembre 2026 le marquage (article 50) des systèmes déjà sur le marché. Quand la recherche trouve
+l'article 101, rien ne lui dit que l'article 113 en fixe la date.
+
+**Correction** (`Retriever.temporal_for`, `retrieval.temporal_sections`) : les dispositions
+d'application dans le temps (articles 113 et 111 de l'AI Act, un seul chunk chacun) sont jointes
+au contexte dès qu'elles citent une section retenue pour la question. Le RGPD (une seule date,
+article 99) et les fiches CNIL ne sont pas concernés.
+
+Cette fois, les métriques du retrieval voient la différence (l'article 113 est une source attendue)
+: [generation_temporel_ministral8b.json](backend/eval/results/generation_temporel_ministral8b.json).
+
+| | Sans | Avec |
+|---|---|---|
+| Sources attendues présentes dans le contexte (102 questions) | 0,898 | **0,922** |
+| Catégorie `renvoi` | 13 / 15 | **15 / 15** |
+| Catégorie `date` | 11 / 13 | **12 / 13** |
+| Questions auxquelles une disposition est jointe | — | 20 sur 102 |
+| Contexte médian | 15 400 caractères | 16 200 caractères |
+| Faits clés de la référence (dates, montants) dans les réponses | 88,5 % | **100 %** |
+| Questions du corpus refusées | 4 | 3 (m039 répond désormais) |
+
+Relu à la main (19 réponses changent) : **4 deviennent justes** (m001 : 2 décembre 2027 ; m039 :
+2 décembre 2026 ; m046 : 2 août 2026 ; m048 : 2 août 2028), 13 restent justes, une se dégrade
+légèrement (m009 : « souvent » à haut risque, avec une réserve spéculative sur l'anonymisation).
+
+**Bilan des phases 5 ter et 5 quater avec `ministral-8b`** : des 14 réponses que le juge avait
+classées incorrectes, 12 sont corrigées. Restent fausses deux erreurs de lecture du modèle (m026,
+« uniquement les systèmes à haut risque » ; g048, divulgation limitée aux autorités notifiantes),
+le type d'erreur que `mistral-large` ne faisait plus.
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
@@ -786,6 +822,7 @@ pour m039) et des erreurs de lecture du modèle (m026 : « uniquement les systè
 - [x] **Phase 5** : génération Mistral avec citations vérifiées par le code, routeur, contrôle de couverture en zone grise, mémoire conversationnelle, streaming (`/chat`, `/chat/stream`), évaluation sur 125 questions
 - [x] **Phase 5 bis** : juge de fidélité validé à la main, comparaison `ministral-8b` / `mistral-large` (effort de raisonnement réglable ; `ministral-8b` gardé, `mistral-large` étant devenu payant)
 - [x] **Phase 5 ter** : « parent document » : les parties d'un article découpé sont jointes au contexte (9 réponses fausses sur 14 corrigées, relues à la main)
+- [x] **Phase 5 quater** : renvois inverses vers les dates d'application (articles 113 et 111) : renvois 15/15, faits clés 100 %, 12 des 14 réponses fausses corrigées au total
 - [ ] **Phase 6** : agent LangGraph d'analyse de conformité, guidé par la liste de vérification CNIL (human-in-the-loop)
 - [ ] **Phase 7** : frontend Next.js, upload PDF (Celery + Redis), auth
 - [ ] **Phase 8** : déploiement, démo vidéo
