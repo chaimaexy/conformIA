@@ -10,6 +10,7 @@ garde-fou du reranker la bloque (score trop bas).
 import logging
 from dataclasses import dataclass
 
+from app.core.config import get_app_config
 from app.llm.json_chat import chat_json
 from app.prompts.rag import ROUTER
 from app.rag.memory import format_history
@@ -35,7 +36,8 @@ def route(message: str, history: list[dict[str, str]]) -> Route:
         return Route("juridique", message, routed=False)
     prompt = ROUTER.format(history=format_history(history), message=message)
     try:
-        data = chat_json(prompt)
+        cfg = get_app_config().llm
+        data = chat_json(prompt, effort=cfg.reasoning_effort.get(cfg.chat_model))
     except Exception:  # le routeur ne doit jamais bloquer une question : on la cherche telle quelle
         logger.exception("Routeur indisponible : question cherchée telle quelle")
         return Route("juridique", message, routed=False)

@@ -1,6 +1,7 @@
 """Évaluation de la génération sur le golden set (chaîne complète, comme en production).
 
     python -m app.evaluation.generation --validated [--name generation] [--limit 20]
+    python -m app.evaluation.generation --validated --judge --model mistral-large-latest
 
 Métriques, toutes calculées par du code (pas de LLM juge) :
 - refus : questions hors corpus refusées (garde-fou ou « SOURCES_INSUFFISANTES ») ;
@@ -11,6 +12,8 @@ Métriques, toutes calculées par du code (pas de LLM juge) :
 - faits clés : dates, montants et pourcentages de la réponse de référence retrouvés ;
 - chiffres non sourcés : faits de la réponse absents de toutes les sources fournies
   (hallucination sur ce qui compte le plus en droit).
+Avec --judge : fidélité (affirmations soutenues par les sources) et exactitude par rapport à
+la réponse de référence, jugées par un modèle plus puissant (voir judge.py).
 Le LLM est mis en cache : relancer ne coûte rien ; ~1 min par question au premier passage
 (offre gratuite Mistral, 2 requêtes/min).
 """
@@ -23,6 +26,7 @@ from datetime import UTC, datetime
 
 from app.core.logging import setup_logging
 from app.evaluation.golden import EVAL_DIR, load
+from app.evaluation.judge import judge
 from app.rag.facts import extract
 from app.rag.service import ChatService
 
@@ -38,7 +42,7 @@ def _source_id(document: str) -> str:
     return "cnil_ia"
 
 
-def evaluate_item(service: ChatService, item) -> dict:
+def evaluate_item(service: ChatService, item, use_judge: bool = False) -> dict:
     result = service.answer(item.question, session_id=f"eval-{item.id}")
     row = {
         "id": item.id,
@@ -72,6 +76,21 @@ def evaluate_item(service: ChatService, item) -> dict:
             "facts_unsourced": sorted(answer_facts - source_facts),
         }
     )
+    if use_judge:
+        try:
+            j = judge(item.question, item.answer, [s.text for s in result.sources], result.answer)
+        except Exception as exc:  # une réponse vide ou invalide du juge n'arrête pas l'évaluation
+            logger.warning("Juge indisponible pour %s : %s", item.id, exc)
+            row["judge_error"] = str(exc)[:200]
+            return row
+        row.update(
+            {
+                "judge_accuracy": j.accuracy,
+                "judge_faithfulness": j.faithfulness,
+                "judge_unsupported": j.unsupported,
+                "judge_errors": j.errors,
+            }
+        )
     return row
 
 
@@ -103,6 +122,23 @@ def summarize(rows: list[dict]) -> dict:
         "reponses_avec_chiffre_non_source": sum(bool(r["facts_unsourced"]) for r in answered),
         "zones": {z: sum(r["zone"] == z for r in rows) for z in sorted({r["zone"] for r in rows})},
     }
+    judged = [r for r in answered if "judge_accuracy" in r]
+    if judged:
+        faithful = [r["judge_faithfulness"] for r in judged if r["judge_faithfulness"] is not None]
+        summary["juge"] = {
+            "reponses_jugees": len(judged),
+            "fidelite_moyenne": round(statistics.mean(faithful), 3) if faithful else None,
+            "reponses_avec_affirmation_non_soutenue": sum(
+                bool(r["judge_unsupported"]) for r in judged
+            ),
+            "affirmations_contredites": sum(
+                c["verdict"] == "contredite" for r in judged for c in r["judge_unsupported"]
+            ),
+            "exactitude": {
+                a: sum(r["judge_accuracy"] == a for r in judged)
+                for a in ("correcte", "partielle", "incorrecte")
+            },
+        }
     return summary
 
 
@@ -111,23 +147,31 @@ def main() -> None:
     parser.add_argument("--validated", action="store_true", help="questions validées uniquement")
     parser.add_argument("--name", default="generation", help="nom du fichier de résultats")
     parser.add_argument("--limit", type=int, default=None, help="n premières questions (essai)")
+    parser.add_argument("--ids", nargs="*", default=None, help="seulement ces questions")
+    parser.add_argument("--model", default=None, help="modèle de génération (défaut : config)")
+    parser.add_argument("--judge", action="store_true", help="juge LLM de fidélité/exactitude")
+    parser.add_argument("--effort", default=None, help="effort de raisonnement : low/medium/high")
     args = parser.parse_args()
     setup_logging()
 
     items = [i for i in load() if i.status != "rejete"]
     if args.validated:
         items = [i for i in items if i.status == "valide"]
+    if args.ids:
+        items = [i for i in items if i.id in args.ids]
     items = items[: args.limit] if args.limit else items
-    service = ChatService()
+    service = ChatService(model=args.model, effort=args.effort)
     rows = []
     for n, item in enumerate(items, start=1):
-        rows.append(evaluate_item(service, item))
+        rows.append(evaluate_item(service, item, use_judge=args.judge))
         logger.info("%d/%d %s : %s", n, len(items), item.id, rows[-1]["zone"])
     summary = summarize(rows)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     out = RESULTS_DIR / f"{args.name}.json"
     payload = {
         "date": datetime.now(UTC).isoformat(timespec="seconds"),
+        "model": args.model or "config",
+        "effort": service.effort,
         "summary": summary,
         "questions": rows,
     }

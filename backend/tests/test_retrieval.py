@@ -149,6 +149,43 @@ def test_context_expansion_follows_citations(monkeypatch):
     assert [c["id"] for c in context] == ["a83", "a6", "a22a"] and context[2]["score"] == 0.7
 
 
+def test_split_sections_get_their_other_parts(monkeypatch):
+    from dataclasses import replace
+
+    from app.retrieval import pipeline
+
+    def part(n, total, size=10):
+        header = f"AI Act > Article 99 - Sanctions (partie {n}/{total} - paragraphe {n})"
+        meta = {"label": "Article 99", "header": header, "cites": [], "sections": []}
+        return {"id": f"p{n}", "document_id": "ai_act", "content": "x" * size, "metadata": meta}
+
+    chunks = {c["id"]: c for c in [part(n, 5) for n in (3, 1, 5, 2, 4)]}
+    chunks["a50"] = {**part(1, 1), "id": "a50"}
+    chunks["a50"]["metadata"] = {**chunks["a50"]["metadata"], "label": "Article 50"}
+    chunks["a50"]["metadata"]["header"] = "AI Act > Article 50"
+    monkeypatch.setitem(pipeline._CHUNKS, "test", chunks)
+    settings = pipeline.RetrievalSettings(strategy="test")
+    rows = [{**chunks["a50"], "score": 0.9}, {**chunks["p2"], "score": 0.5}]
+    rows.append({**chunks["p1"], "score": 0.1})  # noté par le reranker, hors des final_k
+
+    off = pipeline.Retriever(settings, db=object())
+    assert [c["id"] for c in off.with_citations(rows, final_k=2)] == ["a50", "p2"]
+
+    whole = pipeline.Retriever(replace(settings, parent_max_chars=100), db=object())
+    context = whole.with_citations(rows, final_k=2)
+    assert [c["id"] for c in context] == ["a50", "p1", "p2", "p3", "p4", "p5"]  # ordre du texte
+    assert context[1]["score"] == 0.1 and context[3]["score"] is None
+    assert context[1]["part_of"] == "Article 99" and "part_of" not in context[2]
+
+    neighbours = pipeline.Retriever(replace(settings, parent_max_chars=20), db=object())
+    assert [c["id"] for c in neighbours.with_citations(rows, final_k=2)] == [
+        "a50",
+        "p1",
+        "p2",
+        "p3",
+    ]
+
+
 def test_cohere_reranker_maps_scores_by_index(monkeypatch, tmp_path):
     import httpx
 

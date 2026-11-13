@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-12T16:40:15+00:00",
+  "model": "mistral-large-latest",
+  "summary": {
+    "questions": 3,
+    "hors_corpus_refusees": 1.0,
+    "corpus_refusees_a_tort": 0.5,
+    "reponses": 1,
+    "citations_valides": 1,
+    "renvois_invalides": 0,
+    "citations_inexactes": 0,
+    "sources_attendues_citees": 1.0,
+    "faits_cles_retrouves": 1.0,
+    "reponses_avec_chiffre_non_source": 0,
+    "zones": {
+      "reponse": 1,
+      "verification": 2
+    },
+    "juge": {
+      "reponses_jugees": 1,
+      "fidelite_moyenne": 1.0,
+      "reponses_avec_affirmation_non_soutenue": 0,
+      "affirmations_contredites": 0,
+      "exactitude": {
+        "correcte": 1,
+        "partielle": 0,
+        "incorrecte": 0
+      }
+    }
+  },
+  "questions": [
+    {
+      "id": "m032",
+      "category": "hors_corpus",
+      "zone": "verification",
+      "top_score": 0.29723242,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    },
+    {
+      "id": "m042",
+      "category": "date",
+      "zone": "reponse",
+      "top_score": 0.80852383,
+      "refused": false,
+      "answer": "Le RGPD est applicable à partir du 25 mai 2018 [1]. L'article 99, paragraphe 2, du règlement (UE) 2016/679 dispose en effet : « Il est applicable à partir du 25 mai 2018 » [1].",
+      "citations_ok": true,
+      "invalid_markers": [],
+      "unverified_quotes": [],
+      "uncited_sentences": 0,
+      "sources_cited": [
+        "RGPD Article 99"
+      ],
+      "expected_cited": 1,
+      "n_expected": 1,
+      "facts_expected": [
+        "date:2018-05-25"
+      ],
+      "facts_found": [
+        "date:2018-05-25"
+      ],
+      "facts_unsourced": [],
+      "judge_accuracy": "correcte",
+      "judge_faithfulness": 1.0,
+      "judge_unsupported": [],
+      "judge_errors": []
+    },
+    {
+      "id": "m045",
+      "category": "renvoi",
+      "zone": "verification",
+      "top_score": 0.2998702,
+      "refused": true,
+      "answer": "Je ne trouve pas la réponse dans mes sources (AI Act, RGPD et fiches pratiques de la CNIL sur l'IA). Je préfère ne pas répondre plutôt que de risquer une information juridique inexacte. Si votre question porte sur un autre texte, consultez directement sa source officielle."
+    }
+  ]
+}

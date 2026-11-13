@@ -25,7 +25,7 @@ PC portable sans GPU (i5, 8 Go de RAM). Chaque brique doit tourner sur CPU.
 
 | Brique | Choix | Pourquoi |
 |---|---|---|
-| Génération | **Mistral** (`ministral-8b`, configurable) | Seul un modèle génératif rédige une réponse ; un BERT est un encodeur, il ne génère pas de texte. 1 appel par question, cache et retry |
+| Génération | **Mistral** (`ministral-8b`, meilleur modèle de l'offre gratuite), comparé à `mistral-large` | Seul un modèle génératif rédige une réponse ; un BERT est un encodeur, il ne génère pas de texte. `mistral-large` fait 2 réponses incorrectes sur 100 contre 14 (phase 5 bis), mais il est payant depuis le 13/11/2026 : un changement de `config.yaml` suffit pour y passer. 1 appel par question, cache et retry |
 | Embeddings | **`mistral-embed`**, comparé à **`bge-m3`** (XLM-RoBERTa, famille BERT, local) | bge-m3 aide sans reranker, plus rien avec : retiré (image Docker sans torch, réindexation en 1 min) |
 | Recherche | **Hybride** : dense `mistral-embed` + BM25, fusion RRF | Le dense comprend les reformulations, BM25 les mots rares ; +8 points de hit@8 sur le dense seul |
 | Reranking | **Cohere `rerank-v5.0-pro`** (API), comparé à `bge-reranker-v2-m3`, Qwen3-Reranker et CamemBERT en local | Meilleure qualité, < 1 s par question ; les modèles locaux prennent de 20 s à plusieurs minutes sur CPU |
@@ -513,7 +513,7 @@ couche, la vérification des citations en génération la troisième.
 | Brique | Tarif public (novembre 2026) | Par question |
 |---|---|---|
 | Cohere Rerank pro (tarif relevé pour la v4) | ~2,50 $ / 1 000 « recherches » (une requête et jusqu'à 100 documents de 500 tokens) | ~0,005 $ (50 chunks d'environ 600 tokens = 1 à 2 recherches) |
-| Mistral (`ministral-8b`, génération) | ~0,10 à 0,15 $ / million de tokens | ~0,001 $ (environ 8 000 tokens) |
+| Mistral (`ministral-8b`, génération) | ~0,10 à 0,15 $ / million de tokens | ~0,001 $ (environ 8 000 tokens) ; `mistral-large`, plus juste (phase 5 bis) : ~0,008 $ |
 | `mistral-embed` (question) | négligeable | — |
 
 Soit **moins d'un centime par question**. Tarifs relevés sur des comparateurs, à confirmer sur
@@ -613,8 +613,165 @@ Limites connues :
   générées « dépend de l'entrée en vigueur dans votre État membre », ce qui est faux pour un
   règlement. Détecter ce cas demande un juge (humain ou LLM plus puissant que celui qui
   répond) : c'est la prochaine étape de l'évaluation.
-- Le modèle de génération est `ministral-8b` (offre gratuite). Le comparer à `mistral-small`
-  sur ces mêmes métriques dira si un modèle payant vaut son prix, comme pour le reranker.
+- Le modèle de génération était `ministral-8b` (offre gratuite) : voir la phase 5 bis.
+
+## Juge de fidélité et choix du modèle (phase 5 bis)
+
+```bash
+python -m app.evaluation.generation --validated --judge                          # modèle de config.yaml
+python -m app.evaluation.generation --validated --judge --model mistral-large-latest --effort low
+```
+
+### Le juge (`app/evaluation/judge.py`)
+
+Les contrôles par le code voient les renvois, les citations mot pour mot et les chiffres. Ils ne
+voient pas une condition inversée ou une règle appliquée au mauvais cas. Le juge, à la manière de
+RAGAS, reçoit la question, la réponse de référence validée, les sources fournies à l'assistant et
+sa réponse :
+1. il découpe la réponse en affirmations juridiques ;
+2. il note chacune **contre les sources** : soutenue / non soutenue / contredite (fidélité : rien
+   n'a été ajouté de mémoire) ;
+3. il note la réponse **contre la référence** : correcte / partielle / incorrecte.
+
+Le juge est `mistral-large`, un modèle qui raisonne. Toute valeur inattendue de sa part est
+ramenée au verdict le plus sévère.
+
+**Le juge a été validé avant qu'on se fie à ses chiffres** : sur 12 réponses que j'ai notées à la
+main, il donne le même verdict 9 fois, et les 3 désaccords ne diffèrent que d'un cran (partielle
+contre incorrecte). Il repère **les 5 réponses fausses**, dont une amende de 35 M€ au lieu de
+15 M€ qu'aucun contrôle par le code ne pouvait voir (15 M€ figurait aussi dans la réponse, dans
+une remarque annexe).
+
+### Offre gratuite de Mistral (limites relevées dans les en-têtes de l'API, 12/11/2026)
+
+| Modèle | Requêtes / min | Tokens / min | Remarque |
+|---|---|---|---|
+| `ministral-8b`, `ministral-14b` | 2 | 40 000 | |
+| `mistral-large` (Large 4) | 50 | 20 000 | modèle qui raisonne : bloc « thinking » avant la réponse, `top_p` = 1 exigé à température 0, `reasoning_effort` low / medium / high |
+| `mistral-small`, `mistral-medium` | 0 | 0 | non accessibles en offre gratuite |
+
+La comparaison prévue avec `mistral-small` est donc devenue une comparaison avec `mistral-large`,
+gratuit lui aussi. Chaque modèle a son limiteur de débit (fenêtre glissante d'une minute sur les
+requêtes et les tokens).
+
+### Résultats (125 questions, juge `mistral-large`)
+
+Détail : [generation_ministral8b.json](backend/eval/results/generation_ministral8b.json),
+[generation_large.json](backend/eval/results/generation_large.json),
+[generation_large_low.json](backend/eval/results/generation_large_low.json).
+
+| Métrique | `ministral-8b` | `mistral-large` | `mistral-large`, effort `low` |
+|---|---|---|---|
+| **Réponses correctes** (juge) | 61 / 101 | **79 / 100** | **81 / 100** |
+| Réponses partielles | 26 | 19 | 17 |
+| **Réponses incorrectes** | 14 | **2** | **2** |
+| Fidélité moyenne (affirmations soutenues par les sources) | 0,936 | **0,998** | **0,998** |
+| Réponses avec au moins une affirmation non soutenue | 20 | **1** | 2 |
+| Faits clés de la référence retrouvés | 82,1 % | **88,5 %** | **88,5 %** |
+| Questions hors corpus refusées (/23) | 100 % | 100 % | 100 % |
+| Questions du corpus refusées (/102) | 1 | 2 | 2 |
+| Temps de réponse (hors attente du limiteur) | 17 à 30 s (2 requêtes/min) | 12 à 20 s | ~6 s |
+
+**Les erreurs de `ministral-8b` sont des erreurs de lecture** : la bonne source était dans le
+contexte, mais le modèle inverse une condition (« dispensé d'une habilitation » au lieu de « doit
+disposer d'une habilitation » ; article 12, paragraphe 2, du RGPD retourné), restreint une
+portée (« uniquement les systèmes à haut risque » quand l'article 4 bis l'étend aux autres),
+applique le mauvais paragraphe (amende de l'article 99, paragraphe 3, au lieu du paragraphe 4)
+ou attribue à la CNIL un texte de l'AI Act. `mistral-large` corrige 11 de ces 14 réponses.
+
+Vérifications faites avant de conclure :
+- **Le juge se favorise-t-il ?** Il est du même modèle que celui qu'il juge. J'ai relu 8 réponses
+  de `mistral-large` (celles où `ministral-8b` se trompait) : je partage les 8 verdicts.
+- **Ses 6 citations « introuvables » ne sont pas inventées** : ce sont des adaptations
+  grammaticales (« dangereux » pour « dangereuses », « [votre] personnel » pour « leur
+  personnel », guillemets « » devenus ""). Le texte cité est bien dans la source, ce qui n'était
+  pas le cas des citations signalées chez `ministral-8b`.
+- **Ses 2 refus sont justes** : l'article nécessaire n'est pas dans le contexte (m039, m045).
+  Sur ces questions, `ministral-8b` comblait le trou avec une amende ou une date fausse.
+
+Ce qui reste à corriger vient de la **recherche**, pas du modèle :
+- **Article découpé en plusieurs chunks** : seul le début de l'article 99 arrive au modèle, pas
+  le paragraphe 4. Correction prévue : joindre les autres parties de l'article retrouvé
+  (« parent document »).
+- **Renvoi non suivi** : l'article 113 dit que le chapitre XII s'applique le 2 août 2025 « à
+  l'exception de l'article 101 ». Sans ce passage, les deux modèles répondent 2025 au lieu de
+  2026 (m046).
+
+Le temps de raisonnement varie d'un appel à l'autre, même à température 0 : une réponse qui
+omettait le mot « sauf » (m010) est juste aux trois niveaux d'effort quand on la relance. La
+vérification par le code et le juge restent donc nécessaires quel que soit le modèle.
+
+**Débit gratuit** : une question consomme environ 3 700 tokens de contexte (médiane, 7 100 au
+plus) plus la réponse. Avec 20 000 tokens par minute, l'offre gratuite sert 3 à 4 questions par
+minute pour toute l'application : suffisant pour une démo, pas pour la production.
+
+**Effort de raisonnement** : `low` fait aussi bien que le niveau par défaut (81 réponses
+correctes contre 79, 2 incorrectes dans les deux cas ; l'écart est dans le bruit), en 6 s au lieu
+de 12 à 20 s. Ses 4 citations signalées sont, là encore, des accords grammaticaux. Sa nouvelle
+erreur (m008) est une simplification réelle : l'exemption de l'article 35, paragraphe 10, du RGPD
+est donnée sans sa condition (traitements fondés sur l'article 6, paragraphe 1, point c) ou e)).
+
+**Coût en production** : `mistral-large` (Large 4) est affiché à environ 1,36 $ par million de
+tokens en entrée et 4,18 $ en sortie (tarifs relevés sur des comparateurs, à confirmer sur la page
+officielle). Avec environ 4 000 tokens de contexte et 600 tokens de réponse en effort `low`, une
+réponse coûte **moins d'un centime** (~0,008 $), contre ~0,001 $ pour `ministral-8b`. Avec le
+reranker Cohere, une question revient à environ 1,3 centime : 12 réponses fausses de moins sur 100
+valent cet écart pour un outil juridique.
+
+**Décision : `ministral-8b`, faute d'offre gratuite pour `mistral-large`.** Le 13/11/2026,
+Mistral a retiré `mistral-large` de l'offre gratuite (erreur 403 « tier_not_allowed » ; seuls
+`ministral-3b`, `ministral-8b`, `ministral-14b` et `open-mistral-nemo` restent accessibles). Le
+projet garde le modèle gratuit le mieux mesuré. Passer à `mistral-large` en effort `low` ne
+demande que deux lignes de `config.yaml` (`chat_model`, et l'effort déjà réglé) : c'est le premier
+investissement à faire en production, chiffré ci-dessus. Le juge, lui aussi `mistral-large`,
+n'est plus utilisable gratuitement : ses résultats restent en cache et dans `eval/results/`.
+
+## Articles découpés : « parent document » (phase 5 ter)
+
+Le chunking structurel coupe un long article en parties d'au plus 2 000 caractères (233 sections
+sur 689). La partie retrouvée peut renvoyer à une autre : pour « quelle amende pour une PME qui
+utilise la notation sociale ? », la recherche ramène l'article 99, paragraphes 4 à 6 (plafond des
+PME), mais pas le paragraphe 3 (35 M€). Le contrôle de couverture refuse alors à juste titre, et
+`ministral-8b`, en zone de réponse, comblait le trou avec une amende fausse (m045 : 35 M€ au lieu
+de 15 M€).
+
+**Correction** (`Retriever.with_siblings`, `retrieval.parent_max_chars`) : chaque chunk retenu est
+complété par les autres parties de sa section, en entier si la section fait au plus 4 000
+caractères, sinon par ses parties voisines (article 3 : 11 parties ; fiches CNIL : jusqu'à 23).
+Les parties jointes suivent l'ordre du texte et gardent le score du reranker s'il les a notées.
+Elles ne suivent pas leurs propres citations : essayé, cela ajoutait des articles hors sujet
+(articles 98, 56, 96 pour une question d'amende).
+
+**Mesure.** Les métriques du retrieval comptent des sections (« Article 99 ») : elles ne voient
+pas une partie manquante. Le juge `mistral-large` n'étant plus gratuit, l'effet sur
+`ministral-8b` a été mesuré par le code puis relu à la main
+([generation_parent_ministral8b.json](backend/eval/results/generation_parent_ministral8b.json)) :
+
+| | Sans | Avec |
+|---|---|---|
+| Contexte envoyé au modèle (médiane) | 10 400 caractères | 15 400 caractères (+50 %) |
+| Réponses jugées incorrectes en phase 5 bis (14), relues à la main | 14 incorrectes | **9 corrigées**, 1 refus (m039, l'article 111 manque), 4 toujours fausses |
+| Échantillon de 12 réponses correctes, relues à la main | 12 correctes | 11 correctes, 1 dégradée (m003 : « principalement le 2 août 2025 » avant la bonne date) |
+| Questions du corpus refusées (/102) | 1 (m049) | 4 : m049, m039 (réponse fausse avant), m010 (juste avant) et m014 (partielle avant) |
+| Date absente des sources (avertissement affiché) | 0 | 1 (m048 : « 28 août 2024 ») |
+
+Corrigées : l'amende de m045 (15 M€), l'habilitation de sécurité (g046), l'article 12,
+paragraphe 6, du RGPD (g054), l'attribution à la CNIL (g052), les deux critères de l'AIPD (m020),
+entre autres. Le contexte change pour presque toutes les questions : une partie de ces gains peut
+venir du hasard, comme la dégradation de m003. Mais le gain va nettement dans un sens (9 erreurs
+corrigées contre une dégradation sur l'échantillon), et le mécanisme est vérifié sur les cas
+ciblés (m045, question PME) : **l'expansion est gardée**. Coût : +50 % de tokens par question
+(encore loin de la limite de 40 000 tokens/min de `ministral-8b`), et deux refus de plus.
+
+Les deux nouveaux refus sont des instabilités du petit modèle, pas des trous du contexte : pour
+m010, `ministral-8b` écrit le marqueur `SOURCES_INSUFFISANTES` puis répond correctement ; pour
+m014 (zone grise), le contrôle de couverture conclut cette fois que l'article 4 ne suffit pas.
+Ne compter comme refus que les marqueurs non suivis d'une réponse citée a été écarté : dans le
+cache, 5 des 6 réponses de ce type sont de vrais refus qui citent les sources pour expliquer ce qui
+manque.
+
+Restent faux : les renvois que la recherche ne suit pas (article 113 pour m046 et m048, article 111
+pour m039) et des erreurs de lecture du modèle (m026 : « uniquement les systèmes à haut risque »).
 
 ## Feuille de route
 
@@ -627,7 +784,8 @@ Limites connues :
 - [x] **Phase 4 bis** : consolidation : 50 candidats, bge-m3 retiré, tableaux et schémas CNIL, considérants marqués, golden set à 125 questions, graphe des citations, garde-fou à 3 zones
 - [x] **Phase 4 ter** : Cohere comparé à Jina reranker v3 sur le golden set : classement équivalent, garde-fou nettement meilleur avec Cohere, retenu
 - [x] **Phase 5** : génération Mistral avec citations vérifiées par le code, routeur, contrôle de couverture en zone grise, mémoire conversationnelle, streaming (`/chat`, `/chat/stream`), évaluation sur 125 questions
-- [ ] **Phase 5 bis** : juge de fidélité (raisonnements faux sans chiffre), comparaison `ministral-8b` / `mistral-small`
+- [x] **Phase 5 bis** : juge de fidélité validé à la main, comparaison `ministral-8b` / `mistral-large` (effort de raisonnement réglable ; `ministral-8b` gardé, `mistral-large` étant devenu payant)
+- [x] **Phase 5 ter** : « parent document » : les parties d'un article découpé sont jointes au contexte (9 réponses fausses sur 14 corrigées, relues à la main)
 - [ ] **Phase 6** : agent LangGraph d'analyse de conformité, guidé par la liste de vérification CNIL (human-in-the-loop)
 - [ ] **Phase 7** : frontend Next.js, upload PDF (Celery + Redis), auth
 - [ ] **Phase 8** : déploiement, démo vidéo

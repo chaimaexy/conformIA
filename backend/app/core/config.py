@@ -48,11 +48,23 @@ class Settings(BaseSettings):
     config_path: Path = BACKEND_DIR / "config.yaml"
 
 
+class RateLimit(BaseModel):
+    rpm: int = 2  # requêtes par minute
+    tpm: int = 40000  # tokens par minute (entrée + sortie)
+
+
 class LLMConfig(BaseModel):
     provider: Literal["mistral"] = "mistral"
     chat_model: str = "ministral-8b-latest"
+    judge_model: str = (
+        "mistral-large-latest"  # évaluation : raisonnement complet (effort par défaut)
+    )
     temperature: float = 0.0
     max_tokens: int = 1024
+    max_tokens_by_model: dict[str, int] = Field(default_factory=dict)  # modèles qui raisonnent
+    rate_limits: dict[str, RateLimit] = Field(default_factory=dict)  # par modèle ; défaut : 2/min
+    # effort de raisonnement des réponses (pas du juge), par modèle qui raisonne : low/medium/high
+    reasoning_effort: dict[str, str] = Field(default_factory=dict)
 
 
 class EmbeddingsConfig(BaseModel):
@@ -87,6 +99,7 @@ class RetrievalConfig(BaseModel):
     multi_query: bool = False
     rerank_candidates: int = 20  # candidats fusionnés relus par le reranker
     final_k: int = 4  # chunks envoyés au LLM
+    parent_max_chars: int = 0  # section découpée jointe en entier jusqu'à cette taille (0 : non)
 
 
 class CorpusSource(BaseModel):

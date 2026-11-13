@@ -10,6 +10,8 @@ Chaque étape est activable séparément pour être mesurée sur le golden set
 (python -m app.evaluation.retrieval --suite phase4).
 """
 
+import re
+from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
 
@@ -23,6 +25,12 @@ from app.vectordb.store import client, vector_literal
 
 PAGE = 1000  # limite de lignes par requête PostgREST
 _CHUNKS: dict[str, dict[str, dict]] = {}  # stratégie -> chunks, partagé entre configurations
+_PART = re.compile(r"\(partie (\d+)/\d+")  # « Article 99 - Sanctions (partie 2/5 - ... »
+
+
+def part_number(chunk: dict) -> int:
+    m = _PART.search(chunk["metadata"]["header"])
+    return int(m[1]) if m else 1
 
 
 @dataclass(frozen=True)
@@ -35,6 +43,8 @@ class RetrievalSettings:
     multi_query: bool = False
     reranker: str | None = None  # « cohere:<modèle> » ou id Hugging Face (voir rerank.py)
     rerank_candidates: int = 20  # candidats fusionnés relus par le cross-encodeur (CPU : coûteux)
+    # section découpée : jointe en entier jusqu'à cette taille, sinon parties voisines (0 : non)
+    parent_max_chars: int = 0
 
     @classmethod
     def from_config(cls) -> "RetrievalSettings":
@@ -50,6 +60,7 @@ class RetrievalSettings:
             multi_query=r.multi_query,
             reranker=cfg.reranker.model,
             rerank_candidates=r.rerank_candidates,
+            parent_max_chars=r.parent_max_chars,
         )
 
 
@@ -150,16 +161,53 @@ class Retriever:
         return sorted(zip(ids, scores, strict=True), key=lambda kv: kv[1], reverse=True)
 
     @cached_property
+    def section_parts(self) -> dict[tuple[str, str], list[dict]]:
+        """(document, « Article 99 ») -> chunks de la section, dans l'ordre du texte."""
+        parts: dict[tuple[str, str], list[dict]] = defaultdict(list)
+        for chunk in self.chunks.values():
+            parts[(chunk["document_id"], chunk["metadata"]["label"])].append(chunk)
+        for chunks in parts.values():
+            chunks.sort(key=part_number)
+        return dict(parts)
+
+    @cached_property
     def section_heads(self) -> dict[tuple[str, str], dict]:
         """(document, « Article 15 ») -> 1er chunk de la section (pour l'expansion)."""
-        heads: dict[tuple[str, str], dict] = {}
-        for chunk in self.chunks.values():
-            meta = chunk["metadata"]
-            key = (chunk["document_id"], meta["label"])
-            first_part = "(partie " not in meta["header"] or "(partie 1/" in meta["header"]
-            if key not in heads or first_part:
-                heads[key] = chunk
-        return heads
+        return {key: chunks[0] for key, chunks in self.section_parts.items()}
+
+    def with_siblings(self, rows: list[dict], scored: dict[str, float]) -> list[dict]:
+        """Complète chaque chunk d'une section découpée par ses autres parties (parent document).
+
+        Le chunking structurel coupe un long article en parties d'au plus 2 000 caractères :
+        la partie retrouvée (article 99, paragraphes 4 à 6 : plafond des PME) peut renvoyer à une
+        autre (paragraphe 3 : le montant). Une section d'au plus `parent_max_chars` caractères est
+        jointe en entier ; au-delà (article 3 : 11 parties, fiches CNIL : jusqu'à 23), seulement
+        les parties voisines. Les parties jointes suivent l'ordre du texte, et gardent le score du
+        reranker s'il les a notées (None sinon).
+        """
+        out: list[dict] = []
+        placed: set[str] = set()
+        by_id = {r["id"]: r for r in rows}
+        for row in rows:
+            if row["id"] in placed:
+                continue
+            parts = self.section_parts.get((row["document_id"], row["metadata"]["label"]), [])
+            ids = [p["id"] for p in parts]
+            if row["id"] not in ids:  # chunk inconnu de l'index chargé : seul
+                parts, ids = [row], [row["id"]]
+            if sum(len(p["content"]) for p in parts) > self.settings.parent_max_chars:
+                i = ids.index(row["id"])
+                parts = parts[max(0, i - 1) : i + 2]
+            for part in parts:
+                if part["id"] in placed:
+                    continue
+                placed.add(part["id"])
+                if part["id"] in by_id:
+                    out.append(by_id[part["id"]])
+                else:
+                    sibling = {**part, "score": scored.get(part["id"])}
+                    out.append({**sibling, "part_of": row["metadata"]["label"]})
+        return out
 
     def with_citations(self, rows: list[dict], final_k: int, max_extra: int = 6) -> list[dict]:
         """Les final_k meilleurs chunks + les sections qu'ils citent (graphe des citations, 1 saut).
@@ -171,6 +219,9 @@ class Retriever:
         Les sections ajoutées gardent ce score, ou None si elles n'ont pas été notées.
         """
         context = rows[:final_k]
+        if self.settings.parent_max_chars:
+            ids = {r["id"]: r["score"] for r in rows if r.get("score") is not None}
+            context = self.with_siblings(context, ids)
         have = {(r["document_id"], r["metadata"]["label"]) for r in context}
         scored: dict[tuple[str, str], float] = {}
         for r in rows:
@@ -178,7 +229,7 @@ class Retriever:
             if r.get("score") is not None:
                 scored[key] = max(scored.get(key, r["score"]), r["score"])
         cited: list[tuple[tuple[str, str], str]] = []
-        for row in rows[:final_k]:
+        for row in rows[:final_k]:  # les parties jointes ne sont pas suivies (bruit mesuré)
             for label in row["metadata"].get("cites", []):
                 key = (row["document_id"], label)
                 if key not in have and key in self.section_heads and key not in dict(cited):

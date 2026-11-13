@@ -128,11 +128,14 @@ def answer_messages(question: str, sources: list[Source], zone: str) -> list[dic
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 
-def check_coverage(question: str, sources: list[Source]) -> dict | None:
+def check_coverage(
+    question: str, sources: list[Source], model: str | None = None, effort: str | None = None
+) -> dict | None:
     """Zone grise : les sources répondent-elles ? Un appel dédié, plus fiable qu'une consigne
     noyée dans le prompt de réponse (mesuré : DSA et cookies passaient). None si indisponible."""
     try:
-        data = chat_json(CHECK.format(sources=format_sources(sources), question=question))
+        prompt = CHECK.format(sources=format_sources(sources), question=question)
+        data = chat_json(prompt, model=model, effort=effort)
     except Exception:
         logger.exception("Contrôle de couverture indisponible : consigne de zone grise seule")
         return None
@@ -149,7 +152,17 @@ def default_retriever():
 
 
 class ChatService:
-    def __init__(self, retriever=None, memory: ConversationStore | None = None):
+    def __init__(
+        self,
+        retriever=None,
+        memory: ConversationStore | None = None,
+        model: str | None = None,
+        effort: str | None = None,
+    ):
+        cfg = get_app_config().llm
+        self.model = model  # modèle de génération ; None : celui de config.yaml
+        # effort de raisonnement (mistral-large) ; None : celui de config.yaml pour ce modèle
+        self.effort = effort or cfg.reasoning_effort.get(model or cfg.chat_model)
         self._retriever = retriever
         self.memory = memory or ConversationStore()
 
@@ -172,7 +185,7 @@ class ChatService:
         sources = [Source.from_row(i + 1, row) for i, row in enumerate(context)]
         prepared = Prepared(session_id, message, r, zone, top_score, sources)
         if zone == "verification":
-            prepared.coverage = check_coverage(r.question, sources)
+            prepared.coverage = check_coverage(r.question, sources, self.model, self.effort)
         if zone != "refus" and not prepared.not_covered:
             prepared.messages = answer_messages(r.question, sources, zone)
         return prepared
@@ -212,7 +225,9 @@ class ChatService:
 
     def answer(self, message: str, session_id: str | None = None) -> ChatAnswer:
         p = self.prepare(message, session_id)
-        generated = chat_text(p.messages) if p.messages else None
+        generated = None
+        if p.messages:
+            generated = chat_text(p.messages, model=self.model, effort=self.effort)
         return self.finish(p, generated)
 
     def stream(self, message: str, session_id: str | None = None) -> Iterator[dict]:
@@ -230,7 +245,7 @@ class ChatService:
             yield {"type": "statut", "etape": "redaction"}
             parts: list[str] = []
             buffer, released = "", False
-            for chunk in stream_text(p.messages):
+            for chunk in stream_text(p.messages, model=self.model, effort=self.effort):
                 parts.append(chunk)
                 if released:
                     yield {"type": "texte", "texte": chunk}

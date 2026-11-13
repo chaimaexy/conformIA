@@ -3,14 +3,28 @@
 
 llm:
   provider: mistral
-  # Offre gratuite actuelle : ministral-8b / open-mistral-nemo seulement (2 req/min).
-  # mistral-small / medium / large nécessitent l'offre payante (Scale).
+  # Offre gratuite (« Experiment »), limites relevées le 12/11/2026 dans les en-têtes de l'API
+  # (mistral-large en est retiré le 13/11/2026 ; ministral-3b, 14b et open-mistral-nemo restent) :
+  # ministral-8b / 14b : 2 requêtes et 40 000 tokens par minute ; mistral-large : 50 requêtes
+  # et 20 000 tokens par minute ; mistral-small / medium : non accessibles (limite à 0).
+  # Génération : ministral-8b, le meilleur modèle mesuré parmi ceux de l'offre gratuite.
+  # mistral-large faisait mieux (2 réponses incorrectes sur 100 contre 14, phase 5 bis) mais
+  # n'est plus accessible en offre gratuite depuis le 13/11/2026 (erreur 403 « tier_not_allowed »).
   chat_model: ministral-8b-latest
+  judge_model: mistral-large-latest     # juge de l'évaluation (offre payante désormais ; résultats en cache)
   temperature: 0.0                      # réponses juridiques : déterministe
   max_tokens: 1024
+  max_tokens_by_model:
+    mistral-large-latest: 16000         # modèle qui raisonne : jusqu'à ~5 000 tokens de « thinking » avant la réponse
+  rate_limits:
+    ministral-8b-latest: {rpm: 2, tpm: 40000}
+    ministral-14b-latest: {rpm: 2, tpm: 40000}
+    mistral-large-latest: {rpm: 50, tpm: 20000}
+  reasoning_effort:                     # réponses, routeur et contrôle de couverture (pas le juge)
+    mistral-large-latest: low           # aussi juste que l'effort par défaut, 2 à 3 fois plus rapide
 
 # Génération : seul un LLM génératif peut rédiger la réponse (un BERT ne génère pas de texte).
-# Contrainte offre gratuite (2 req/min) : 1 appel LLM par question, cache + retry, et
+# Offre gratuite : 1 appel LLM par question (2 en zone grise), cache + retry, et
 # évaluation du retrieval sans LLM (recall@k, MRR).
 
 embeddings:
@@ -63,6 +77,7 @@ retrieval:
   multi_query: false                    # mesuré en phase 4 : fait baisser hit@1, brouille le garde-fou
   rerank_candidates: 50                 # candidats fusionnés relus par le reranker (20 -> 50 : MRR 0,837 -> 0,859)
   final_k: 4                            # chunks envoyés au LLM
+  parent_max_chars: 4000                # partie d'un article découpé : section entière jusqu'à 4 000 car., sinon parties voisines
 
 # Versions figées pour la reproductibilité. L'ingestion interroge Cellar et prévient
 # si une version consolidée plus récente ou un nouveau rectificatif français existe.

@@ -37,10 +37,14 @@ Ne cite aucun texte par son numéro (ni règlement, ni article, ni annexe). Text
 Réponds uniquement en JSON : {{"juridique": "...", "mots_cles": "...", "hypothese": "..."}}"""
 
 
+MODEL = "ministral-8b-latest"
+
+
 def expand(question: str) -> list[str]:
     """Reformulations de la question (sans la question elle-même). Liste vide en cas d'échec."""
     try:
-        result = chat_json(PROMPT.format(question=question))
+        # modèle de la mesure de phase 4 (réponses en cache) ; le multi-query a été écarté
+        result = chat_json(PROMPT.format(question=question), model=MODEL)
     except Exception as exc:  # le multi-query ne doit jamais bloquer la recherche
         logger.warning("Multi-query indisponible (%s) : question seule", exc)
         return []

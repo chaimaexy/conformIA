@@ -66,7 +66,7 @@ def test_router_only_when_useful(monkeypatch):
     assert not needs_router("Que dit l'article 22 du RGPD ?", [])
     assert needs_router("bonjour", [])
     assert needs_router("et pour les PME ?", [{"role": "user", "content": "..."}])
-    monkeypatch.setattr(router_module, "chat_json", lambda p: pytest.fail("appel inutile"))
+    monkeypatch.setattr(router_module, "chat_json", lambda p, **k: pytest.fail("appel inutile"))
     assert route("Que dit l'article 22 du RGPD ?", []).routed is False
 
 
@@ -75,14 +75,14 @@ def test_router_rewrites_and_falls_back(monkeypatch):
     monkeypatch.setattr(
         router_module,
         "chat_json",
-        lambda p: {"intention": "juridique", "question": "Amende pour une PME ?"},
+        lambda p, **k: {"intention": "juridique", "question": "Amende pour une PME ?"},
     )
     assert route("et pour les PME ?", history).question == "Amende pour une PME ?"
-    monkeypatch.setattr(router_module, "chat_json", lambda p: {"intention": "???"})
+    monkeypatch.setattr(router_module, "chat_json", lambda p, **k: {"intention": "???"})
     r = route("et pour les PME ?", history)
     assert (r.intention, r.question) == ("juridique", "et pour les PME ?")
 
-    def broken(prompt):
+    def broken(prompt, **k):
         raise RuntimeError("API indisponible")
 
     monkeypatch.setattr(router_module, "chat_json", broken)
@@ -116,11 +116,11 @@ class FakeRetriever:
 def make_service(monkeypatch, score, generated, covered=True):
     calls = []
 
-    def fake_chat_text(messages):
+    def fake_chat_text(messages, model=None, effort=None):
         calls.append(messages)
         return generated
 
-    def fake_check(prompt):
+    def fake_check(prompt, model=None, effort=None):
         calls.append("controle")
         return {"couvert": covered, "raison": "test"}
 
@@ -176,7 +176,7 @@ def test_unsourced_figure_triggers_a_visible_warning(monkeypatch):
 def test_conversation_needs_no_search(monkeypatch):
     service, calls = make_service(monkeypatch, 0.9, "x")
     monkeypatch.setattr(
-        router_module, "chat_json", lambda p: {"intention": "conversation", "question": ""}
+        router_module, "chat_json", lambda p, **k: {"intention": "conversation", "question": ""}
     )
     result = service.answer("bonjour")
     assert result.zone == "conversation" and result.answer == CONVERSATION and calls == []
@@ -185,14 +185,18 @@ def test_conversation_needs_no_search(monkeypatch):
 def test_stream_hides_the_refusal_marker(monkeypatch):
     service, _ = make_service(monkeypatch, 0.3, "non utilisé")
     monkeypatch.setattr(
-        service_module, "stream_text", lambda m: iter([INSUFFICIENT[:6], INSUFFICIENT[6:]])
+        service_module,
+        "stream_text",
+        lambda m, model=None, effort=None: iter([INSUFFICIENT[:6], INSUFFICIENT[6:]]),
     )
     events = list(service.stream("Que dit le Data Act ?"))
     assert [e["type"] for e in events] == ["statut", "sources", "statut", "fin"]
     assert events[-1]["refused"] and events[-1]["answer"] == REFUSAL
 
     pieces = ["Applicable dès le ", "2 août 2026 ", "[1]."]
-    monkeypatch.setattr(service_module, "stream_text", lambda m: iter(pieces))
+    monkeypatch.setattr(
+        service_module, "stream_text", lambda m, model=None, effort=None: iter(pieces)
+    )
     events = list(service.stream("Quand l'AI Act s'applique-t-il ?"))
     text = "".join(e["texte"] for e in events if e["type"] == "texte")
     assert text == "".join(pieces) and events[-1]["verification"]["cited"] == [1]
@@ -205,7 +209,9 @@ def test_chat_endpoints(monkeypatch):
     service, _ = make_service(monkeypatch, 0.8, "Applicable dès le 2 août 2026 [1].")
     monkeypatch.setattr(chat, "get_service", lambda: service)
     monkeypatch.setattr(
-        service_module, "stream_text", lambda m: iter(["Applicable dès le 2 août 2026 [1]."])
+        service_module,
+        "stream_text",
+        lambda m, model=None, effort=None: iter(["Applicable dès le 2 août 2026 [1]."]),
     )
     client = TestClient(app)
     body = client.post("/chat", json={"message": "Quand l'AI Act s'applique-t-il ?"}).json()
@@ -234,3 +240,24 @@ def test_quote_with_ellipsis_checks_each_fragment():
     bad = "« Le non-respect de l'interdiction [...] fait l'objet de prison ferme » [2]."
     assert not verify(ok, SOURCES).unverified_quotes
     assert verify(bad, SOURCES).unverified_quotes
+
+
+def test_judge_parsing_is_strict_on_unknown_values():
+    from app.evaluation.judge import parse
+
+    j = parse(
+        {
+            "affirmations": [
+                {"texte": "Amende de 35 M€", "verdict": "contredite"},
+                {"texte": "Article 50", "verdict": "soutenue"},
+                {"texte": "Vague", "verdict": "peut-être"},  # inconnu -> non soutenue
+                {"texte": "  "},  # vide -> ignorée
+            ],
+            "exactitude": "plutôt bonne",  # inconnu -> incorrecte (le plus sévère)
+            "erreurs": ["35 M€ au lieu de 15 M€", ""],
+        }
+    )
+    assert [c["verdict"] for c in j.claims] == ["contredite", "soutenue", "non_soutenue"]
+    assert j.accuracy == "incorrecte" and j.errors == ["35 M€ au lieu de 15 M€"]
+    assert j.faithfulness == 1 / 3 and len(j.unsupported) == 2
+    assert parse({}).faithfulness is None
