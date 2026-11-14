@@ -58,6 +58,30 @@ class Verification:
         )
 
 
+def quote_found(quote: str, sources: list[str]) -> bool:
+    """Une citation (coupée ou non par « [...] ») figure-t-elle mot pour mot dans les sources ?
+    Une citation trop courte pour être vérifiée (moins de 4 mots par morceau) est refusée."""
+    fragments = [f for f in ELLIPSIS.split(quote) if len(f.split()) >= MIN_QUOTE_WORDS]
+    haystack = [normalize(s) for s in sources]
+    return bool(fragments) and all(any(normalize(f) in s for s in haystack) for f in fragments)
+
+
+def longest_run(quote: str, text: str) -> int:
+    """Nombre de mots du plus long passage de la citation présent tel quel dans le texte.
+
+    Plus tolérant que quote_found : un petit modèle abrège ou complète volontiers une longue
+    phrase (« ... de telles relations professionnelles contractuelles »). Sert à ancrer un choix
+    (quel point de l'annexe III ?) ; le texte affiché vient alors du code, pas de la citation."""
+    words = normalize(quote).split()
+    haystack = normalize(text)
+    best = 0
+    for i in range(len(words)):
+        j = i + best + 1  # on ne cherche que plus long que le meilleur déjà trouvé
+        while j <= len(words) and " ".join(words[i:j]) in haystack:
+            best, j = j - i, j + 1
+    return best
+
+
 def verify(answer: str, sources: list[str]) -> Verification:
     """`sources[i]` est le texte de la source numérotée i + 1."""
     numbers = cited_numbers(answer)

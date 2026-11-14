@@ -809,6 +809,143 @@ classées incorrectes, 12 sont corrigées. Restent fausses deux erreurs de lectu
 « uniquement les systèmes à haut risque » ; g048, divulgation limitée aux autorités notifiantes),
 le type d'erreur que `mistral-large` ne faisait plus.
 
+## Agent d'analyse de conformité (phase 6)
+
+![Architecture cible](docs/architecture_agent.svg)
+
+Le chat répond à une question précise ; l'agent fait un **pré-diagnostic** d'un projet décrit
+librement, comme le ferait un consultant : il qualifie le système au regard de l'AI Act, liste
+les obligations et leurs dates, passe la liste de vérification RGPD de la CNIL, demande ce qui
+manque et rend un rapport sourcé.
+
+```bash
+curl -N -X POST localhost:8000/analyses -H "Content-Type: application/json"      -d '{"description": "Nous voulons utiliser un logiciel qui classe les CV de nos candidats."}'
+# -> événements : debut, etape..., questions (l'analyse attend)
+curl -N -X POST localhost:8000/analyses/<id>/reponses -H "Content-Type: application/json"      -d '{"reponses": {"roles": ["deployeur"], "biometrie": "non"}}'
+# -> etape..., rapport (JSON + Markdown)
+python -m app.agents.obligations --verifier    # la carte des obligations est-elle fidèle au texte ?
+python -m app.evaluation.agent                 # 19 scénarios vérifiés
+```
+
+### Pourquoi un graphe fixe plutôt qu'un agent libre
+
+| Forme | Appels LLM par analyse | Pour ce projet |
+|---|---|---|
+| Agent libre (ReAct) | 15 à 30 | 10 à 15 min à 2 requêtes/min, trajet différent à chaque fois, outils mal choisis par un modèle 8B |
+| Plan-and-execute, multi-agents | 10 à 20 et plus | le plan est déjà connu : c'est la procédure de conformité |
+| **Graphe fixe + boucle corrective bornée** (retenu) | **4 à 9** (7,4 en moyenne) | rapide, reproductible, relisible par un juriste |
+
+Quand les étapes sont connues d'avance, un workflow est plus fiable qu'un agent qui décide de son
+trajet ([Anthropic, *Building effective agents*](https://www.anthropic.com/engineering/building-effective-agents)).
+La boucle corrective reprend l'idée de Corrective RAG : un résultat mal sourcé déclenche **un**
+nouvel essai ciblé, pas une boucle ouverte.
+
+### Les étapes (`app/agents/`)
+
+| Étape | Qui décide | Garde-fou |
+|---|---|---|
+| ① **Profil** (`profile.py`) | 1 appel LLM : description -> rôle, finalité, données, personnes... | chaque valeur doit être prouvée par un extrait de la description, **vérifié mot pour mot** ; sinon elle redevient inconnue |
+| ② **Questions** | code : liste fixe de questions fermées, seulement pour ce qui manque | pause LangGraph (`interrupt`), reprise après réponse ; « je ne sais pas » est signalé dans le rapport |
+| ③ **Interdictions** (`classification.py`, `interdictions.yaml`) | 1 appel repère les points candidats de l'article 5 ; 1 appel juge leurs conditions | les conditions de chaque point (cumulatives, alternatives, exceptions) sont **fixées dans un fichier**, recopiées du texte ; le modèle ne juge que les faits, **le code décide** |
+| ④ **Haut risque** | 1 appel sur l'article 6 et l'annexe III (lus par leur numéro, sans recherche) | le code retrouve le point d'où vient la citation (8 mots consécutifs au moins) et cite le texte exact ; un nouvel essai, puis « incertain » ; dérogation de l'article 6, paragraphe 3 |
+| ⑤ **Obligations et dates** (`obligations.py`) | **code** : article 50, annexe I et chapitre V se déduisent du profil ; carte des obligations | 69 extraits (carte + conditions de l'article 5) vérifiés contre l'index ; dates des articles 113 et 111 |
+| ⑥ **RGPD** (`checklist.py`) | 3 appels : les 11 thèmes de la liste de la CNIL par lots | « à vérifier » par défaut, rien d'affirmé que le profil ne dit pas ; aucun appel sans données personnelles |
+| ⑦ **Rapport** (`report.py`) | code + 1 synthèse LLM | une synthèse qui contient une date ou un montant absent des résultats est remplacée par celle du code |
+
+**Les dates ne sont jamais devinées.** L'article 113, point c), fixe les dates des systèmes à haut
+risque pour le chapitre III, sections 1 à 3 (articles 6 à 27) seulement. Pour les articles 43,
+47 à 49, 72, 73 et 86, placés ailleurs, la carte ne donne pas de date et le rapport renvoie à
+l'article 113.
+
+### Ce que le premier essai réel a appris
+
+Sur un logiciel de tri de CV utilisé par une PME :
+- **le modèle l'a classé « pratique interdite » (notation sociale)**, en citant correctement le
+  début de l'article 5, paragraphe 1, point c) (« l'évaluation ou la classification de personnes
+  physiques »), mais sans ses autres conditions (comportement social sur une période, note sociale,
+  traitement préjudiciable). La citation était exacte : le contrôle par le code ne pouvait pas le
+  voir. D'où la revérification condition par condition ;
+- **le profil contenait une information inventée** (« déjà sur le marché après le 2 août 2026 »
+  pour un projet qui ne l'était pas). D'où l'exigence d'une preuve pour chaque valeur ;
+- **la réponse JSON pour 4 thèmes CNIL était coupée** à 1 024 tokens : limite portée à 4 096 pour
+  l'agent, un nouvel essai, puis « à vérifier ».
+
+Après correction : haut risque, annexe III, point 4 a), obligations du déployeur (article 26,
+information des candidats, droit à l'explication) à partir du 2 décembre 2027.
+
+### Évaluation (19 scénarios)
+
+19 projets fictifs (`eval/agent_scenarios.yaml`) :
+- 8 systèmes à haut risque ;
+- 3 pratiques interdites ;
+- 3 cas de transparence (chatbot, générateur d'images, hypertrucage) ;
+- 2 modèles à usage général ;
+- 1 composant de sécurité (annexe I) ;
+- 2 cas à risque minimal.
+
+Chaque résultat attendu (niveau, point, obligations et dates) a été vérifié contre les textes.
+L'agent est joué comme par un utilisateur : l'évaluation répond à ses questions à partir des faits
+du scénario.
+
+| Mesure | Premier passage | Après corrections |
+|---|---|---|
+| Niveau de risque juste | 14/19 | **19/19** |
+| Point de l'annexe III juste | 7/8 | **8/8** |
+| Pratique interdite reconnue | 0/3 | **3/3** |
+| Transparence (article 50) juste | 2/3 | **3/3** |
+| Modèle à usage général juste | 2/2 | **2/2** |
+| Obligations attendues retrouvées | 38/44 | **44/44** |
+| Dates fausses | 0 | **0** |
+| Obligations en trop | 0 | **0** |
+| Valeurs de profil contraires aux faits | 9 | **1** |
+| Synthèse du modèle acceptée par le contrôle | 1/19 | **19/19** |
+| Appels LLM par analyse | 7,4 | 7,4 (4 à 9) |
+| Questions fermées par analyse | 9,1 | 9,4 |
+| Durée réelle d'une analyse | | 2 à 4 min (environ 3 min), limitée par les 2 requêtes/min |
+
+La durée moyenne écrite dans `eval/results/agent.json` est faussée par le cache : la plupart des
+réponses y étaient déjà. La durée réelle vient des passages sans cache.
+
+**Ce que l'évaluation a appris** (chaque cause trouvée en lisant les réponses, pas en devinant) :
+- **Aucune pratique interdite reconnue.** Il y avait deux causes :
+  - le modèle découpait lui-même l'article 5 en conditions, et le faisait mal. Il rendait
+    cumulatives les deux branches alternatives du point c), i) ou ii), et inventait des
+    conditions (« le système est déjà en service »). Les conditions de chaque point sont
+    maintenant **fixées dans `interdictions.yaml`** : cumulatives, alternatives, exceptions,
+    recopiées du texte et vérifiées. Le modèle ne juge plus que les faits, et le code décide ;
+  - le modèle renvoyait parfois `[{"conditions": ...}]` ou la liste seule au lieu de l'objet
+    demandé, et la réponse était jetée. Elle est maintenant acceptée sous ces deux formes.
+- **Des citations refusées pour un mot de trop.** Le modèle abrège ou complète les longues
+  phrases de l'annexe III (« ... de telles relations *professionnelles contractuelles* »). Le
+  code retrouve maintenant le point d'où vient la citation (au moins 8 mots consécutifs du texte)
+  et affiche le texte exact du point. Il **corrige ainsi un numéro mal recopié** : pour les
+  promotions et licenciements, le modèle annonçait 4 a) en citant le 4 b).
+- **Un doute sans fondement.** Un point de l'article 5 dont aucune condition n'est établie
+  (hypertrucage publicitaire, « techniques manipulatrices ») n'est plus retenu comme
+  « incertain ». Il reste listé parmi les points examinés. De même, un « incertain » de
+  l'annexe III qui ne désigne aucun point n'en est pas un.
+- **Des erreurs de profil.** Les erreurs avaient trois sources :
+  - un score de crédit compté comme donnée sensible : l'article 9 du RGPD est maintenant
+    défini dans le prompt ;
+  - une surveillance d'examens comptée comme « dialogue avec des personnes » : l'article 50,
+    paragraphe 1, est maintenant défini ;
+  - surtout, des périodes mal calculées : « depuis octobre 2025 » donnait « avant le
+    2 août 2025 », et « à partir de 2027 » donnait « déjà sur le marché ». Le modèle recopie
+    maintenant la date, et **le code calcule la période**.
+- **Une synthèse rejetée 18 fois sur 19**, non pour un fait inventé : le modèle la découpait en
+  rubriques (un objet au lieu d'un texte). Les rubriques sont mises bout à bout, puis contrôlées.
+
+**Limites.**
+- L'erreur de profil restante : pour la traduction de documents techniques internes, le modèle
+  affirme qu'il y a des données personnelles, en citant toute la description comme « preuve ».
+  La règle de preuve vérifie que l'extrait existe, pas qu'il établit la valeur.
+- Les 19 scénarios sont nets, et les corrections ont été faites en les regardant : le 19/19
+  mesure la cohérence de l'agent sur des cas clairs. Ce n'est pas une validation par un juriste
+  sur des cas limites, comme un système d'IA qui ne fait qu'assister une décision (dérogation
+  de l'article 6, paragraphe 3), que ces scénarios ne testent pas.
+- Environ 9 questions fermées par analyse, sur des descriptions de 2 lignes : une description
+  plus complète en évite la plupart.
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
@@ -823,7 +960,7 @@ le type d'erreur que `mistral-large` ne faisait plus.
 - [x] **Phase 5 bis** : juge de fidélité validé à la main, comparaison `ministral-8b` / `mistral-large` (effort de raisonnement réglable ; `ministral-8b` gardé, `mistral-large` étant devenu payant)
 - [x] **Phase 5 ter** : « parent document » : les parties d'un article découpé sont jointes au contexte (9 réponses fausses sur 14 corrigées, relues à la main)
 - [x] **Phase 5 quater** : renvois inverses vers les dates d'application (articles 113 et 111) : renvois 15/15, faits clés 100 %, 12 des 14 réponses fausses corrigées au total
-- [ ] **Phase 6** : agent LangGraph d'analyse de conformité, guidé par la liste de vérification CNIL (human-in-the-loop)
+- [x] **Phase 6** : agent LangGraph d'analyse de conformité (graphe fixe, questions fermées avec pause et reprise, classification AI Act vérifiée, carte des obligations vérifiée contre le texte, liste de vérification CNIL, rapport sourcé, 19 scénarios d'évaluation)
 - [ ] **Phase 7** : frontend Next.js, upload PDF (Celery + Redis), auth
 - [ ] **Phase 8** : déploiement, démo vidéo
 

@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1050" width="1280" height="1050" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+    </marker>
+    <style>
+      .panel { fill: #F6F7F9; stroke: #C5C9D0; stroke-width: 1.5; }
+      .todo { stroke-dasharray: 7 5; }
+      .llm { fill: #FCE9D8; stroke: #D9822B; stroke-width: 1.5; }
+      .code { fill: #DFECFB; stroke: #3B7DD8; stroke-width: 1.5; }
+      .human { fill: #E3F4E8; stroke: #2E8B57; stroke-width: 1.5; }
+      .ext { fill: #EEE9F8; stroke: #7A5CC4; stroke-width: 1.5; }
+      .t { font-size: 14px; font-weight: 600; fill: #1F2328; }
+      .s { font-size: 11.5px; fill: #3D4450; }
+      .h { font-size: 15px; font-weight: 700; fill: #1F2328; }
+      .n { font-size: 11.5px; fill: #5A6270; font-style: italic; }
+      .edge { stroke: #555; stroke-width: 1.5; fill: none; marker-end: url(#a); }
+      .dot { stroke: #2E8B57; stroke-width: 1.5; fill: none; stroke-dasharray: 4 4; marker-end: url(#a); }
+    </style>
+  </defs>
+  <rect width="1280" height="1050" fill="#FFFFFF"/>
+
+  <text x="640" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#1F2328">ConformIA : architecture cible avec l'agent d'analyse (phase 6)</text>
+
+  <!-- Utilisateur, interface, API -->
+  <rect x="490" y="50" width="300" height="40" rx="8" class="human"/>
+  <text x="640" y="75" text-anchor="middle" class="t">Utilisateur (DPO, juriste, chef de projet)</text>
+  <rect x="390" y="112" width="500" height="40" rx="8" class="panel todo"/>
+  <text x="640" y="137" text-anchor="middle" class="t">Interface Next.js + Supabase Auth (phase 7)</text>
+  <rect x="20" y="176" width="1000" height="62" rx="8" class="code"/>
+  <text x="520" y="197" text-anchor="middle" class="t">API FastAPI (réponses en flux, Server-Sent Events)</text>
+  <text x="200" y="222" text-anchor="middle" class="s">POST /chat · POST /chat/stream (existant)</text>
+  <text x="710" y="222" text-anchor="middle" class="s">POST /analyses · POST /analyses/{id}/reponses · GET /analyses/{id}</text>
+  <path d="M640,90 L640,110" class="edge"/>
+  <path d="M640,152 L640,174" class="edge"/>
+  <path d="M200,238 L200,278" class="edge"/>
+  <path d="M710,238 L710,278" class="edge"/>
+
+  <!-- Chat (phase 5) -->
+  <rect x="20" y="280" width="360" height="470" rx="10" class="panel"/>
+  <text x="200" y="306" text-anchor="middle" class="h">Chat sourcé (phases 5 à 5 quater)</text>
+  <rect x="40" y="322" width="320" height="50" rx="7" class="llm"/>
+  <text x="200" y="342" text-anchor="middle" class="t">Routeur</text>
+  <text x="200" y="360" text-anchor="middle" class="s">LLM, seulement avec historique ou message court</text>
+  <rect x="40" y="394" width="320" height="50" rx="7" class="code"/>
+  <text x="200" y="414" text-anchor="middle" class="t">Recherche + garde-fou à 3 zones</text>
+  <text x="200" y="432" text-anchor="middle" class="s">score &lt; 0,20 : refus · 0,20 à 0,45 : contrôle</text>
+  <rect x="40" y="466" width="320" height="50" rx="7" class="llm"/>
+  <text x="200" y="486" text-anchor="middle" class="t">Contrôle de couverture</text>
+  <text x="200" y="504" text-anchor="middle" class="s">LLM, zone grise seulement</text>
+  <rect x="40" y="538" width="320" height="50" rx="7" class="llm"/>
+  <text x="200" y="558" text-anchor="middle" class="t">Réponse citée [n]</text>
+  <text x="200" y="576" text-anchor="middle" class="s">LLM, uniquement à partir des sources</text>
+  <rect x="40" y="610" width="320" height="50" rx="7" class="code"/>
+  <text x="200" y="630" text-anchor="middle" class="t">Vérification par le code</text>
+  <text x="200" y="648" text-anchor="middle" class="s">renvois, citations mot pour mot, dates et montants</text>
+  <text x="200" y="694" text-anchor="middle" class="n">1 à 2 appels LLM par question</text>
+  <text x="200" y="712" text-anchor="middle" class="n">mémoire : 3 derniers échanges</text>
+  <path d="M200,372 L200,392" class="edge"/>
+  <path d="M200,444 L200,464" class="edge"/>
+  <path d="M200,516 L200,536" class="edge"/>
+  <path d="M200,588 L200,608" class="edge"/>
+
+  <!-- Agent (phase 6) -->
+  <rect x="400" y="280" width="620" height="470" rx="10" class="panel todo"/>
+  <text x="710" y="306" text-anchor="middle" class="h">Agent d'analyse de conformité (phase 6, LangGraph)</text>
+  <rect x="420" y="322" width="290" height="50" rx="7" class="llm"/>
+  <text x="565" y="342" text-anchor="middle" class="t">① Profil du projet</text>
+  <text x="565" y="360" text-anchor="middle" class="s">LLM → JSON : rôle, finalité, données, personnes</text>
+  <rect x="420" y="394" width="290" height="50" rx="7" class="code"/>
+  <text x="565" y="414" text-anchor="middle" class="t">② Informations manquantes ?</text>
+  <text x="565" y="432" text-anchor="middle" class="s">code : liste fixe des champs nécessaires</text>
+  <rect x="420" y="466" width="290" height="50" rx="7" class="llm"/>
+  <text x="565" y="486" text-anchor="middle" class="t">③ Classification AI Act</text>
+  <text x="565" y="504" text-anchor="middle" class="s">LLM : art. 5, 6, annexes I et III, 50, 51</text>
+  <rect x="420" y="538" width="290" height="50" rx="7" class="code"/>
+  <text x="565" y="558" text-anchor="middle" class="t">④ Obligations et dates</text>
+  <text x="565" y="576" text-anchor="middle" class="s">code : carte des obligations + art. 113 / 111</text>
+  <rect x="420" y="610" width="290" height="50" rx="7" class="llm"/>
+  <text x="565" y="630" text-anchor="middle" class="t">⑤ Liste de vérification CNIL</text>
+  <text x="565" y="648" text-anchor="middle" class="s">LLM par lots : 11 thèmes RGPD</text>
+  <rect x="420" y="682" width="290" height="50" rx="7" class="llm"/>
+  <text x="565" y="702" text-anchor="middle" class="t">⑥ Vérification + rapport sourcé</text>
+  <text x="565" y="720" text-anchor="middle" class="s">code (citations) + 1 synthèse LLM</text>
+  <path d="M565,372 L565,392" class="edge"/>
+  <path d="M565,444 L565,464" class="edge"/>
+  <path d="M565,516 L565,536" class="edge"/>
+  <path d="M565,588 L565,608" class="edge"/>
+  <path d="M565,660 L565,680" class="edge"/>
+
+  <rect x="735" y="394" width="265" height="50" rx="7" class="human"/>
+  <text x="867" y="414" text-anchor="middle" class="t">Questions à l'utilisateur</text>
+  <text x="867" y="432" text-anchor="middle" class="s">pause (interrupt) puis reprise</text>
+  <path d="M710,419 L733,419" class="edge"/>
+  <path d="M867,394 L867,347 L712,347" class="edge"/>
+  <text x="790" y="340" text-anchor="middle" class="n">réponses</text>
+  <path d="M1000,404 L1010,404 L1010,72 L792,72" class="dot"/>
+  <text x="1006" y="262" text-anchor="end" class="n">human-in-the-loop</text>
+
+  <rect x="735" y="466" width="265" height="122" rx="7" class="code"/>
+  <text x="867" y="486" text-anchor="middle" class="t">Outils de l'agent (code)</text>
+  <text x="750" y="508" class="s">search(question) : recherche hybride</text>
+  <text x="750" y="527" class="s">section(« Annexe III ») : lecture exacte</text>
+  <text x="750" y="546" class="s">citations(section) : graphe des renvois</text>
+  <text x="750" y="565" class="s">dates(section) : art. 113 et 111</text>
+  <path d="M710,491 L733,491" class="edge"/>
+  <path d="M710,563 L733,563" class="edge"/>
+  <path d="M710,635 L722,635 L722,575 L733,575" class="edge"/>
+
+  <rect x="735" y="610" width="265" height="50" rx="7" class="code"/>
+  <text x="867" y="630" text-anchor="middle" class="t">État typé + checkpoint</text>
+  <text x="867" y="648" text-anchor="middle" class="s">reprise après pause · SQLite → Postgres</text>
+  <text x="867" y="696" text-anchor="middle" class="n">≈ 7 appels LLM par analyse (4 à 9)</text>
+  <text x="867" y="714" text-anchor="middle" class="n">≈ 2 à 4 min à 2 requêtes / min</text>
+
+  <path d="M200,750 L200,788" class="edge"/>
+  <path d="M867,588 L867,600 L1015,600 L1015,770 L760,770 L760,788" class="edge"/>
+  <path d="M565,732 L565,788" class="edge"/>
+
+  <!-- Couche de connaissance -->
+  <rect x="20" y="790" width="1000" height="190" rx="10" class="panel"/>
+  <text x="520" y="816" text-anchor="middle" class="h">Couche de connaissance partagée (phases 1 à 5 quater, existante)</text>
+  <rect x="40" y="830" width="310" height="62" rx="7" class="code"/>
+  <text x="195" y="852" text-anchor="middle" class="t">Recherche hybride</text>
+  <text x="195" y="870" text-anchor="middle" class="s">mistral-embed + BM25 → RRF</text>
+  <text x="195" y="885" text-anchor="middle" class="s">→ Cohere rerank (50) → 4 chunks</text>
+  <rect x="365" y="830" width="310" height="62" rx="7" class="code"/>
+  <text x="520" y="852" text-anchor="middle" class="t">Construction du contexte</text>
+  <text x="520" y="870" text-anchor="middle" class="s">parent document · graphe des citations</text>
+  <text x="520" y="885" text-anchor="middle" class="s">renvois inverses vers les dates</text>
+  <rect x="690" y="830" width="310" height="62" rx="7" class="code"/>
+  <text x="845" y="852" text-anchor="middle" class="t">Lecture exacte d'une section</text>
+  <text x="845" y="870" text-anchor="middle" class="s">« Article 6 », « Annexe III » : sans recherche</text>
+  <text x="845" y="885" text-anchor="middle" class="s">(utilisée par l'agent)</text>
+  <rect x="40" y="906" width="470" height="58" rx="7" class="code"/>
+  <text x="275" y="928" text-anchor="middle" class="t">Index : Supabase pgvector + BM25 en mémoire</text>
+  <text x="275" y="948" text-anchor="middle" class="s">1 193 chunks structurels (tableaux CNIL, considérants marqués)</text>
+  <rect x="530" y="906" width="470" height="58" rx="7" class="code"/>
+  <text x="765" y="928" text-anchor="middle" class="t">Corpus versionné et vérifié</text>
+  <text x="765" y="948" text-anchor="middle" class="s">AI Act consolidé (2026/1744) · RGPD · 17 fiches CNIL + liste de vérification</text>
+
+  <!-- Évaluation -->
+  <rect x="1040" y="176" width="220" height="400" rx="10" class="panel"/>
+  <text x="1150" y="202" text-anchor="middle" class="h">Évaluation</text>
+  <rect x="1055" y="218" width="190" height="62" rx="7" class="code"/>
+  <text x="1150" y="240" text-anchor="middle" class="t">Golden set</text>
+  <text x="1150" y="258" text-anchor="middle" class="s">125 questions validées</text>
+  <text x="1150" y="272" text-anchor="middle" class="s">contre les sources</text>
+  <rect x="1055" y="294" width="190" height="62" rx="7" class="code todo"/>
+  <text x="1150" y="316" text-anchor="middle" class="t">Scénarios d'agent</text>
+  <text x="1150" y="334" text-anchor="middle" class="s">projets fictifs + verdicts</text>
+  <text x="1150" y="348" text-anchor="middle" class="s">attendus (19 scénarios)</text>
+  <rect x="1055" y="370" width="190" height="62" rx="7" class="llm"/>
+  <text x="1150" y="392" text-anchor="middle" class="t">Juge LLM</text>
+  <text x="1150" y="410" text-anchor="middle" class="s">validé à la main</text>
+  <text x="1150" y="424" text-anchor="middle" class="s">(mistral-large, payant)</text>
+  <text x="1150" y="458" text-anchor="middle" class="n">Mesures de l'agent :</text>
+  <text x="1150" y="477" text-anchor="middle" class="s">classification juste ?</text>
+  <text x="1150" y="495" text-anchor="middle" class="s">obligations retrouvées ?</text>
+  <text x="1150" y="513" text-anchor="middle" class="s">citations valides ?</text>
+  <text x="1150" y="531" text-anchor="middle" class="s">appels LLM, durée,</text>
+  <text x="1150" y="549" text-anchor="middle" class="s">questions posées</text>
+
+  <!-- Services externes -->
+  <rect x="1040" y="596" width="220" height="384" rx="10" class="panel"/>
+  <text x="1150" y="622" text-anchor="middle" class="h">Services externes</text>
+  <rect x="1055" y="638" width="190" height="78" rx="7" class="ext"/>
+  <text x="1150" y="660" text-anchor="middle" class="t">Mistral API (UE)</text>
+  <text x="1150" y="680" text-anchor="middle" class="s">ministral-8b : génération</text>
+  <text x="1150" y="696" text-anchor="middle" class="s">mistral-embed : vecteurs</text>
+  <text x="1150" y="710" text-anchor="middle" class="s">gratuit : 2 requêtes / min</text>
+  <rect x="1055" y="732" width="190" height="62" rx="7" class="ext"/>
+  <text x="1150" y="756" text-anchor="middle" class="t">Cohere Rerank v5 pro</text>
+  <text x="1150" y="776" text-anchor="middle" class="s">tri + score du garde-fou</text>
+  <rect x="1055" y="810" width="190" height="78" rx="7" class="ext"/>
+  <text x="1150" y="832" text-anchor="middle" class="t">Supabase</text>
+  <text x="1150" y="852" text-anchor="middle" class="s">pgvector (index)</text>
+  <text x="1150" y="868" text-anchor="middle" class="s">Postgres (état, mémoire)</text>
+  <text x="1150" y="882" text-anchor="middle" class="s">Auth (phase 7)</text>
+  <path d="M1000,861 L1053,861" class="edge"/>
+  <path d="M1020,700 L1053,690" class="edge"/>
+  <text x="1036" y="730" text-anchor="middle" class="n" transform="rotate(-90 1032 740)">appels LLM</text>
+
+  <!-- Légende -->
+  <rect x="20" y="998" width="16" height="16" rx="3" class="llm"/>
+  <text x="44" y="1011" class="s">appel LLM (Mistral)</text>
+  <rect x="190" y="998" width="16" height="16" rx="3" class="code"/>
+  <text x="214" y="1011" class="s">code déterministe (sans LLM)</text>
+  <rect x="410" y="998" width="16" height="16" rx="3" class="human"/>
+  <text x="434" y="1011" class="s">humain</text>
+  <rect x="500" y="998" width="16" height="16" rx="3" class="ext"/>
+  <text x="524" y="1011" class="s">service externe</text>
+  <rect x="640" y="998" width="16" height="16" rx="3" class="panel todo"/>
+  <text x="664" y="1011" class="s">pointillés : à construire</text>
+  <text x="1260" y="1011" text-anchor="end" class="n">Graphe fixe : l'ordre des étapes est décidé par le code, le LLM n'intervient qu'aux étapes orange.</text>
+</svg>

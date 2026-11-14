@@ -1,0 +1,219 @@
+# Scénarios d'évaluation de l'agent d'analyse (phase 6).
+#
+# Chaque scénario : une description libre (ce que l'utilisateur écrit), les « faits » du projet
+# (réponses qu'il donnerait aux questions fermées, utilisées pour répondre à sa place et pour
+# repérer les valeurs du profil mal extraites), et le résultat attendu, vérifié contre le texte :
+# article 5 (interdictions), annexe III (haut risque), article 50 (transparence), chapitre V
+# (modèles à usage général), articles 113 et 111 (dates), carte des obligations.
+#   niveau : interdit | haut_risque | haut_risque_a_confirmer | obligations_specifiques | risque_minimal
+#   obligations : identifiants de la carte qui doivent figurer, avec leur date si elle est connue
+#   absentes : identifiants qui ne doivent pas figurer
+
+- id: cv_deployeur
+  description: >-
+    Nous sommes une PME française de 200 salariés. Nous voulons utiliser un logiciel du marché,
+    acheté à un éditeur, qui analyse automatiquement les CV reçus et classe les candidats pour nos
+    recrutements. Les recruteurs ne lisent que les 20 premiers candidats du classement.
+  faits: {roles: [deployeur], decisions_sur_personnes: oui, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: haut_risque
+    annexe_iii: 4 a)
+    obligations: {maitrise_ia: 2025-02-02, obligations_deployeur: 2027-12-02, information_personnes: 2027-12-02, droit_explication: null}
+    absentes: [obligations_fournisseur, analyse_impact_droits, interdiction]
+
+- id: cv_fournisseur
+  description: >-
+    Notre start-up développe et commercialise sous sa marque un logiciel qui lit les CV, attribue
+    un score à chaque candidat et classe les candidatures pour les services RH de nos clients.
+  faits: {roles: [fournisseur], decisions_sur_personnes: oui, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: haut_risque
+    annexe_iii: 4 a)
+    obligations: {obligations_fournisseur: 2027-12-02, gestion_risques: 2027-12-02, donnees: 2027-12-02, documentation_technique: 2027-12-02, controle_humain: 2027-12-02, evaluation_conformite: null, enregistrement_fournisseur: null, incidents_graves: null}
+    absentes: [obligations_deployeur, interdiction]
+
+- id: rh_promotion
+  description: >-
+    Notre groupe veut utiliser un outil d'IA acheté à un éditeur pour suivre les performances de
+    nos salariés à partir de leurs indicateurs d'activité et proposer les promotions et les
+    licenciements aux managers.
+  faits: {roles: [deployeur], decisions_sur_personnes: oui, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: oui, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: haut_risque
+    annexe_iii: 4 b)
+    obligations: {obligations_deployeur: 2027-12-02, information_travailleurs: 2027-12-02, information_personnes: 2027-12-02}
+    absentes: [analyse_impact_droits, interdiction]
+
+- id: credit_banque
+  description: >-
+    Notre banque va utiliser un modèle d'IA fourni par un prestataire pour évaluer la solvabilité
+    des particuliers qui demandent un crédit à la consommation et leur attribuer une note de crédit.
+  faits: {roles: [deployeur], decisions_sur_personnes: oui, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: haut_risque
+    annexe_iii: 5 b)
+    obligations: {obligations_deployeur: 2027-12-02, analyse_impact_droits: 2027-12-02, information_personnes: 2027-12-02}
+    absentes: [enregistrement_deployeur, interdiction]
+
+- id: assurance_sante
+  description: >-
+    Nous sommes un assureur. Nous voulons déployer un outil d'IA, acheté à un éditeur, qui évalue
+    le risque de chaque assuré et calcule le tarif de ses contrats d'assurance maladie.
+  faits: {roles: [deployeur], decisions_sur_personnes: oui, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: oui, deja_sur_le_marche: non}
+  attendu:
+    niveau: haut_risque
+    annexe_iii: 5 c)
+    obligations: {obligations_deployeur: 2027-12-02, analyse_impact_droits: 2027-12-02}
+    absentes: [interdiction]
+
+- id: aide_sociale
+  description: >-
+    Notre administration départementale veut utiliser un système d'IA pour évaluer l'éligibilité
+    des demandeurs aux aides sociales et proposer l'octroi ou le refus de la prestation.
+  faits: {roles: [deployeur], decisions_sur_personnes: oui, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: oui, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: oui, deja_sur_le_marche: non}
+  attendu:
+    niveau: haut_risque
+    annexe_iii: 5 a)
+    obligations: {obligations_deployeur: 2027-12-02, analyse_impact_droits: 2027-12-02, enregistrement_deployeur: null}
+    absentes: [interdiction]
+
+- id: tri_urgences
+  description: >-
+    Notre hôpital public veut déployer un système d'IA qui trie les patients admis aux urgences
+    selon la gravité de leur état pour fixer l'ordre de prise en charge.
+  faits: {roles: [deployeur], decisions_sur_personnes: oui, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: oui, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: oui, deja_sur_le_marche: non}
+  attendu:
+    niveau: haut_risque
+    annexe_iii: 5 d)
+    obligations: {obligations_deployeur: 2027-12-02, analyse_impact_droits: 2027-12-02, enregistrement_deployeur: null}
+    absentes: [interdiction]
+
+- id: surveillance_examens
+  description: >-
+    Notre université veut utiliser un logiciel d'IA qui surveille les étudiants pendant les
+    examens en ligne et signale les comportements de fraude aux enseignants.
+  faits: {roles: [deployeur], decisions_sur_personnes: oui, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: oui, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: haut_risque
+    annexe_iii: 3 d)
+    obligations: {obligations_deployeur: 2027-12-02, analyse_impact_droits: 2027-12-02}
+    absentes: [interdiction]
+
+- id: notation_sociale
+  description: >-
+    Notre commune veut attribuer à chaque habitant une note calculée par une IA à partir de son
+    comportement social observé pendant l'année (incivilités, retards de paiement, plaintes des
+    voisins) et réserver l'accès aux services municipaux aux habitants les mieux notés.
+  faits: {roles: [deployeur], decisions_sur_personnes: oui, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: oui, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: interdit
+    interdit: c)
+    obligations: {interdiction: 2025-02-02, sanction_interdiction: null}
+
+- id: emotions_travail
+  description: >-
+    Nous voulons installer dans nos bureaux des caméras équipées d'une IA qui détecte l'humeur et
+    les émotions de nos salariés pendant leur travail, pour mesurer leur engagement.
+  faits: {roles: [deployeur], decisions_sur_personnes: non, interagit_avec_personnes: non, genere_contenus: non, biometrie: oui, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: oui, donnees_personnelles: oui, donnees_sensibles: oui, deja_sur_le_marche: non}
+  attendu:
+    niveau: interdit
+    interdit: f)
+    obligations: {interdiction: 2025-02-02}
+
+- id: orientation_sexuelle
+  description: >-
+    Notre application analyse les photos de profil des utilisateurs avec une IA pour en déduire
+    leur orientation sexuelle et leurs opinions politiques, afin de cibler la publicité.
+  faits: {roles: [fournisseur, deployeur], decisions_sur_personnes: non, interagit_avec_personnes: non, genere_contenus: non, biometrie: oui, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: oui, deja_sur_le_marche: non}
+  attendu:
+    niveau: interdit
+    interdit: g)
+    obligations: {interdiction: 2025-02-02}
+
+- id: chatbot_fournisseur
+  description: >-
+    Notre éditeur de logiciels développe un agent conversationnel qui répond aux questions des
+    clients de nos clients sur leurs commandes et leurs livraisons. Nous le vendons sous notre
+    marque à des sites de commerce en ligne.
+  faits: {roles: [fournisseur], decisions_sur_personnes: non, interagit_avec_personnes: oui, genere_contenus: oui, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non, hypertrucage: non}
+  attendu:
+    niveau: obligations_specifiques
+    transparence: [1, 2]
+    obligations: {informer_interaction: 2026-08-02, marquer_contenus: 2026-08-02, maitrise_ia: 2025-02-02}
+    absentes: [obligations_fournisseur, interdiction]
+
+- id: generateur_images
+  description: >-
+    Notre start-up édite depuis octobre 2025 une application qui génère des images à partir d'une
+    description écrite par l'utilisateur. Nous l'avons développée et la vendons sous notre marque.
+  faits: {roles: [fournisseur], decisions_sur_personnes: non, interagit_avec_personnes: non, genere_contenus: oui, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: non, donnees_sensibles: non, deja_sur_le_marche: entre_2025_08_02_et_2026_08_02}
+  attendu:
+    niveau: obligations_specifiques
+    transparence: [2]
+    obligations: {marquer_contenus: 2026-12-02}
+    absentes: [obligations_fournisseur, interdiction]
+
+- id: hypertrucage_marketing
+  description: >-
+    Notre agence de communication utilise un outil d'IA générative pour créer des vidéos très
+    réalistes dans lesquelles une personnalité connue semble présenter les produits de nos clients.
+  faits: {roles: [deployeur], decisions_sur_personnes: non, interagit_avec_personnes: non, genere_contenus: oui, hypertrucage: oui, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: obligations_specifiques
+    transparence: [4]
+    obligations: {signaler_hypertrucage: 2026-08-02}
+    absentes: [interdiction]
+
+- id: modele_existant
+  description: >-
+    Notre entreprise a entraîné un grand modèle de langage polyvalent, mis à disposition d'autres
+    entreprises via une API depuis mars 2025. Nous sommes établis en France.
+  faits: {roles: [fournisseur], modele_usage_general: oui, hors_ue: non, decisions_sur_personnes: non, interagit_avec_personnes: non, genere_contenus: oui, biometrie: non, composant_securite_produit: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: avant_2025_08_02}
+  attendu:
+    niveau: obligations_specifiques
+    modele_usage_general: true
+    obligations: {obligations_modele: 2027-08-02}
+    absentes: [mandataire_modele, interdiction]
+    # pas d'attente sur l'article 50 : qu'un modèle exposé par une API soit aussi un « système
+    # d'IA à usage général » au sens du paragraphe 2 est une question d'interprétation
+
+- id: modele_hors_ue
+  description: >-
+    Nous sommes une entreprise américaine. Nous allons proposer en Europe, à partir de 2027, un
+    modèle d'IA à usage général que nous avons entraîné, accessible aux développeurs via une API.
+  faits: {roles: [fournisseur], modele_usage_general: oui, hors_ue: oui, decisions_sur_personnes: non, interagit_avec_personnes: non, genere_contenus: oui, biometrie: non, composant_securite_produit: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: obligations_specifiques
+    modele_usage_general: true
+    obligations: {obligations_modele: 2025-08-02, mandataire_modele: 2025-08-02}
+    absentes: [interdiction]
+
+- id: jouet_connecte
+  description: >-
+    Nous fabriquons des jouets. Notre nouvelle peluche connectée intègre une IA qui coupe le moteur
+    dès qu'elle détecte un doigt d'enfant coincé : c'est un composant de sécurité du jouet.
+  faits: {roles: [fournisseur], composant_securite_produit: oui, decisions_sur_personnes: non, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: non, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: haut_risque_a_confirmer
+    obligations: {obligations_fournisseur: 2028-08-02, gestion_risques: 2028-08-02}
+    absentes: [interdiction, obligations_deployeur]
+
+- id: filtre_spam
+  description: >-
+    Nous avons développé en interne un filtre anti-spam à base d'apprentissage automatique pour
+    trier les courriels reçus par nos propres salariés.
+  faits: {roles: [fournisseur, deployeur], decisions_sur_personnes: non, interagit_avec_personnes: non, genere_contenus: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: oui, donnees_personnelles: oui, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: risque_minimal
+    obligations: {maitrise_ia: 2025-02-02}
+    absentes: [obligations_fournisseur, obligations_deployeur, interdiction, informer_interaction]
+
+- id: traduction_interne
+  description: >-
+    Nos équipes utilisent un service d'IA de traduction automatique, acheté sur abonnement, pour
+    traduire nos documents techniques internes.
+  faits: {roles: [deployeur], decisions_sur_personnes: non, interagit_avec_personnes: non, genere_contenus: oui, hypertrucage: non, biometrie: non, composant_securite_produit: non, modele_usage_general: non, secteur_public: non, lieu_de_travail: non, donnees_personnelles: non, donnees_sensibles: non, deja_sur_le_marche: non}
+  attendu:
+    niveau: risque_minimal
+    obligations: {maitrise_ia: 2025-02-02}
+    absentes: [marquer_contenus, signaler_hypertrucage, interdiction]

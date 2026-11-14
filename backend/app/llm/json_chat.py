@@ -140,7 +140,12 @@ def _complete(body: dict) -> str:
 
 
 def _cached(
-    messages: Messages, temperature: float, model: str, json_mode: bool, effort: str | None = None
+    messages: Messages,
+    temperature: float,
+    model: str,
+    json_mode: bool,
+    effort: str | None = None,
+    max_tokens: int | None = None,
 ) -> str:
     global _cache
     with _lock:
@@ -153,6 +158,8 @@ def _cached(
         if (cached := _cache.get(key)) is not None:
             return cached
         extra = {"response_format": {"type": "json_object"}} if json_mode else {}
+        if max_tokens:  # réponse longue (agent : plusieurs thèmes en un appel)
+            extra["max_tokens"] = max_tokens
         answer = _complete(_body(messages, temperature, model, effort, **extra))
         if json_mode:
             json.loads(answer)  # lève une erreur si le JSON est invalide : rien en cache
@@ -161,12 +168,17 @@ def _cached(
 
 
 def chat_json(
-    prompt: str, temperature: float = 0.0, model: str | None = None, effort: str | None = None
+    prompt: str,
+    temperature: float = 0.0,
+    model: str | None = None,
+    effort: str | None = None,
+    max_tokens: int | None = None,
 ) -> dict | list:
     """Réponse JSON du modèle (en cache si déjà demandée)."""
     model = model or get_app_config().llm.chat_model
     messages = [{"role": "user", "content": prompt}]
-    return json.loads(_cached(messages, temperature, model, json_mode=True, effort=effort))
+    answer = _cached(messages, temperature, model, True, effort=effort, max_tokens=max_tokens)
+    return json.loads(answer)
 
 
 def chat_text(

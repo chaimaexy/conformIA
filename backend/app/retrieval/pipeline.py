@@ -175,6 +175,21 @@ class Retriever:
         return dict(parts)
 
     @cached_property
+    def documents(self) -> dict[str, str]:
+        """« ai_act » -> identifiant du document dans l'index."""
+        rows = self.db.table("documents").select("id, source_id").execute().data
+        return {row["source_id"]: row["id"] for row in rows}
+
+    def section(self, source_id: str, label: str) -> list[dict]:
+        """Toutes les parties d'une section, lue par son numéro (« Annexe III »), sans recherche.
+
+        L'agent sait d'avance quels textes il doit lire (l'article 5 pour les interdictions) :
+        une recherche risquerait d'en manquer une partie. Liste vide si la section n'existe pas.
+        """
+        document = self.documents.get(source_id)
+        return [{**c, "score": None} for c in self.section_parts.get((document, label), [])]
+
+    @cached_property
     def section_heads(self) -> dict[tuple[str, str], dict]:
         """(document, « Article 15 ») -> 1er chunk de la section (pour l'expansion)."""
         return {key: chunks[0] for key, chunks in self.section_parts.items()}

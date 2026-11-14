@@ -1,0 +1,972 @@
+{
+  "date": "2026-11-14T17:23:39+00:00",
+  "summary": {
+    "scenarios": 19,
+    "erreurs_execution": 0,
+    "niveau_juste": "19/19",
+    "point_annexe_iii_juste": "8/8",
+    "pratique_interdite_juste": "3/3",
+    "transparence_juste": "3/3",
+    "modele_usage_general_juste": "2/2",
+    "obligations_retrouvees": "44/44",
+    "dates_fausses": 0,
+    "obligations_en_trop": 0,
+    "erreurs_de_profil": 1,
+    "questions_par_analyse": 9.4,
+    "appels_llm_moyens": 7.4,
+    "duree_moyenne_s": 19.5
+  },
+  "scenarios": [
+    {
+      "id": "cv_deployeur",
+      "duree_s": 4.4,
+      "appels_llm": 8,
+      "questions_posees": [
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "haut_risque",
+      "annexe_iii": "4 a)",
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "obligations_deployeur": [
+          "2027-12-02"
+        ],
+        "information_personnes": [
+          "2027-12-02"
+        ],
+        "droit_explication": [],
+        "sanction_haut_risque": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "annexe_iii_ok": true,
+      "obligations_trouvees": [
+        "maitrise_ia",
+        "obligations_deployeur",
+        "information_personnes",
+        "droit_explication"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "cv_fournisseur",
+      "duree_s": 0.1,
+      "appels_llm": 8,
+      "questions_posees": [
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "haut_risque",
+      "annexe_iii": "4 a)",
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "obligations_fournisseur": [
+          "2027-12-02"
+        ],
+        "gestion_risques": [
+          "2027-12-02"
+        ],
+        "donnees": [
+          "2027-12-02"
+        ],
+        "documentation_technique": [
+          "2027-12-02"
+        ],
+        "journaux": [
+          "2027-12-02"
+        ],
+        "transparence_deployeurs": [
+          "2027-12-02"
+        ],
+        "controle_humain": [
+          "2027-12-02"
+        ],
+        "exactitude": [
+          "2027-12-02"
+        ],
+        "gestion_qualite": [
+          "2027-12-02"
+        ],
+        "conservation_documents": [
+          "2027-12-02"
+        ],
+        "tenue_journaux": [
+          "2027-12-02"
+        ],
+        "mesures_correctives": [
+          "2027-12-02"
+        ],
+        "evaluation_conformite": [],
+        "declaration_conformite": [],
+        "marquage_ce": [],
+        "enregistrement_fournisseur": [],
+        "surveillance_apres_commercialisation": [],
+        "incidents_graves": [],
+        "sanction_haut_risque": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "annexe_iii_ok": true,
+      "obligations_trouvees": [
+        "obligations_fournisseur",
+        "gestion_risques",
+        "donnees",
+        "documentation_technique",
+        "controle_humain",
+        "evaluation_conformite",
+        "enregistrement_fournisseur",
+        "incidents_graves"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "rh_promotion",
+      "duree_s": 0.1,
+      "appels_llm": 8,
+      "questions_posees": [
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "haut_risque",
+      "annexe_iii": "4 b)",
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "obligations_deployeur": [
+          "2027-12-02"
+        ],
+        "information_travailleurs": [
+          "2027-12-02"
+        ],
+        "information_personnes": [
+          "2027-12-02"
+        ],
+        "droit_explication": [],
+        "sanction_haut_risque": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "annexe_iii_ok": true,
+      "obligations_trouvees": [
+        "obligations_deployeur",
+        "information_travailleurs",
+        "information_personnes"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "credit_banque",
+      "duree_s": 0.1,
+      "appels_llm": 8,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "haut_risque",
+      "annexe_iii": "5 b)",
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "obligations_deployeur": [
+          "2027-12-02"
+        ],
+        "information_personnes": [
+          "2027-12-02"
+        ],
+        "analyse_impact_droits": [
+          "2027-12-02"
+        ],
+        "droit_explication": [],
+        "sanction_haut_risque": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "annexe_iii_ok": true,
+      "obligations_trouvees": [
+        "obligations_deployeur",
+        "analyse_impact_droits",
+        "information_personnes"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "assurance_sante",
+      "duree_s": 0.1,
+      "appels_llm": 8,
+      "questions_posees": [
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "haut_risque",
+      "annexe_iii": "5 c)",
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "obligations_deployeur": [
+          "2027-12-02"
+        ],
+        "information_personnes": [
+          "2027-12-02"
+        ],
+        "analyse_impact_droits": [
+          "2027-12-02"
+        ],
+        "droit_explication": [],
+        "sanction_haut_risque": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "annexe_iii_ok": true,
+      "obligations_trouvees": [
+        "obligations_deployeur",
+        "analyse_impact_droits"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "aide_sociale",
+      "duree_s": 0.1,
+      "appels_llm": 8,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "haut_risque",
+      "annexe_iii": "5 a)",
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "obligations_deployeur": [
+          "2027-12-02"
+        ],
+        "information_personnes": [
+          "2027-12-02"
+        ],
+        "analyse_impact_droits": [
+          "2027-12-02"
+        ],
+        "enregistrement_deployeur": [],
+        "droit_explication": [],
+        "sanction_haut_risque": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "annexe_iii_ok": true,
+      "obligations_trouvees": [
+        "obligations_deployeur",
+        "analyse_impact_droits",
+        "enregistrement_deployeur"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "tri_urgences",
+      "duree_s": 0.1,
+      "appels_llm": 8,
+      "questions_posees": [
+        "roles",
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "haut_risque",
+      "annexe_iii": "5 d)",
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "obligations_deployeur": [
+          "2027-12-02"
+        ],
+        "information_personnes": [
+          "2027-12-02"
+        ],
+        "analyse_impact_droits": [
+          "2027-12-02"
+        ],
+        "enregistrement_deployeur": [],
+        "droit_explication": [],
+        "sanction_haut_risque": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "annexe_iii_ok": true,
+      "obligations_trouvees": [
+        "obligations_deployeur",
+        "analyse_impact_droits",
+        "enregistrement_deployeur"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "surveillance_examens",
+      "duree_s": 0.1,
+      "appels_llm": 8,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "haut_risque",
+      "annexe_iii": "3 d)",
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "obligations_deployeur": [
+          "2027-12-02"
+        ],
+        "information_personnes": [
+          "2027-12-02"
+        ],
+        "analyse_impact_droits": [
+          "2027-12-02"
+        ],
+        "enregistrement_deployeur": [],
+        "droit_explication": [],
+        "sanction_haut_risque": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "annexe_iii_ok": true,
+      "obligations_trouvees": [
+        "obligations_deployeur",
+        "analyse_impact_droits"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "notation_sociale",
+      "duree_s": 0.1,
+      "appels_llm": 7,
+      "questions_posees": [
+        "roles",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "interdit",
+      "annexe_iii": null,
+      "interdit": [
+        "c)"
+      ],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "interdiction": [
+          "2025-02-02"
+        ],
+        "sanction_interdiction": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "interdit_ok": true,
+      "obligations_trouvees": [
+        "interdiction",
+        "sanction_interdiction"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "emotions_travail",
+      "duree_s": 0.1,
+      "appels_llm": 7,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "interdit",
+      "annexe_iii": null,
+      "interdit": [
+        "f)"
+      ],
+      "transparence": [
+        3
+      ],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "interdiction": [
+          "2025-02-02"
+        ],
+        "sanction_interdiction": [],
+        "sanction_haut_risque": [],
+        "informer_emotions_biometrie": [
+          "2026-08-02"
+        ]
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "interdit_ok": true,
+      "obligations_trouvees": [
+        "interdiction"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "orientation_sexuelle",
+      "duree_s": 0.1,
+      "appels_llm": 7,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "interdit",
+      "annexe_iii": null,
+      "interdit": [
+        "g)"
+      ],
+      "transparence": [
+        3
+      ],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "interdiction": [
+          "2025-02-02"
+        ],
+        "sanction_interdiction": [],
+        "sanction_haut_risque": [],
+        "informer_emotions_biometrie": [
+          "2026-08-02"
+        ]
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "interdit_ok": true,
+      "obligations_trouvees": [
+        "interdiction"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "chatbot_fournisseur",
+      "duree_s": 0.1,
+      "appels_llm": 7,
+      "questions_posees": [
+        "roles",
+        "decisions_sur_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "obligations_specifiques",
+      "annexe_iii": null,
+      "interdit": [],
+      "transparence": [
+        1,
+        2
+      ],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "sanction_haut_risque": [],
+        "informer_interaction": [
+          "2026-08-02"
+        ],
+        "marquer_contenus": [
+          "2026-08-02"
+        ]
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "transparence_ok": true,
+      "obligations_trouvees": [
+        "informer_interaction",
+        "marquer_contenus",
+        "maitrise_ia"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "generateur_images",
+      "duree_s": 0.1,
+      "appels_llm": 5,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_personnelles",
+        "donnees_sensibles"
+      ],
+      "erreurs_profil": [],
+      "niveau": "obligations_specifiques",
+      "annexe_iii": null,
+      "interdit": [],
+      "transparence": [
+        2
+      ],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "sanction_haut_risque": [],
+        "marquer_contenus": [
+          "2026-12-02"
+        ]
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "transparence_ok": true,
+      "obligations_trouvees": [
+        "marquer_contenus"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "hypertrucage_marketing",
+      "duree_s": 0.1,
+      "appels_llm": 9,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_personnelles",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "obligations_specifiques",
+      "annexe_iii": null,
+      "interdit": [],
+      "transparence": [
+        4
+      ],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "sanction_haut_risque": [],
+        "signaler_hypertrucage": [
+          "2026-08-02"
+        ]
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "transparence_ok": true,
+      "obligations_trouvees": [
+        "signaler_hypertrucage"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "modele_existant",
+      "duree_s": 0.1,
+      "appels_llm": 8,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_personnelles",
+        "donnees_sensibles",
+        "hors_ue"
+      ],
+      "erreurs_profil": [],
+      "niveau": "obligations_specifiques",
+      "annexe_iii": null,
+      "interdit": [],
+      "transparence": [
+        2
+      ],
+      "modele_usage_general": true,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "sanction_haut_risque": [],
+        "marquer_contenus": [
+          "2026-12-02"
+        ],
+        "obligations_modele": [
+          "2027-08-02"
+        ]
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "modele_usage_general_ok": true,
+      "obligations_trouvees": [
+        "obligations_modele"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "modele_hors_ue",
+      "duree_s": 182.7,
+      "appels_llm": 8,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_personnelles",
+        "donnees_sensibles"
+      ],
+      "erreurs_profil": [],
+      "niveau": "obligations_specifiques",
+      "annexe_iii": null,
+      "interdit": [],
+      "transparence": [
+        2
+      ],
+      "modele_usage_general": true,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "sanction_haut_risque": [],
+        "marquer_contenus": [
+          "2026-08-02"
+        ],
+        "obligations_modele": [
+          "2025-08-02"
+        ],
+        "mandataire_modele": [
+          "2025-08-02"
+        ]
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "modele_usage_general_ok": true,
+      "obligations_trouvees": [
+        "obligations_modele",
+        "mandataire_modele"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "jouet_connecte",
+      "duree_s": 0.1,
+      "appels_llm": 4,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_personnelles",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "haut_risque_a_confirmer",
+      "annexe_iii": null,
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ],
+        "obligations_fournisseur": [
+          "2028-08-02"
+        ],
+        "gestion_risques": [
+          "2028-08-02"
+        ],
+        "donnees": [
+          "2028-08-02"
+        ],
+        "documentation_technique": [
+          "2028-08-02"
+        ],
+        "journaux": [
+          "2028-08-02"
+        ],
+        "transparence_deployeurs": [
+          "2028-08-02"
+        ],
+        "controle_humain": [
+          "2028-08-02"
+        ],
+        "exactitude": [
+          "2028-08-02"
+        ],
+        "gestion_qualite": [
+          "2028-08-02"
+        ],
+        "conservation_documents": [
+          "2028-08-02"
+        ],
+        "tenue_journaux": [
+          "2028-08-02"
+        ],
+        "mesures_correctives": [
+          "2028-08-02"
+        ],
+        "evaluation_conformite": [],
+        "declaration_conformite": [],
+        "marquage_ce": [],
+        "surveillance_apres_commercialisation": [],
+        "incidents_graves": [],
+        "sanction_haut_risque": []
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "obligations_trouvees": [
+        "obligations_fournisseur",
+        "gestion_risques"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "filtre_spam",
+      "duree_s": 0.1,
+      "appels_llm": 7,
+      "questions_posees": [
+        "roles",
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [],
+      "niveau": "risque_minimal",
+      "annexe_iii": null,
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ]
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "obligations_trouvees": [
+        "maitrise_ia"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    },
+    {
+      "id": "traduction_interne",
+      "duree_s": 182.4,
+      "appels_llm": 8,
+      "questions_posees": [
+        "decisions_sur_personnes",
+        "interagit_avec_personnes",
+        "genere_contenus",
+        "biometrie",
+        "composant_securite_produit",
+        "modele_usage_general",
+        "secteur_public",
+        "lieu_de_travail",
+        "donnees_sensibles",
+        "deja_sur_le_marche"
+      ],
+      "erreurs_profil": [
+        "donnees_personnelles : True au lieu de False"
+      ],
+      "niveau": "risque_minimal",
+      "annexe_iii": null,
+      "interdit": [],
+      "transparence": [],
+      "modele_usage_general": false,
+      "obligations": {
+        "maitrise_ia": [
+          "2025-02-02"
+        ]
+      },
+      "synthese_origine": "llm",
+      "niveau_ok": true,
+      "obligations_trouvees": [
+        "maitrise_ia"
+      ],
+      "obligations_manquantes": [],
+      "dates_fausses": [],
+      "obligations_en_trop": []
+    }
+  ]
+}

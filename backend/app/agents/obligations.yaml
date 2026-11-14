@@ -1,0 +1,312 @@
+# Carte des obligations de l'AI Act : quels articles s'appliquent à quel profil, et à partir de quand.
+#
+# Chaque entrée cite le texte (« extrait »). La commande
+#     python -m app.agents.obligations --verifier
+# vérifie que chaque extrait figure mot pour mot dans la section citée de l'index : une carte
+# fausse ou périmée (nouvelle version consolidée) est détectée avant d'arriver dans un rapport.
+#
+# Catégories (déduites de la classification) : tous, interdit, haut_risque (annexe I ou III),
+# haut_risque_annexe_iii, transparence_1 à transparence_4 (article 50, paragraphes 1 à 4),
+# modele_usage_general, risque_systemique.
+# « si » : au moins une de ces conditions du profil doit être vraie.
+# « date » : clé de la section dates ; absente quand l'article 113 ne fixe pas directement la date
+# de cette disposition (le rapport renvoie alors à l'article 113, joint au contexte).
+
+dates:
+  chapitres_I_II:
+    date: 2025-02-02
+    article: Article 113
+    extrait: "les chapitres I et II s'appliquent à partir du 2 février 2025"
+  interdictions_ajoutees:  # article 5, paragraphe 1, points b bis) et b ter), paragraphes 1 bis et 1 ter
+    date: 2026-12-02
+    article: Article 113
+    extrait: "et de l'article 5, paragraphes 1 bis et 1 ter, qui s'appliquent à partir du 2 décembre 2026"
+  generale:
+    date: 2026-08-02
+    article: Article 113
+    extrait: "Il est applicable à partir du 2 août 2026."
+  haut_risque_annexe_iii:
+    date: 2027-12-02
+    article: Article 113
+    extrait: "du 2 décembre 2027 en ce qui concerne les systèmes d'IA classés comme étant à haut risque en vertu de l'article 6, paragraphe 2, et de l'annexe III"
+  haut_risque_annexe_i:
+    date: 2028-08-02
+    article: Article 113
+    extrait: "du 2 août 2028 en ce qui concerne les systèmes d'IA classés à haut risque en vertu de l'article 6, paragraphe 1, et de l'annexe I"
+  modeles_usage_general:
+    date: 2025-08-02
+    article: Article 113
+    extrait: "le chapitre III, section 4, le chapitre V, le chapitre VII, le chapitre XII et l’article 78 s’appliquent à partir du 2 août 2025"
+  modeles_deja_sur_le_marche:  # mis sur le marché avant le 2 août 2025
+    date: 2027-08-02
+    article: Article 111
+    extrait: "Les fournisseurs de modèles d’IA à usage général qui ont été mis sur le marché avant le 2 août 2025 prennent les mesures nécessaires pour se conformer aux obligations prévues par le présent règlement au plus tard le 2 août 2027."
+  contenus_deja_sur_le_marche:  # article 50, paragraphe 2, systèmes mis sur le marché avant le 2 août 2026
+    date: 2026-12-02
+    article: Article 111
+    extrait: "qui ont été mis sur le marché avant le 2 août 2026 prennent les mesures nécessaires pour se conformer à l'article 50, paragraphe 2, d'ici au 2 décembre 2026"
+
+# Systèmes à haut risque déjà sur le marché avant la date d'application : article 111, paragraphe 2.
+haut_risque_deja_sur_le_marche:
+  article: Article 111
+  extrait: "uniquement si, à compter de cette date, ces systèmes subissent d'importantes modifications de leurs conceptions"
+
+obligations:
+  # --- Tous les systèmes d'IA ---------------------------------------------------------------
+  - id: maitrise_ia
+    article: Article 4
+    titre: Maîtrise de l'IA (formation du personnel)
+    roles: [fournisseur, deployeur]
+    categories: [tous]
+    date: chapitres_I_II
+    extrait: "Les fournisseurs et les déployeurs de systèmes d'IA prennent des mesures pour favoriser le développement de la maîtrise de l'IA par leur personnel"
+
+  # --- Pratiques interdites -----------------------------------------------------------------
+  - id: interdiction
+    article: Article 5
+    titre: Pratique interdite (cesser ou ne pas mettre sur le marché)
+    roles: [fournisseur, deployeur, importateur, distributeur, mandataire]
+    categories: [interdit]
+    date: chapitres_I_II
+    extrait: "Les pratiques en matière d’IA suivantes sont interdites"
+  - id: sanction_interdiction
+    article: Article 99
+    titre: Amende jusqu'à 35 000 000 EUR ou 7 % du chiffre d'affaires annuel mondial
+    roles: [fournisseur, deployeur, importateur, distributeur, mandataire]
+    categories: [interdit]
+    extrait: "Le non-respect de l’interdiction des pratiques en matière d’IA visées à l’article 5 fait l’objet d’amendes administratives pouvant aller jusqu’à 35 000 000 EUR"
+
+  # --- Systèmes à haut risque : fournisseur -------------------------------------------------
+  - id: obligations_fournisseur
+    article: Article 16
+    titre: Obligations générales du fournisseur d'un système à haut risque
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "veillent à ce que leurs systèmes d’IA à haut risque soient conformes aux exigences énoncées à la section 2"
+  - id: gestion_risques
+    article: Article 9
+    titre: Système de gestion des risques
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "Un système de gestion des risques est établi, mis en œuvre, documenté et tenu à jour"
+  - id: donnees
+    article: Article 10
+    titre: Données et gouvernance des données (entraînement, validation, test)
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "sont développés sur la base de jeux de données d'entraînement, de validation et de test qui satisfont aux critères de qualité"
+  - id: documentation_technique
+    article: Article 11
+    titre: Documentation technique
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "La documentation technique relative à un système d’IA à haut risque est établie avant que ce système ne soit mis sur le marché ou mis en service"
+  - id: journaux
+    article: Article 12
+    titre: Enregistrement automatique des événements (journaux)
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "permettent, techniquement, l’enregistrement automatique des événements (journaux) tout au long de la durée de vie du système"
+  - id: transparence_deployeurs
+    article: Article 13
+    titre: Transparence et notice d'utilisation pour les déployeurs
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "le fonctionnement de ces systèmes est suffisamment transparent pour permettre aux déployeurs d’interpréter les sorties d’un système"
+  - id: controle_humain
+    article: Article 14
+    titre: Contrôle humain
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "un contrôle effectif par des personnes physiques pendant leur période d’utilisation"
+  - id: exactitude
+    article: Article 15
+    titre: Exactitude, robustesse et cybersécurité
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "d’atteindre un niveau approprié d’exactitude, de robustesse et de cybersécurité"
+  - id: gestion_qualite
+    article: Article 17
+    titre: Système de gestion de la qualité
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "mettent en place un système de gestion de la qualité garantissant le respect du présent règlement"
+  - id: conservation_documents
+    article: Article 18
+    titre: Conservation des documents pendant 10 ans
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "Pendant une période prenant fin 10 ans après la mise sur le marché ou la mise en service du système d’IA à haut risque"
+  - id: tenue_journaux
+    article: Article 19
+    titre: Tenue des journaux générés automatiquement
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "assurent la tenue des journaux générés automatiquement par leurs systèmes d’IA à haut risque"
+  - id: mesures_correctives
+    article: Article 20
+    titre: Mesures correctives et devoir d'information
+    roles: [fournisseur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "prennent immédiatement les mesures correctives nécessaires pour le mettre en conformité"
+  - id: evaluation_conformite
+    article: Article 43
+    titre: Évaluation de la conformité avant la mise sur le marché
+    roles: [fournisseur]
+    categories: [haut_risque]
+    extrait: "veillent à ce que le système d’IA à haut risque soit soumis à la procédure d’évaluation de la conformité applicable visée à l’article 43"
+    source: Article 16
+  - id: declaration_conformite
+    article: Article 47
+    titre: Déclaration UE de conformité
+    roles: [fournisseur]
+    categories: [haut_risque]
+    extrait: "Le fournisseur établit une déclaration UE de conformité écrite, lisible par machine"
+  - id: marquage_ce
+    article: Article 48
+    titre: Marquage CE
+    roles: [fournisseur]
+    categories: [haut_risque]
+    extrait: "apposent le marquage CE sur le système d’IA à haut risque"
+    source: Article 16
+  - id: enregistrement_fournisseur
+    article: Article 49
+    titre: Enregistrement dans la base de données de l'UE
+    roles: [fournisseur]
+    categories: [haut_risque_annexe_iii]
+    sauf_point: "2"
+    extrait: "le fournisseur ou, selon le cas, le mandataire s’enregistre dans la base de données de l’UE visée à l’article 71 et y enregistre aussi son système"
+  - id: surveillance_apres_commercialisation
+    article: Article 72
+    titre: Surveillance après commercialisation
+    roles: [fournisseur]
+    categories: [haut_risque]
+    extrait: "Les fournisseurs établissent et documentent un système de surveillance après commercialisation"
+  - id: incidents_graves
+    article: Article 73
+    titre: Signalement des incidents graves
+    roles: [fournisseur]
+    categories: [haut_risque]
+    extrait: "signalent tout incident grave aux autorités de surveillance du marché des États membres dans lesquels cet incident s’est produit"
+
+  # --- Systèmes à haut risque : déployeur ---------------------------------------------------
+  - id: obligations_deployeur
+    article: Article 26
+    titre: Utilisation conforme à la notice, contrôle humain, surveillance, journaux
+    roles: [deployeur]
+    categories: [haut_risque]
+    date: haut_risque
+    extrait: "prennent des mesures techniques et organisationnelles appropriées afin de garantir qu’ils utilisent ces systèmes conformément aux notices d’utilisation"
+  - id: information_travailleurs
+    article: Article 26
+    titre: Informer les travailleurs et leurs représentants (paragraphe 7)
+    roles: [deployeur]
+    categories: [haut_risque]
+    si: [lieu_de_travail]
+    date: haut_risque
+    extrait: "les déployeurs qui sont des employeurs informent les représentants des travailleurs et les travailleurs concernés"
+  - id: information_personnes
+    article: Article 26
+    titre: Informer les personnes faisant l'objet de décisions (paragraphe 11)
+    roles: [deployeur]
+    categories: [haut_risque_annexe_iii]
+    si: [decisions_sur_personnes]
+    date: haut_risque
+    extrait: "qui prennent des décisions ou facilitent les prises de décision concernant des personnes physiques, informent lesdites personnes physiques qu’elles sont soumises à l’utilisation du système d’IA à haut risque"
+  - id: analyse_impact_droits
+    article: Article 27
+    titre: Analyse d'impact sur les droits fondamentaux
+    roles: [deployeur]
+    categories: [haut_risque_annexe_iii]
+    sauf_point: "2"
+    si: [secteur_public, annexe_iii_5bc]
+    date: haut_risque
+    extrait: "les déployeurs qui sont des organismes de droit public ou des entités privées fournissant des services publics et les déployeurs de systèmes d’IA à haut risque visés à l’annexe III, points 5), b) et c), effectuent une analyse de l’impact sur les droits fondamentaux"
+  - id: enregistrement_deployeur
+    article: Article 49
+    titre: Enregistrement de l'utilisation (autorités publiques)
+    roles: [deployeur]
+    categories: [haut_risque_annexe_iii]
+    sauf_point: "2"
+    si: [secteur_public]
+    extrait: "les déployeurs qui sont des autorités publiques, des institutions organes ou organismes de l’Union ou des personnes agissant en leur nom s’enregistrent"
+  - id: droit_explication
+    article: Article 86
+    titre: Droit des personnes à une explication de la décision
+    roles: [deployeur]
+    categories: [haut_risque_annexe_iii]
+    sauf_point: "2"
+    si: [decisions_sur_personnes]
+    extrait: "Toute personne concernée faisant l’objet d’une décision prise par un déployeur sur la base des sorties d’un système d’IA à haut risque mentionné à l’annexe III"
+  - id: sanction_haut_risque
+    article: Article 99
+    titre: Amende jusqu'à 15 000 000 EUR ou 3 % du chiffre d'affaires annuel mondial
+    roles: [fournisseur, deployeur, importateur, distributeur, mandataire]
+    categories: [haut_risque, transparence_1, transparence_2, transparence_3, transparence_4]
+    extrait: "fait l’objet d’une amende administrative pouvant aller jusqu’à 15 000 000 EUR"
+
+  # --- Transparence (article 50) ------------------------------------------------------------
+  - id: informer_interaction
+    article: Article 50
+    titre: Informer les personnes qu'elles interagissent avec une IA (paragraphe 1)
+    roles: [fournisseur]
+    categories: [transparence_1]
+    date: generale
+    extrait: "les personnes physiques concernées soient informées qu’elles interagissent avec un système d’IA"
+  - id: marquer_contenus
+    article: Article 50
+    titre: Marquer les contenus générés dans un format lisible par machine (paragraphe 2)
+    roles: [fournisseur]
+    categories: [transparence_2]
+    date: generale
+    extrait: "veillent à ce que les sorties des systèmes d’IA soient marquées dans un format lisible par machine et identifiables comme ayant été générées ou manipulées par une IA"
+  - id: informer_emotions_biometrie
+    article: Article 50
+    titre: Informer les personnes exposées à la reconnaissance des émotions ou à la catégorisation biométrique (paragraphe 3)
+    roles: [deployeur]
+    categories: [transparence_3]
+    date: generale
+    extrait: "Les déployeurs d’un système de reconnaissance des émotions ou d’un système de catégorisation biométrique informent les personnes physiques qui y sont exposées du fonctionnement du système"
+  - id: signaler_hypertrucage
+    article: Article 50
+    titre: Signaler les hypertrucages (paragraphe 4)
+    roles: [deployeur]
+    categories: [transparence_4]
+    date: generale
+    extrait: "constituant un hypertrucage indiquent que les contenus ont été générés ou manipulés par une IA"
+
+  # --- Modèles d'IA à usage général (chapitre V) --------------------------------------------
+  - id: obligations_modele
+    article: Article 53
+    titre: Documentation technique, information des intégrateurs, droit d'auteur, résumé des données d'entraînement
+    roles: [fournisseur]
+    categories: [modele_usage_general]
+    date: modeles
+    extrait: "élaborent et tiennent à jour la documentation technique du modèle, y compris son processus d’entraînement et d’essai et les résultats de son évaluation"
+  - id: mandataire_modele
+    article: Article 54
+    titre: Mandataire dans l'Union (fournisseur établi hors de l'Union)
+    roles: [fournisseur]
+    categories: [modele_usage_general]
+    si: [hors_ue]
+    date: modeles
+    extrait: "les fournisseurs établis dans des pays tiers désignent, par mandat écrit, un mandataire établi dans l’Union"
+  - id: risque_systemique
+    article: Article 55
+    titre: Évaluation, atténuation des risques systémiques, incidents, cybersécurité
+    roles: [fournisseur]
+    categories: [risque_systemique]
+    date: modeles
+    extrait: "les fournisseurs de modèles d’IA à usage général présentant un risque systémique"

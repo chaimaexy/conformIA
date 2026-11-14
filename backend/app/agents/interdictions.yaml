@@ -1,0 +1,88 @@
+# Conditions des pratiques interdites (article 5, paragraphe 1, du règlement sur l'IA).
+#
+# Le découpage est fixé ici, pas par le LLM : laissé libre, un petit modèle rend cumulatives
+# des conditions alternatives (point c) i) ou ii)) ou en invente (« le système est déjà en
+# service »). Le LLM ne fait que juger chaque condition contre le profil du projet.
+#
+# - toutes      : conditions cumulatives ;
+# - au_moins_une : au moins une doit être remplie (point c) i) et ii)) ;
+# - sauf        : exceptions ; établie -> la pratique n'est pas interdite.
+# Chaque « extrait » est recopié mot pour mot de l'article 5 ; il est vérifié contre l'index
+# (python -m app.agents.obligations --verifier) et c'est lui que le rapport cite.
+
+a):
+  toutes:
+    - question: Le système a-t-il recours à des techniques subliminales ou délibérément manipulatrices ou trompeuses ?
+      extrait: a recours à des techniques subliminales, au-dessous du seuil de conscience d’une personne, ou à des techniques délibérément manipulatrices ou trompeuses
+    - question: Ces techniques ont-elles pour objectif ou pour effet d'altérer substantiellement le comportement des personnes, en portant considérablement atteinte à leur capacité à prendre une décision éclairée ?
+      extrait: avec pour objectif ou effet d’altérer substantiellement le comportement d’une personne ou d’un groupe de personnes en portant considérablement atteinte à leur capacité à prendre une décision éclairée
+    - question: Cela cause-t-il, ou est-ce raisonnablement susceptible de causer, un préjudice important ?
+      extrait: d’une manière qui cause ou est raisonnablement susceptible de causer un préjudice important à cette personne, à une autre personne ou à un groupe de personnes
+b):
+  toutes:
+    - question: Le système exploite-t-il les vulnérabilités dues à l'âge, au handicap ou à la situation sociale ou économique de personnes ?
+      extrait: exploite les éventuelles vulnérabilités dues à l’âge, au handicap ou à la situation sociale ou économique spécifique d’une personne physique ou d’un groupe de personnes donné
+    - question: A-t-il pour objectif ou pour effet d'altérer substantiellement leur comportement ?
+      extrait: avec pour objectif ou effet d’altérer substantiellement le comportement de cette personne ou d’un membre de ce groupe
+    - question: Cela cause-t-il, ou est-ce raisonnablement susceptible de causer, un préjudice important ?
+      extrait: d’une manière qui cause ou est raisonnablement susceptible de causer un préjudice important à cette personne ou à un tiers
+b bis):
+  toutes:
+    - question: Le système génère-t-il ou manipule-t-il des contenus réalistes représentant les parties intimes d'une personne identifiable, ou une personne identifiable se livrant à des activités sexuellement explicites ?
+      extrait: génère ou manipule des images, des vidéos, des contenus audio ou tout autre matériel similaire réalistes représentant les parties intimes d'une personne identifiable, ou une personne identifiable se livrant à des activités sexuellement explicites
+    - question: Ces contenus sont-ils produits sans le consentement libre, spécifique, éclairé, univoque et explicite de la personne représentée ?
+      extrait: sans le consentement libre, spécifique, éclairé, univoque et explicite de cette personne pour cette production ou manipulation
+b ter):
+  toutes:
+    - question: Le système génère-t-il ou manipule-t-il du matériel pédopornographique au sens de la directive 2011/93/UE ?
+      extrait: génère ou manipule tout matériel ou spectacle au sens de l'article 2, points c) et e), de la directive 2011/93/UE
+  sauf:
+    - question: Une défense « sans droit » s'applique-t-elle en vertu du droit national ?
+      extrait: sauf lorsqu'une défense «sans droit» s'applique en vertu du droit national
+c):
+  toutes:
+    - question: Le système évalue-t-il ou classe-t-il des personnes au cours d'une période donnée en fonction de leur comportement social ou de caractéristiques personnelles ou de personnalité, pour leur attribuer une note sociale ?
+      extrait: l’évaluation ou la classification de personnes physiques ou de groupes de personnes au cours d’une période donnée en fonction de leur comportement social ou de caractéristiques personnelles ou de personnalité connues, déduites ou prédites
+  au_moins_une:
+    - question: Cette note conduit-elle à un traitement préjudiciable ou défavorable dans des contextes sociaux sans rapport avec celui où les données ont été générées ou collectées ?
+      extrait: le traitement préjudiciable ou défavorable de certaines personnes physiques ou de groupes de personnes dans des contextes sociaux dissociés du contexte dans lequel les données ont été générées ou collectées à l’origine
+    - question: Cette note conduit-elle à un traitement préjudiciable ou défavorable injustifié ou disproportionné par rapport au comportement social ou à sa gravité ?
+      extrait: le traitement préjudiciable ou défavorable de certaines personnes ou de groupes de personnes, qui est injustifié ou disproportionné par rapport à leur comportement social ou à la gravité de celui-ci
+d):
+  toutes:
+    - question: Le système évalue-t-il ou prédit-il le risque qu'une personne commette une infraction pénale ?
+      extrait: mener des évaluations des risques des personnes physiques visant à évaluer ou à prédire le risque qu’une personne physique commette une infraction pénale
+    - question: Cette évaluation repose-t-elle uniquement sur le profilage de la personne ou sur l'évaluation de ses traits de personnalité ou caractéristiques ?
+      extrait: uniquement sur la base du profilage d’une personne physique ou de l’évaluation de ses traits de personnalité ou caractéristiques
+  sauf:
+    - question: Le système sert-il seulement à étayer une évaluation humaine déjà fondée sur des faits objectifs et vérifiables, directement liés à une activité criminelle ?
+      extrait: utilisés pour étayer l’évaluation humaine de l’implication d’une personne dans une activité criminelle, qui est déjà fondée sur des faits objectifs et vérifiables, directement liés à une activité criminelle
+e):
+  toutes:
+    - question: Le système crée-t-il ou développe-t-il des bases de données de reconnaissance faciale par le moissonnage non ciblé d'images faciales provenant d'internet ou de la vidéosurveillance ?
+      extrait: créent ou développent des bases de données de reconnaissance faciale par le moissonnage non ciblé d’images faciales provenant de l’internet ou de la vidéosurveillance
+f):
+  toutes:
+    - question: Le système infère-t-il les émotions de personnes physiques ?
+      extrait: inférer les émotions d’une personne physique
+    - question: Est-ce sur le lieu de travail ou dans un établissement d'enseignement ?
+      extrait: sur le lieu de travail et dans les établissements d’enseignement
+  sauf:
+    - question: Le système est-il destiné à être mis en place ou mis sur le marché pour des raisons médicales ou de sécurité ?
+      extrait: destinée à être mise en place ou mise sur le marché pour des raisons médicales ou de sécurité
+g):
+  toutes:
+    - question: Le système catégorise-t-il individuellement des personnes sur la base de leurs données biométriques (visage, voix, corps...) ?
+      extrait: systèmes de catégorisation biométrique qui catégorisent individuellement les personnes physiques sur la base de leurs données biométriques
+    - question: Est-ce pour en déduire leur race, leurs opinions politiques, leur affiliation syndicale, leurs convictions religieuses ou philosophiques, leur vie sexuelle ou leur orientation sexuelle ?
+      extrait: afin d’arriver à des déductions ou des inférences concernant leur race, leurs opinions politiques, leur affiliation à une organisation syndicale, leurs convictions religieuses ou philosophiques, leur vie sexuelle ou leur orientation sexuelle
+  sauf:
+    - question: S'agit-il seulement de l'étiquetage ou du filtrage d'ensembles de données biométriques acquis légalement, ou de catégorisation dans le domaine répressif ?
+      extrait: l’étiquetage ou le filtrage d’ensembles de données biométriques acquis légalement, tels que des images, fondés sur des données biométriques ou la catégorisation de données biométriques dans le domaine répressif
+h):
+  toutes:
+    - question: Le système sert-il à l'identification biométrique à distance en temps réel, dans des espaces accessibles au public, à des fins répressives ?
+      extrait: l’utilisation de systèmes d’identification biométrique à distance en temps réel dans des espaces accessibles au public à des fins répressives
+  sauf:
+    - question: Cette utilisation est-elle strictement nécessaire à la recherche ciblée de victimes ou de personnes disparues, à la prévention d'une menace imminente pour la vie ou d'une attaque terroriste, ou à la localisation d'un suspect d'infraction grave ?
+      extrait: sauf si et dans la mesure où cette utilisation est strictement nécessaire eu égard à l’un des objectifs suivants

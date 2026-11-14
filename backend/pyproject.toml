@@ -19,6 +19,10 @@ dependencies = [
     "langchain-text-splitters>=0.3",
     "numpy>=2.0",
     "snowballstemmer>=2.2",            # racinisation française pour BM25 (pur Python)
+    "langgraph>=1.2,<2",                # agent d'analyse : graphe fixe, pause et reprise
+    "langgraph-checkpoint-sqlite>=3.1,<4",  # état des analyses (Postgres en phase 7)
+    # 1.13.1 : DLL bloquée par le contrôle des applications de Windows sur le poste de dev
+    "ormsgpack==1.12.2; sys_platform == 'win32'",
 ]
 
 [project.optional-dependencies]
