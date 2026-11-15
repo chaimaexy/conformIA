@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-14T17:23:39+00:00",
+  "date": "2026-11-14T20:39:54+00:00",
   "summary": {
     "scenarios": 19,
     "erreurs_execution": 0,
@@ -12,14 +12,14 @@
     "dates_fausses": 0,
     "obligations_en_trop": 0,
     "erreurs_de_profil": 1,
-    "questions_par_analyse": 9.4,
+    "questions_par_analyse": 9.5,
     "appels_llm_moyens": 7.4,
-    "duree_moyenne_s": 19.5
+    "duree_moyenne_s": 9.9
   },
   "scenarios": [
     {
       "id": "cv_deployeur",
-      "duree_s": 4.4,
+      "duree_s": 4.0,
       "appels_llm": 8,
       "questions_posees": [
         "interagit_avec_personnes",
@@ -349,7 +349,7 @@
     },
     {
       "id": "tri_urgences",
-      "duree_s": 0.1,
+      "duree_s": 0.2,
       "appels_llm": 8,
       "questions_posees": [
         "roles",
@@ -767,7 +767,7 @@
     },
     {
       "id": "modele_hors_ue",
-      "duree_s": 182.7,
+      "duree_s": 0.1,
       "appels_llm": 8,
       "questions_posees": [
         "decisions_sur_personnes",
@@ -932,7 +932,7 @@
     },
     {
       "id": "traduction_interne",
-      "duree_s": 182.4,
+      "duree_s": 181.9,
       "appels_llm": 8,
       "questions_posees": [
         "decisions_sur_personnes",
@@ -944,7 +944,8 @@
         "secteur_public",
         "lieu_de_travail",
         "donnees_sensibles",
-        "deja_sur_le_marche"
+        "deja_sur_le_marche",
+        "hypertrucage"
       ],
       "erreurs_profil": [
         "donnees_personnelles : True au lieu de False"

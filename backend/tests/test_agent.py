@@ -17,7 +17,9 @@ from app.agents.classification import (
     conditions_of,
     point_text,
     practice_verdict,
+    profile_summary,
 )
+from app.agents.document import DocumentError, page_of, read_pdf
 from app.agents.graph import AnalysisService, Sources
 from app.agents.profile import (
     Profile,
@@ -303,7 +305,7 @@ class FakeSources(Sources):
 
 
 def fake_ask(prompt):
-    if "DESCRIPTION DU PROJET" in prompt:
+    if "DESCRIPTION DU PROJET" in prompt or "DOCUMENT DU PROJET" in prompt:
         return {
             "finalite": "Tri des CV",
             "roles": ["deployeur"],
@@ -346,29 +348,45 @@ def test_graph_pauses_for_questions_then_reports(tmp_path):
     assert list(service.resume(analysis_id, {}))[0]["type"] == "erreur"
 
 
-def test_analysis_endpoints(monkeypatch, tmp_path):
+@pytest.fixture
+def api(monkeypatch, tmp_path):
+    """Client de l'API avec un faux LLM et la file locale (sans Redis)."""
+    from app.agents.queue import local_queue
     from app.api.routes import analyses
     from app.main import app
 
     service = AnalysisService(FakeSources(), fake_ask, db_path=tmp_path / "a.sqlite")
+    queue = local_queue(service)
     monkeypatch.setattr(analyses, "get_service", lambda: service)
-    client = TestClient(app)
+    monkeypatch.setattr(analyses, "get_queue", lambda: queue)
+    monkeypatch.setattr(analyses, "POLL_S", 0.01)
+    return TestClient(app)
 
-    def events(response):
-        return [json.loads(line[6:]) for line in response.text.split("\n\n") if line]
 
-    started = events(client.post("/analyses", json={"description": CV}))
-    analysis_id = started[0]["analyse_id"]
+def flux(client, ticket) -> list[dict]:
+    """Événements du flux SSE, jusqu'à ce que l'analyse attende ou se termine."""
+    response = client.get(ticket["flux"])
+    return [json.loads(line[6:]) for line in response.text.split("\n\n") if line]
+
+
+def test_analysis_endpoints(api):
+    ticket = api.post("/analyses", json={"description": CV})
+    assert ticket.status_code == 202 and ticket.json()["position"] == 1
+    analysis_id = ticket.json()["analyse_id"]
+    started = flux(api, ticket.json())
+    assert [e["type"] for e in started][:2] == ["en_attente", "debut"]
     assert started[-1]["type"] == "questions"
-    assert client.get(f"/analyses/{analysis_id}").json()["statut"] == "questions"
+    assert api.get(f"/analyses/{analysis_id}").json()["statut"] == "questions"
+
     answers = {q["champ"]: "non" for q in started[-1]["questions"]}
-    finished = events(client.post(f"/analyses/{analysis_id}/reponses", json={"reponses": answers}))
-    assert finished[-1]["type"] == "rapport"
-    assert (
-        client.post(f"/analyses/{analysis_id}/reponses", json={"reponses": {}}).status_code == 409
-    )
-    assert client.get("/analyses/inconnue").status_code == 404
-    assert client.post("/analyses", json={"description": "trop court"}).status_code == 422
+    resumed = api.post(f"/analyses/{analysis_id}/reponses", json={"reponses": answers})
+    assert resumed.status_code == 202 and resumed.json()["depuis"] == len(started)
+    finished = flux(api, resumed.json())
+    assert finished[0]["type"] == "en_attente" and finished[-1]["type"] == "rapport"
+    assert api.post(f"/analyses/{analysis_id}/reponses", json={"reponses": {}}).status_code == 409
+    assert api.get("/analyses/inconnue").status_code == 404
+    assert api.get("/analyses/inconnue/flux").status_code == 404
+    assert api.post("/analyses", json={"description": "trop court"}).status_code == 422
 
 
 def test_object_wrapped_in_a_list_is_unwrapped():
@@ -385,3 +403,165 @@ def test_doubt_without_any_annex_point_is_not_high_risk():
 
     result = classify_high_risk(Profile(description=CV), ANNEX_III, ask)
     assert result["verdict"] == "non" and result["point"] is None and result["nouvel_essai"]
+
+
+# ----------------------------------------------------------------------------- document PDF
+def make_pdf(pages: list[str]) -> bytes:
+    """PDF minimal (texte en Helvetica, WinAnsi) : une chaîne par page, une ligne par « \n »."""
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        None,  # arbre des pages, écrit quand les pages sont connues
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",
+    ]
+    kids = []
+    for text in pages:
+        lines = [
+            line.replace("\\", "\\\\").replace("(", r"\(").replace(")", r"\)")
+            for line in text.split("\n")
+        ]
+        body = "BT /F1 11 Tf 14 TL 50 780 Td " + " ".join(f"({line}) Tj T*" for line in lines)
+        stream = (body + " ET").encode("cp1252")
+        objects.append(b"<< /Length %d >>\nstream\n" % len(stream) + stream + b"\nendstream")
+        content = len(objects)
+        objects.append(
+            b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] "
+            b"/Resources << /Font << /F1 3 0 R >> >> /Contents %d 0 R >>" % content
+        )
+        kids.append(b"%d 0 R" % len(objects))
+    objects[1] = b"<< /Type /Pages /Kids [%s] /Count %d >>" % (b" ".join(kids), len(kids))
+    out, offsets = bytearray(b"%PDF-1.4\n"), []
+    for n, obj in enumerate(objects, start=1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n" % n + obj + b"\nendobj\n"
+    xref = len(out)
+    out += b"xref\n0 %d\n0000000000 65535 f \n" % (len(objects) + 1)
+    out += b"".join(b"%010d 00000 n \n" % o for o in offsets)
+    out += b"trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n" % (
+        len(objects) + 1,
+        xref,
+    )
+    return bytes(out)
+
+
+SPEC = [
+    "Cahier des charges : outil de recrutement\nContexte : notre PME de 80 salariés recrute "
+    "beaucoup.",
+    "Fonctionnement\nNous voulons utiliser un logiciel acheté à un éditeur qui analyse "
+    "automatiquement les CV reçus.\nIl classe les candidats pour nos recrutements.",
+]
+
+
+def test_pdf_is_read_page_by_page():
+    document = read_pdf(make_pdf(SPEC), "cahier.pdf")
+    assert len(document.pages) == 2 and document.empty_pages == []
+    assert document.text().startswith("[page 1]\nCahier des charges")
+    assert "salariés" in document.text()  # accents décodés (WinAnsi)
+    assert page_of("classe les candidats pour nos recrutements", document.text()) == 2
+    assert page_of("absent du document", document.text()) is None
+
+
+@pytest.mark.parametrize(
+    ("data", "message"),
+    [
+        (b"Bonjour, ceci n'est pas un PDF", "n'est pas un PDF"),
+        (b"%PDF-1.4\nfichier abime", "illisible"),
+        (b"%PDF-" + b"0" * (10 * 1024 * 1024), "dépasse 10 Mo"),
+    ],
+)
+def test_bad_files_are_refused_with_a_clear_message(data, message):
+    with pytest.raises(DocumentError, match=message):
+        read_pdf(data)
+
+
+def test_scanned_and_long_pdfs_are_refused():
+    with pytest.raises(DocumentError, match="scanné"):
+        read_pdf(make_pdf(["", " "]))
+    with pytest.raises(DocumentError, match="31 pages"):
+        read_pdf(make_pdf(["page"] * 31))
+
+
+def test_profile_from_a_document_keeps_pages_and_sends_only_excerpts():
+    text = read_pdf(make_pdf(SPEC)).text()
+    data = {
+        "finalite": "Tri des CV",
+        "roles": ["deployeur"],
+        "decisions_sur_personnes": True,
+        "preuves": {
+            "roles": "Nous voulons utiliser un logiciel acheté",
+            "decisions_sur_personnes": "Il classe les candidats",
+        },
+        "passages_cles": [
+            "analyse automatiquement les CV reçus",
+            "passage inventé qui ne figure nulle part",
+            "court",
+        ],
+    }
+    profile = parse_profile(text, data)
+    profile.document = "cahier.pdf"
+    assert profile.preuves["roles"] == {
+        "extrait": "Nous voulons utiliser un logiciel acheté",
+        "page": 2,
+    }
+    assert [p["extrait"] for p in profile.passages] == ["analyse automatiquement les CV reçus"]
+    summary = profile_summary(profile)
+    assert "Cahier des charges" not in summary  # pas le document entier
+    assert "(page 2) analyse automatiquement les CV reçus" in summary
+
+    built = report.build(profile, [], {}, [], None, [])
+    assert "description" not in built["profil"]
+    lines = report.profile_lines(built["profil"])
+    assert "| Rôle | Déployeur (utilisateur professionnel) | « Nous voulons" in lines[0]
+    assert lines[0].endswith("page 2 |")
+
+
+def test_redis_events_and_failed_job():
+    import fakeredis
+
+    from app.agents.queue import RedisEvents, run_job
+
+    events = RedisEvents(fakeredis.FakeRedis())
+    assert events.wait("a") == 1 and events.wait("b") == 2
+    events.started("a")
+    assert events.wait("c") == 2  # « a » a commencé : « c » passe après « b »
+
+    class Broken:
+        def start(self, *args):
+            raise RuntimeError("réseau coupé")
+
+    run_job(Broken(), events, {"type": "debut", "analyse_id": "a", "texte": "x"})
+    assert events.count("a") == 1 and events.read("a")[0]["type"] == "erreur"
+
+
+def test_analysis_from_an_uploaded_pdf(api):
+    files = {"fichier": ("cahier.pdf", make_pdf(SPEC), "application/pdf")}
+    ticket = api.post("/analyses/document", files=files)
+    assert ticket.status_code == 202
+    assert ticket.json()["document"] == {"nom": "cahier.pdf", "pages": 2, "pages_sans_texte": []}
+    started = flux(api, ticket.json())
+    assert started[-1]["type"] == "questions"
+    answers = {q["champ"]: "non" for q in started[-1]["questions"]}
+    resumed = api.post(
+        f"/analyses/{ticket.json()['analyse_id']}/reponses", json={"reponses": answers}
+    )
+    final = flux(api, resumed.json())[-1]
+    assert final["type"] == "rapport" and final["rapport"]["profil"]["document"] == "cahier.pdf"
+    assert "page 2" in final["markdown"]
+
+    refused = api.post(
+        "/analyses/document", files={"fichier": ("x.pdf", b"pas un pdf", "text/plain")}
+    )
+    assert refused.status_code == 422 and "n'est pas un PDF" in refused.json()["detail"]
+
+
+def test_an_answer_can_open_a_second_round_of_questions(tmp_path):
+    service = AnalysisService(FakeSources(), fake_ask, db_path=tmp_path / "a.sqlite")
+    first = list(service.start(CV))[-1]
+    analysis_id = first["analyse_id"]
+    asked = [q["champ"] for q in first["questions"]]
+    assert "hypertrucage" not in asked  # sans objet tant qu'on ignore si le système génère
+    answers = {name: "non" for name in asked} | {"genere_contenus": "oui"}
+    second = list(service.resume(analysis_id, answers))[-1]
+    assert second["type"] == "questions"
+    assert [q["champ"] for q in second["questions"]] == ["hypertrucage"]  # seulement la nouvelle
+    final = list(service.resume(analysis_id, {"hypertrucage": "non"}))[-1]
+    assert final["type"] == "rapport" and final["rapport"]["informations_manquantes"] == []

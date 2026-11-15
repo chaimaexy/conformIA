@@ -11,6 +11,7 @@ from typing import Literal, get_args
 
 from pydantic import BaseModel, Field
 
+from app.agents.document import page_of
 from app.rag.verify import normalize
 
 Role = Literal["fournisseur", "deployeur", "importateur", "distributeur", "mandataire"]
@@ -37,6 +38,10 @@ class Profile(BaseModel):
     donnees_personnelles: bool | None = None
     donnees_sensibles: bool | None = None
     deja_sur_le_marche: MarketStatus | None = None
+    # tenus par le code, pas extraits par le LLM
+    document: str | None = None  # nom du PDF quand l'analyse part d'un document
+    preuves: dict[str, dict] = Field(default_factory=dict)  # champ -> {extrait, page}
+    passages: list[dict] = Field(default_factory=list)  # passages clés du document, vérifiés
 
 
 YES_NO = [("oui", "Oui"), ("non", "Non"), ("je_ne_sais_pas", "Je ne sais pas")]
@@ -180,6 +185,7 @@ def apply_answers(profile: Profile, answers: dict) -> Profile:
             data[name] = value == "oui"
         else:
             data[name] = value
+        data["preuves"].pop(name, None)  # la valeur vient de l'utilisateur, plus de l'extrait
     return Profile.model_validate(data)
 
 
@@ -224,6 +230,35 @@ Réponds en JSON avec exactement ces clés :
 Chaque valeur booléenne vaut true, false ou null (non précisé)."""
 
 FREE_TEXT = ("description", "finalite", "personnes_concernees")  # reformulations admises
+INTERNAL = ("description", "document", "preuves", "passages")
+MAX_PASSAGES = 8
+MIN_PASSAGE_WORDS = 5
+
+# Même profil, lu dans un document de plusieurs pages (cahier des charges, documentation,
+# analyse d'impact). Il demande en plus des passages clés, recopiés mot pour mot : les étapes
+# suivantes reçoivent ces passages et le profil, pas tout le document (limite de tokens/min).
+DOCUMENT_PROMPT = (
+    EXTRACTION_PROMPT.replace(
+        "Tu analyses la description d'un projet d'IA",
+        "Tu analyses le document d'un projet d'IA (cahier des charges, documentation, analyse "
+        "d'impact)",
+    )
+    .replace(
+        "DESCRIPTION DU PROJET :\n{description}",
+        "DOCUMENT DU PROJET (texte extrait du PDF, chaque page commence par [page n]) :\n"
+        "{description}",
+    )
+    .replace("l'extrait de la description qui", "l'extrait du document qui")
+    .replace(
+        "\nRéponds en JSON avec exactement ces clés :\n{{",
+        '\nDonne aussi dans "passages_cles" jusqu\'à 8 passages du document, recopiés MOT POUR '
+        "MOT (sans la marque de page), qui décrivent l'usage du système, les personnes "
+        "concernées, les données utilisées et les décisions prises.\n\n"
+        "Réponds en JSON avec exactement ces clés :\n"
+        '{{"passages_cles": ["..."], ',
+    )
+)
+assert DOCUMENT_PROMPT.count("passages_cles") == 2 and "l'extrait du document" in DOCUMENT_PROMPT
 
 
 def has_evidence(evidence, description: str) -> bool:
@@ -243,8 +278,9 @@ def parse_profile(description: str, data: dict) -> Profile:
     """
     clean: dict = {"description": description}
     evidence = data.get("preuves") if isinstance(data.get("preuves"), dict) else {}
+    proofs: dict[str, dict] = {}
     for name in Profile.model_fields:
-        if name == "description" or name not in data or data[name] is None:
+        if name in INTERNAL or name not in data or data[name] is None:
             continue
         value = data[name]
         if name not in FREE_TEXT and not has_evidence(evidence.get(name), description):
@@ -256,16 +292,40 @@ def parse_profile(description: str, data: dict) -> Profile:
         except ValueError:
             continue
         clean[name] = value
+        if name not in FREE_TEXT:
+            proofs[name] = _proof(evidence[name], description)
     # Période de mise sur le marché : le modèle la calculait mal (« à partir de 2027 » ->
     # « après le 2 août 2026 » au lieu de « pas encore »). Seul « non » est repris tel quel ;
     # une période ne vient que d'une date recopiée de la description, convertie par le code.
     if clean.get("deja_sur_le_marche") not in (None, "non"):
         del clean["deja_sur_le_marche"]
+        proofs.pop("deja_sur_le_marche", None)
     if has_evidence(evidence.get("date_mise_sur_le_marche"), description):
         status = market_status(data.get("date_mise_sur_le_marche"))
         if status:
             clean["deja_sur_le_marche"] = status
+            proofs["deja_sur_le_marche"] = _proof(evidence["date_mise_sur_le_marche"], description)
+    clean["preuves"] = proofs
+    clean["passages"] = key_passages(data.get("passages_cles"), description)
     return Profile.model_validate(clean)
+
+
+def _proof(evidence: str, text: str) -> dict:
+    excerpt = evidence.strip(" .«»\"'")
+    return {"extrait": excerpt, "page": page_of(excerpt, text)}
+
+
+def key_passages(passages, text: str) -> list[dict]:
+    """Passages clés recopiés du document : seuls ceux retrouvés mot pour mot sont gardés."""
+    if not isinstance(passages, list):
+        return []
+    kept: list[dict] = []
+    for passage in passages:
+        if not isinstance(passage, str) or len(passage.split()) < MIN_PASSAGE_WORDS:
+            continue
+        if has_evidence(passage, text) and passage not in [k["extrait"] for k in kept]:
+            kept.append(_proof(passage, text))
+    return kept[:MAX_PASSAGES]
 
 
 def market_status(when, today: date | None = None) -> str | None:

@@ -114,8 +114,10 @@ def build(
     note_111: dict | None,
     rgpd: list[dict],
 ) -> dict:
+    # le texte d'un PDF (jusqu'à 30 pages) ne se recopie pas dans le rapport : ses preuves suffisent
+    exclude = {"description"} if profile.document else set()
     return {
-        "profil": profile.model_dump(),
+        "profil": profile.model_dump(exclude=exclude),
         "informations_manquantes": [
             {"champ": m, "question": QUESTIONS[m]["question"]} for m in missing
         ],
@@ -123,11 +125,55 @@ def build(
         "obligations": obligations,
         "systeme_deja_sur_le_marche": note_111,
         "rgpd": rgpd,
-        "avertissement": DISCLAIMER,
+        "avertissement": DISCLAIMER.replace("votre description", "votre document")
+        if profile.document
+        else DISCLAIMER,
     }
 
 
 CONDITION_LABELS = {"etablie": "Oui.", "non": "Non.", "inconnue": "Inconnu."}
+PROFILE_LABELS = {
+    "roles": "Rôle",
+    "decisions_sur_personnes": "Décisions sur des personnes",
+    "interagit_avec_personnes": "Dialogue avec des personnes",
+    "genere_contenus": "Génère des contenus",
+    "hypertrucage": "Hypertrucage",
+    "biometrie": "Biométrie ou émotions",
+    "composant_securite_produit": "Composant de sécurité d'un produit",
+    "modele_usage_general": "Modèle d'IA à usage général",
+    "secteur_public": "Secteur public",
+    "lieu_de_travail": "Sur le lieu de travail",
+    "donnees_personnelles": "Données personnelles",
+    "donnees_sensibles": "Données sensibles",
+    "deja_sur_le_marche": "Déjà sur le marché",
+    "hors_ue": "Établi hors de l'UE",
+}
+
+
+def _value_label(field: str, value) -> str:
+    if isinstance(value, bool):
+        return "oui" if value else "non"
+    options = dict(QUESTIONS[field]["options"])
+    if isinstance(value, list):
+        return ", ".join(options.get(v, v) for v in value)
+    return options.get(value, str(value))
+
+
+def profile_lines(profile: dict) -> list[str]:
+    """Une ligne par valeur connue, avec sa preuve (extrait et page) ou « votre réponse »."""
+    lines = []
+    for field, label in PROFILE_LABELS.items():
+        value = profile.get(field)
+        if value in (None, []):
+            continue
+        proof = (profile.get("preuves") or {}).get(field)
+        if proof:
+            page = f", page {proof['page']}" if proof.get("page") else ""
+            source = f"« {_one_line(proof['extrait'])} »{page}"
+        else:
+            source = "votre réponse"
+        lines.append(f"| {label} | {_value_label(field, value)} | {source} |")
+    return lines
 
 
 def _one_line(text: str) -> str:
@@ -138,6 +184,12 @@ def to_markdown(report: dict) -> str:
     c = report["classification"]
     lines = ["# Pré-diagnostic de conformité", "", f"> {report['avertissement']}", ""]
     lines += ["## Synthèse", "", report.get("synthese", ""), ""]
+    profile = report["profil"]
+    origin = f" (d'après le document « {profile['document']} »)" if profile.get("document") else ""
+    lines += [f"## Profil du projet{origin}", ""]
+    if profile.get("finalite"):
+        lines += [f"Finalité : {profile['finalite']}", ""]
+    lines += ["| Élément | Valeur | Source |", "|---|---|---|", *profile_lines(profile), ""]
     lines += ["## Classification AI Act", "", f"**{LEVELS[c['niveau']]}**", ""]
     for p in c["interdit"]["pratiques"]:
         lines.append(

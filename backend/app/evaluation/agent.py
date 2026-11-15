@@ -91,9 +91,10 @@ def run_scenario(service: AnalysisService, scenario: dict) -> dict:
     analysis_id = events[0]["analyse_id"]
     extracted = service.graph.get_state(service._config(analysis_id)).values["profil"]
     asked = []
-    if events[-1]["type"] == "questions":
-        asked = [q["champ"] for q in events[-1]["questions"]]
-        answers = {name: scenario["faits"].get(name, "je_ne_sais_pas") for name in asked}
+    while events[-1]["type"] == "questions":  # un second tour si une réponse en appelle une autre
+        fields = [q["champ"] for q in events[-1]["questions"]]
+        asked += fields
+        answers = {name: scenario["faits"].get(name, "je_ne_sais_pas") for name in fields}
         events = list(service.resume(analysis_id, answers))
     final = events[-1]
     if final["type"] != "rapport":

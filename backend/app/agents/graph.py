@@ -32,6 +32,7 @@ from app.agents.classification import (
     classify_prohibited,
 )
 from app.agents.profile import (
+    DOCUMENT_PROMPT,
     EXTRACTION_PROMPT,
     Profile,
     apply_answers,
@@ -69,10 +70,12 @@ NOT_HIGH_RISK = {
 
 
 class AnalysisState(TypedDict, total=False):
-    description: str
+    description: str  # description libre, ou texte du PDF avec ses marques de page
+    document: str | None  # nom du PDF, quand l'analyse part d'un document
     reponses_initiales: dict  # réponses déjà connues (formulaire) : pas de question pour elles
     profil: dict
     manquants: list[str]
+    demandes: list[str]  # champs déjà demandés : une question n'est jamais reposée
     interdit: dict
     haut_risque: dict
     classification: dict
@@ -165,8 +168,10 @@ class Sources:
 def build_graph(sources: Sources, ask: Callable[[str], dict], checkpointer=None):
     def profil(state: AnalysisState) -> dict:
         count = Counter(ask)
-        data = count(EXTRACTION_PROMPT.format(description=state["description"]))
+        prompt = DOCUMENT_PROMPT if state.get("document") else EXTRACTION_PROMPT
+        data = count(prompt.format(description=state["description"]))
         profile = parse_profile(state["description"], data)
+        profile.document = state.get("document")
         profile = apply_answers(profile, state.get("reponses_initiales") or {})
         return {
             "profil": profile.model_dump(),
@@ -175,9 +180,21 @@ def build_graph(sources: Sources, ask: Callable[[str], dict], checkpointer=None)
         }
 
     def questions(state: AnalysisState) -> dict:
-        answers = interrupt({"questions": questions_for(state["manquants"])})
+        asked = state.get("demandes") or []
+        to_ask = [m for m in state["manquants"] if m not in asked]
+        answers = interrupt({"questions": questions_for(to_ask)})
         profile = apply_answers(Profile.model_validate(state["profil"]), answers or {})
-        return {"profil": profile.model_dump(), "manquants": missing_fields(profile)}
+        return {
+            "profil": profile.model_dump(),
+            "manquants": missing_fields(profile),
+            "demandes": asked + to_ask,
+        }
+
+    def after_questions(state: AnalysisState) -> str:
+        # une réponse peut rendre une question pertinente (contenus générés -> hypertrucage) :
+        # un nouveau tour, seulement pour les questions jamais posées (donc borné)
+        asked = state.get("demandes") or []
+        return "questions" if [m for m in state["manquants"] if m not in asked] else "interdictions"
 
     def interdictions(state: AnalysisState) -> dict:
         count = Counter(ask)
@@ -244,7 +261,7 @@ def build_graph(sources: Sources, ask: Callable[[str], dict], checkpointer=None)
     graph.add_conditional_edges(
         "profil", lambda s: "questions" if s["manquants"] else "interdictions"
     )
-    graph.add_edge("questions", "interdictions")
+    graph.add_conditional_edges("questions", after_questions)
     graph.add_conditional_edges(
         "interdictions",
         lambda s: "obligations" if s["interdit"]["verdict"] == "oui" else "haut_risque",
@@ -268,9 +285,20 @@ class AnalysisService:
     def _config(analysis_id: str) -> dict:
         return {"configurable": {"thread_id": analysis_id}}
 
-    def start(self, description: str, answers: dict | None = None) -> Iterator[dict]:
-        analysis_id = uuid.uuid4().hex
-        state = {"description": description, "reponses_initiales": answers or {}}
+    def start(
+        self,
+        description: str,
+        answers: dict | None = None,
+        analysis_id: str | None = None,
+        document: str | None = None,
+    ) -> Iterator[dict]:
+        """description : texte libre, ou texte d'un PDF (document : nom du fichier)."""
+        analysis_id = analysis_id or uuid.uuid4().hex
+        state = {
+            "description": description,
+            "document": document,
+            "reponses_initiales": answers or {},
+        }
         yield {"type": "debut", "analyse_id": analysis_id}
         yield from self._run(analysis_id, state)
 
@@ -304,20 +332,22 @@ class AnalysisService:
 
     def _run(self, analysis_id: str, payload) -> Iterator[dict]:
         config = self._config(analysis_id)
+        final = None
         for update in self.graph.stream(payload, config, stream_mode="updates"):
             for node, values in update.items():
                 if node == "__interrupt__":
-                    yield {
-                        "type": "questions",
-                        "analyse_id": analysis_id,
-                        "questions": values[0].value["questions"],
-                    }
-                    return
+                    questions = values[0].value["questions"]
+                    final = {"type": "questions", "analyse_id": analysis_id, "questions": questions}
+                    continue
                 yield {"type": "etape", "etape": node, "libelle": STEPS.get(node, node)}
                 if node == "rapport":
-                    yield {
+                    final = {
                         "type": "rapport",
                         "analyse_id": analysis_id,
                         "rapport": values["rapport"],
                         "markdown": values["markdown"],
                     }
+        # émis seulement une fois le graphe arrêté et son état sauvegardé : un client qui reçoit
+        # « questions » peut répondre aussitôt (l'API lit l'état pour accepter la réponse)
+        if final:
+            yield final

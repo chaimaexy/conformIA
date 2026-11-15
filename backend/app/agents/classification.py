@@ -107,7 +107,18 @@ FEEDBACK = (
 
 
 def profile_summary(profile: Profile) -> str:
-    data = profile.model_dump(exclude_none=True)
+    """Profil envoyé aux étapes suivantes. Pour un document, pas ses 30 pages (limite de tokens
+    par minute) : les extraits recopiés qui prouvent le profil, et les passages clés."""
+    data = profile.model_dump(exclude_none=True, exclude={"preuves", "passages", "document"})
+    if profile.document:
+        data.pop("description")
+        excerpts = [p for p in profile.passages] + list(profile.preuves.values())
+        seen = []
+        for e in excerpts:
+            line = f"(page {e['page']}) {e['extrait']}" if e.get("page") else e["extrait"]
+            if line not in seen:
+                seen.append(line)
+        data["extraits_du_document"] = seen
     data = {k: v for k, v in data.items() if v not in ([], "")}
     return json.dumps(data, ensure_ascii=False, indent=1)
 

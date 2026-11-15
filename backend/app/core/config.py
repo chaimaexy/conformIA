@@ -44,6 +44,8 @@ class Settings(BaseSettings):
     supabase_secret_key: str | None = None  # côté serveur uniquement, contourne RLS
     supabase_jwks_url: str | None = None  # vérification des JWT Supabase Auth
     database_url: str | None = None
+    # file des analyses (Celery) ; absent : file locale dans le processus de l'API
+    redis_url: str | None = None
 
     config_path: Path = BACKEND_DIR / "config.yaml"
 

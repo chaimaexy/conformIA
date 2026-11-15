@@ -2,21 +2,31 @@ services:
   api:
     build: ./backend
     env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
     ports:
       - "8000:8000"
+    volumes:
+      - ./data:/data  # index, caches et état des analyses (partagé avec le worker)
+    depends_on: [redis]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 30s
       timeout: 5s
       retries: 3
 
-  # Phase 7 : ingestion asynchrone des PDF utilisateurs
-  # redis:
-  #   image: redis:7-alpine
-  #   ports:
-  #     - "6379:6379"
-  # worker:
-  #   build: ./backend
-  #   env_file: .env
-  #   command: celery -A app.workers.celery_app worker --loglevel=info
-  #   depends_on: [redis]
+  # File des analyses : Redis transmet les tâches et les événements, le worker exécute les
+  # analyses une par une (offre gratuite de Mistral : 2 requêtes/min pour tout le compte).
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]  # rien d'écrit sur disque
+
+  worker:
+    build: ./backend
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    command: celery -A app.workers.celery_app worker --concurrency=1 --loglevel=info
+    volumes:
+      - ./data:/data
+    depends_on: [redis]

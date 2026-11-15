@@ -819,10 +819,16 @@ les obligations et leurs dates, passe la liste de vérification RGPD de la CNIL,
 manque et rend un rapport sourcé.
 
 ```bash
-curl -N -X POST localhost:8000/analyses -H "Content-Type: application/json"      -d '{"description": "Nous voulons utiliser un logiciel qui classe les CV de nos candidats."}'
-# -> événements : debut, etape..., questions (l'analyse attend)
-curl -N -X POST localhost:8000/analyses/<id>/reponses -H "Content-Type: application/json"      -d '{"reponses": {"roles": ["deployeur"], "biometrie": "non"}}'
-# -> etape..., rapport (JSON + Markdown)
+curl -X POST localhost:8000/analyses -H "Content-Type: application/json" \
+     -d '{"description": "Nous voulons utiliser un logiciel qui classe les CV de nos candidats."}'
+# -> 202 {"analyse_id", "position" dans la file, "flux": "/analyses/<id>/flux?depuis=0"}
+curl -N "localhost:8000/analyses/<id>/flux?depuis=0"
+# -> événements : en_attente, debut, etape..., questions (l'analyse attend)
+curl -X POST localhost:8000/analyses/<id>/reponses -H "Content-Type: application/json" \
+     -d '{"reponses": {"roles": ["deployeur"], "biometrie": "non"}}'
+# -> 202, puis le flux donne etape..., rapport (JSON + Markdown)
+curl -X POST localhost:8000/analyses/document -F "fichier=@docs/exemples/cahier_des_charges_aide_logement.pdf"
+# -> même déroulé, à partir d'un PDF du projet (phase 7a)
 python -m app.agents.obligations --verifier    # la carte des obligations est-elle fidèle au texte ?
 python -m app.evaluation.agent                 # 19 scénarios vérifiés
 ```
@@ -900,7 +906,7 @@ du scénario.
 | Valeurs de profil contraires aux faits | 9 | **1** |
 | Synthèse du modèle acceptée par le contrôle | 1/19 | **19/19** |
 | Appels LLM par analyse | 7,4 | 7,4 (4 à 9) |
-| Questions fermées par analyse | 9,1 | 9,4 |
+| Questions fermées par analyse | 9,1 | 9,5 (second tour compris, phase 7a) |
 | Durée réelle d'une analyse | | 2 à 4 min (environ 3 min), limitée par les 2 requêtes/min |
 
 La durée moyenne écrite dans `eval/results/agent.json` est faussée par le cache : la plupart des
@@ -946,6 +952,85 @@ réponses y étaient déjà. La durée réelle vient des passages sans cache.
 - Environ 9 questions fermées par analyse, sur des descriptions de 2 lignes : une description
   plus complète en évite la plupart.
 
+## Analyse d'un document PDF et file d'attente (phase 7a)
+
+Une description de deux lignes laisse l'agent poser environ 9 questions. Un vrai projet a souvent
+déjà un document : cahier des charges, documentation technique, analyse d'impact. L'agent le lit
+et **prouve chaque valeur du profil par un extrait du PDF, avec son numéro de page**.
+
+### Ce qui se passe à l'envoi
+
+| Étape | Choix | Pourquoi |
+|---|---|---|
+| Contrôles | en-tête `%PDF-` (le contenu, pas l'extension) ; 10 Mo, 30 pages et 80 000 caractères au plus ; PDF protégé ou scanné refusé | le refus est immédiat, avec un message clair, avant toute attente dans la file |
+| Lecture | `pdfplumber`, page par page, texte marqué `[page n]` | déjà utilisé pour la liste de la CNIL, tourne sur un simple processeur. PyMuPDF : licence AGPL. Docling : modèles trop lourds pour 8 Go de RAM. Mistral OCR : non vérifié dans l'offre gratuite |
+| Stockage | **aucun** : le PDF est lu en mémoire, seul son texte entre dans l'analyse | pour un outil RGPD, ne pas garder ce dont on n'a pas besoin. Plus simple qu'un stockage suivi d'une suppression |
+| Profil | le prompt du profil, adapté au document, demande aussi jusqu'à 8 **passages clés** recopiés mot pour mot | chaque extrait est vérifié dans le texte, et sa page est retrouvée par le code |
+| Étapes suivantes | elles reçoivent le profil, les extraits prouvés et les passages clés, **pas les 30 pages** | une analyse fait environ 8 appels : renvoyer tout le document dépasserait la limite de 40 000 tokens par minute |
+
+### La file : Celery + Redis, une analyse à la fois
+
+L'offre gratuite de Mistral permet **2 requêtes par minute pour tout le compte**. Deux analyses
+lancées en même temps se gêneraient (erreurs 429, nouveaux essais). En file, chacune passe à son
+tour, et le client connaît sa position.
+
+- **Les trois `POST` répondent tout de suite (202)** avec l'identifiant, la position et l'adresse
+  du flux (`GET /analyses/{id}/flux`, Server-Sent Events).
+- **Un worker Celery** (`--concurrency=1`) exécute les analyses. Il publie les événements dans
+  une liste Redis, que l'API relit pour le flux.
+- **Sans Redis** (poste de développement, tests), la même file tourne dans un fil d'exécution de
+  l'API.
+- `docker-compose.yml` ajoute `redis` (rien n'est écrit sur disque) et `worker`.
+- L'événement « questions » n'est émis qu'**une fois l'état de LangGraph sauvegardé**. Les tests
+  ont montré qu'avant cela, un client rapide pouvait répondre à une analyse que l'API ne voyait
+  pas encore en attente.
+- Une réponse peut rendre une autre question pertinente : avec « génère des contenus : oui », on
+  demande alors l'hypertrucage. **Un second tour** ne pose que les questions jamais posées : il est
+  donc borné.
+
+### Essai réel
+
+Le document : un cahier des charges fictif de 4 pages
+([`docs/exemples/cahier_des_charges_aide_logement.pdf`](docs/exemples/cahier_des_charges_aide_logement.pdf)).
+Un département y décrit l'achat d'un outil qui pré-instruit les demandes d'aide au logement, avec
+un assistant en ligne pour les demandeurs.
+
+Le résultat attendu a été écrit **avant** de lancer l'essai :
+- haut risque, annexe III, point 5 a) ;
+- obligations : article 26, information des personnes, article 27 (organisme public), article 49
+  (enregistrement par une autorité publique) et article 86 ;
+- système « pas encore » sur le marché (mise en service prévue en janvier 2027) ;
+- données sensibles (santé).
+
+Le résultat obtenu correspond **en tout point**. Toutes les valeurs du profil sont justes, chacune
+prouvée à la bonne page :
+- organisme public, page 1 ;
+- décisions sur des personnes, page 2 ;
+- assistant conversationnel, page 2 ;
+- données de santé, page 3 ;
+- mise en service en janvier 2027, page 4.
+
+L'agent a posé **5 questions au lieu de 9**, fait 8 appels, et sa synthèse a passé le contrôle des
+faits. C'est un seul document, écrit pour l'essai : il montre que la chaîne fonctionne de bout en
+bout, ce n'est pas une évaluation chiffrée.
+
+### Essai avec Docker
+
+`docker compose up --build` lance l'API, Redis et le worker. Le même PDF a été envoyé à
+`/analyses/document`, cette fois avec « génère des contenus : oui » :
+- le worker a exécuté chaque étape, et l'API a suivi l'analyse par la liste Redis ;
+- le second tour a demandé l'hypertrucage, comme prévu ;
+- le rapport est identique à l'essai précédent (haut risque, 5 a), mêmes obligations, chaque
+  preuve à la même page), en 8 appels et 3 min 07 s de travail du worker. Le profil est venu du
+  cache de l'essai précédent (même document), les 7 autres appels sont partis vers Mistral ;
+- l'état des analyses est un fichier SQLite dans `./data`, partagé par les deux conteneurs. L'API a
+  bien lu l'analyse terminée écrite par le worker.
+
+Deux analyses envoyées en même temps ont reçu les positions 1 et 2. Le worker a pris la seconde
+seulement après avoir fini la première.
+
+Le SQLite partagé convient à un seul poste. En production, l'état ira dans Postgres (phase 7b).
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
@@ -961,7 +1046,8 @@ réponses y étaient déjà. La durée réelle vient des passages sans cache.
 - [x] **Phase 5 ter** : « parent document » : les parties d'un article découpé sont jointes au contexte (9 réponses fausses sur 14 corrigées, relues à la main)
 - [x] **Phase 5 quater** : renvois inverses vers les dates d'application (articles 113 et 111) : renvois 15/15, faits clés 100 %, 12 des 14 réponses fausses corrigées au total
 - [x] **Phase 6** : agent LangGraph d'analyse de conformité (graphe fixe, questions fermées avec pause et reprise, classification AI Act vérifiée, carte des obligations vérifiée contre le texte, liste de vérification CNIL, rapport sourcé, 19 scénarios d'évaluation)
-- [ ] **Phase 7** : frontend Next.js, upload PDF (Celery + Redis), auth
+- [x] **Phase 7a** : analyse d'un PDF du projet (profil prouvé page par page, aucun fichier conservé), file d'attente Celery + Redis (une analyse à la fois), flux SSE, second tour de questions
+- [ ] **Phase 7b** : frontend Next.js, auth Supabase, état des analyses dans Postgres
 - [ ] **Phase 8** : déploiement, démo vidéo
 
 ## Sources

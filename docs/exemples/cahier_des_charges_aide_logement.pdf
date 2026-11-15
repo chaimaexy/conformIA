@@ -1,0 +1,65 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Length 881 >>
+stream
+BT /F1 11 Tf 14 TL 50 780 Td (Département de Valmont - Direction de l'action sociale) Tj T* (Cahier des charges : outil d'aide à l'instruction des demandes d'aide au logement) Tj T* (Version 1.2 - document de travail) Tj T* () Tj T* (1. Contexte) Tj T* (Le Département de Valmont gère chaque année environ 18 000 demandes d'aide au logement du Fonds) Tj T* (de solidarité logement \(FSL\). Les délais d'instruction atteignent aujourd'hui sept semaines.) Tj T* (Le Département souhaite réduire ces délais sans dégrader la qualité des décisions.) Tj T* () Tj T* (2. Objet) Tj T* (Le présent cahier des charges décrit l'outil que le Département souhaite acquérir auprès d'un) Tj T* (éditeur de logiciels spécialisé. Le Département utilisera cette solution sous sa propre) Tj T* (responsabilité, au sein de ses services d'action sociale. Il ne développe pas lui-même l'outil.) Tj T* ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 901 >>
+stream
+BT /F1 11 Tf 14 TL 50 780 Td (3. Fonctionnalités attendues) Tj T* (3.1 Pré-instruction des dossiers) Tj T* (L'outil analyse chaque dossier de demande et évalue l'éligibilité du demandeur aux aides du) Tj T* (FSL.) Tj T* (Il propose à l'agent instructeur un avis \(accord, refus ou demande de pièces\) accompagné d'un) Tj T* (score de priorité. L'agent instructeur reste responsable de la décision finale, mais l'avis de) Tj T* (l'outil sera suivi dans la grande majorité des cas pour tenir les délais.) Tj T* () Tj T* (3.2 Assistant en ligne pour les demandeurs) Tj T* (Un assistant conversationnel, intégré au portail du Département, répond aux questions des) Tj T* (demandeurs sur l'avancement de leur dossier et sur les pièces à fournir.) Tj T* () Tj T* (3.3 Tableaux de bord) Tj T* (L'outil produit des statistiques mensuelles sur les demandes, les délais et les montants) Tj T* (versés.) Tj T* ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 725 >>
+stream
+BT /F1 11 Tf 14 TL 50 780 Td (4. Données traitées) Tj T* (L'outil traite les données des demandeurs et des membres de leur foyer : identité, adresse,) Tj T* (composition familiale, revenus, montant du loyer, dettes locatives et situation) Tj T* (professionnelle.) Tj T* (Pour les demandes au titre du handicap, il traite aussi des informations sur l'état de santé du) Tj T* (demandeur \(taux d'incapacité, reconnaissance de la qualité de travailleur handicapé\).) Tj T* (Les données sont hébergées dans l'Union européenne.) Tj T* () Tj T* (5. Personnes concernées) Tj T* (Les demandeurs d'aide au logement et les membres de leur foyer, ainsi que les agents) Tj T* (instructeurs du Département qui utilisent l'outil.) Tj T* ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 549 >>
+stream
+BT /F1 11 Tf 14 TL 50 780 Td (6. Calendrier) Tj T* (Le marché sera attribué au premier semestre 2026. Après une phase de paramétrage et de tests,) Tj T* (la mise en service de l'outil est prévue en janvier 2027.) Tj T* () Tj T* (7. Exigences de l'acheteur) Tj T* (L'éditeur fournira la documentation technique de la solution et la notice d'utilisation.) Tj T* (Le Département désignera un référent chargé du contrôle humain des avis produits par l'outil.) Tj T* (Les journaux d'utilisation seront conservés selon les règles du Département.) Tj T* ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000134 00000 n 
+0000000231 00000 n 
+0000001163 00000 n 
+0000001289 00000 n 
+0000002241 00000 n 
+0000002367 00000 n 
+0000003143 00000 n 
+0000003269 00000 n 
+0000003870 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+3998
+%%EOF
