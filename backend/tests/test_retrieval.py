@@ -218,6 +218,59 @@ def test_temporal_provisions_follow_reverse_citations(monkeypatch):
     assert [c["id"] for c in off.with_citations(rows[:2], final_k=2)] == ["a101", "a9"]
 
 
+def test_sanctions_follow_reverse_citations_for_fine_questions(monkeypatch):
+    from dataclasses import replace
+
+    from app.retrieval import pipeline
+
+    def chunk(id_, label, document="doc-ai", cites=(), part=""):
+        meta = {"label": label, "header": f"{label}{part}", "cites": list(cites), "sections": []}
+        return {"id": id_, "document_id": document, "content": id_, "metadata": meta}
+
+    chunks = {
+        "a5": chunk("a5", "Article 5"),
+        "c31": chunk("c31", "Considérant 31"),
+        "p1": chunk("p1", "Article 99", cites=["Article 96", "Article 5"], part=" (partie 1/3)"),
+        "p2": chunk("p2", "Article 99", cites=["Article 5", "Article 26"], part=" (partie 2/3)"),
+        "p3": chunk("p3", "Article 99", part=" (partie 3/3)"),  # critères : ne cite rien
+        "a100": chunk("a100", "Article 100", cites=["Article 5"]),
+        # même numéro dans un autre texte : l'article 99 du RGPD n'est pas un article de sanctions
+        "r99": chunk("r99", "Article 99", document="doc-rgpd", cites=["Article 5"]),
+        "r5": chunk("r5", "Article 5", document="doc-rgpd"),
+    }
+    monkeypatch.setitem(pipeline._CHUNKS, "test", chunks)
+    settings = pipeline.RetrievalSettings(
+        strategy="test", sanction_sections=(("ai_act", "Article 99"),)
+    )
+    retriever = pipeline.Retriever(settings, db=object())
+    retriever.__dict__["documents"] = {"ai_act": "doc-ai", "rgpd": "doc-rgpd"}
+    rows = [{**chunks[i], "score": s} for i, s in [("c31", 0.41), ("a5", 0.26), ("r5", 0.1)]]
+    rows.append({**chunks["p1"], "score": 0.03})  # noté par le reranker, hors des final_k
+
+    question = "Quelle amende pour un système de notation sociale ?"
+    context = retriever.with_citations(rows, final_k=3, question=question)
+    # parties de l'article 99 qui citent l'article 5, dans l'ordre du texte ; ni le
+    # paragraphe des critères, ni l'article 100, ni l'article 99 du RGPD
+    assert [c["id"] for c in context] == ["c31", "a5", "r5", "p1", "p2"]
+    assert context[3]["score"] == 0.03 and context[4]["score"] is None
+    assert context[3]["sanctions"] == "Article 5"
+    # question qui ne parle pas d'amende, ou réglage vide : rien n'est joint
+    other = retriever.with_citations(
+        rows, final_k=3, question="Qu'est-ce que la notation sociale ?"
+    )
+    assert [c["id"] for c in other] == ["c31", "a5", "r5"]
+    off = pipeline.Retriever(replace(settings, sanction_sections=()), db=object())
+    assert [c["id"] for c in off.with_citations(rows, final_k=3, question=question)] == [
+        "c31",
+        "a5",
+        "r5",
+    ]
+    # partie déjà retenue pour la question : pas de doublon
+    first = [rows[3], *rows[:3]]
+    context = retriever.with_citations(first, final_k=3, question=question)
+    assert [c["id"] for c in context] == ["p1", "c31", "a5", "p2"]
+
+
 def test_cohere_reranker_maps_scores_by_index(monkeypatch, tmp_path):
     import httpx
 

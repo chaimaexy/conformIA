@@ -109,7 +109,7 @@ class FakeRetriever:
             rows.append({"content": text, "metadata": meta, "score": self.score - i / 10})
         return [rows]
 
-    def with_citations(self, rows, final_k):
+    def with_citations(self, rows, final_k, question=""):
         return rows[:final_k]
 
 

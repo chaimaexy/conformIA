@@ -67,7 +67,7 @@ backend/
   eval/         # golden set + RAGAS
   tests/
   config.yaml   # paramètres non sensibles (modèles, chunking, retrieval)
-frontend/       # Next.js (phase 7)
+frontend/       # Next.js 16 (phase 7c)
 supabase/migrations/
 data/           # raw/ et processed/ (non versionnés)
 ```
@@ -82,6 +82,15 @@ py -3.13 -m venv .venv
 pip install -e ".[dev]"
 uvicorn app.main:app --reload # http://localhost:8000/docs
 pytest
+```
+
+Interface (dans un second terminal, voir [`frontend/README.md`](frontend/README.md)) :
+
+```bash
+cd frontend
+cp .env.local.example .env.local   # URL Supabase + clé publishable
+npm install
+npm run dev                         # http://localhost:3000
 ```
 
 Encodeurs locaux (bge-m3, cross-encodeurs), sur CPU :
@@ -811,6 +820,84 @@ classées incorrectes, 12 sont corrigées. Restent fausses deux erreurs de lectu
 « uniquement les systèmes à haut risque » ; g048, divulgation limitée aux autorités notifiantes),
 le type d'erreur que `mistral-large` ne faisait plus.
 
+## Renvois inverses : les articles de sanctions (phase 5 quinquies)
+
+La question d'exemple de la phase 5, « Quelle amende pour un système de notation sociale ? », était
+**refusée**, alors que sa variante du golden set (m050, « … pour une entreprise qui utilise un
+système de notation sociale ? ») passait. Trace de la recherche (`with_citations`, 50 candidats) :
+
+| Étape | « … pour un système de notation sociale ? » | m050 « … pour une entreprise qui utilise … » |
+|---|---|---|
+| Candidats (RRF) : rangs de l'article 99 | 8, 10, 14, 19 (§ 1 à 3), 36 : **retrouvé** | 5, 9 (§ 1 à 3), 14, 20, 30 |
+| Reranker : 1er chunk | considérant 31 (définit la notation sociale), 0,412 | considérant 31, 0,299 |
+| Reranker : article 5 | rang 2 (0,260) | rang 2 (0,228) |
+| Reranker : article 99, § 1 à 3 (35 M€) | **rang 16** (0,026) | **rang 3** (0,036) |
+| Contexte envoyé au modèle | articles 5, considérants 31 et 58, annexe III : **pas l'article 99** | article 99 présent |
+| Résultat | zone grise, contrôle de couverture : « les extraits ne mentionnent pas les amendes » -> refus | réponse juste |
+
+**La recherche trouve l'article 99, mais le reranker le classe trop bas** : pour lui, le passage
+qui définit la notation sociale ressemble plus à la question que celui qui fixe le montant. Un mot
+de plus (« entreprise ») suffit à le faire remonter : la réussite de m050 était fragile. Le graphe
+des citations ne pouvait pas compenser : l'article 5 ne cite pas l'article 99, **c'est l'article 99
+qui cite l'article 5** (« le non-respect de l'interdiction des pratiques en matière d'IA visées à
+l'article 5 »). Même cas que les dates de la phase 5 quater : le lien existe, dans l'autre sens.
+Le refus était le bon comportement du garde-fou (aucune amende inventée), mais pas la bonne réponse.
+
+**Correction** (`Retriever.sanctions_for`, `retrieval.sanction_sections`) : quand la question parle
+d'amende ou de sanction, les parties de l'article 99 (AI Act) et de l'article 83 (RGPD) qui citent
+une section retenue sont jointes au contexte. Deux limites, pour ne pas ajouter de bruit :
+- **seulement les parties qui citent la section** : pour l'article 5, l'article 99, § 1 à 3 (35 M€)
+  et § 4 à 6 (le plafond des PME), pas les critères du § 7 ;
+- **seulement pour une question d'amende** (« amende », « sanction », « pénalité ») : sans cette
+  condition, toute question sur les obligations du déployeur (article 26) recevrait le barème de
+  l'article 99, § 4.
+
+Les articles de sanctions sont déclarés par texte : « Article 99 » est le barème dans l'AI Act,
+mais l'entrée en vigueur dans le RGPD. L'article 100 de l'AI Act (amendes des institutions de
+l'Union) n'est pas joint : il cite aussi l'article 5 et mettrait un autre barème sous les yeux du
+modèle.
+
+**Mesure** ([sanctions.json](backend/eval/results/sanctions.json),
+[generation_sanctions_ministral8b.json](backend/eval/results/generation_sanctions_ministral8b.json)) :
+
+| | Sans | Avec |
+|---|---|---|
+| hit@1 / hit@4 / MRR@20 (102 questions) | 0,76 / 0,96 / 0,855 | identiques (le classement ne change pas) |
+| Sources attendues présentes dans le contexte | 0,922 | 0,922 |
+| Questions du golden set dont le contexte change | — | **0 sur 125** (les 7 questions d'amende avaient déjà la bonne partie) |
+| Contexte médian | 16 047 caractères | 16 047 caractères |
+| Génération (`ministral-8b`, 125 questions) | — | **125 réponses identiques** à la phase 5 quater (même prompt, servies par le cache) : hors corpus refusées 100 %, refus à tort 2,9 %, faits clés 100 %, aucun chiffre non sourcé |
+
+Le golden set ne voyait pas le problème : ses 7 questions d'amende ont toutes la bonne partie dans
+le contexte, et `recall_contexte` compte des sections, pas des parties. Vérification ciblée, sur
+des reformulations hors golden set (montants attendus dans le contexte) :
+
+| Question | Sans | Avec |
+|---|---|---|
+| Quelle amende pour un système de notation sociale ? | absent | **35 M€ / 7 %** (article 99, § 3) |
+| Quelle sanction en cas d'utilisation d'un système de notation sociale ? | absent | **35 M€ / 7 %** |
+| Quelles amendes pour la reconnaissance des émotions au travail ? | absent | **35 M€ / 7 %** |
+| Quelles sanctions pour un traitement sans base légale ? | absent | **20 M€ / 4 %** (RGPD, article 83, § 5, joint parce qu'il cite l'article 58, retenu ; l'article 6 n'est qu'au 6e rang) |
+| Quelle amende pour un déployeur qui ne respecte pas ses obligations ? | 15 M€ / 3 % | inchangé |
+| Quelle amende si je ne réalise pas d'analyse d'impact (AIPD) ? | absent | **toujours absent** |
+
+Avec la correction, la question d'exemple reçoit une réponse juste : zone grise (score inchangé,
+0,412), contrôle de couverture `couvert: true`, « jusqu'à 35 000 000 EUR ou 7 % du chiffre
+d'affaires annuel mondial total, le montant le plus élevé étant retenu », citée de l'article 99,
+§ 3, et de l'article 5, § 1, point c). Les numéros de citation renvoient aux bonnes sources et
+aucun chiffre n'est non sourcé. En revanche, dans un second essai (sans cache), les deux extraits
+entre guillemets n'étaient pas mot pour mot : l'un avec des coupes « [...] », l'autre arrêté
+avant la fin de la phrase. La vérification les signale (`unverified_quotes`), mais la réponse ne
+le dit pas encore au lecteur : c'est la limite déjà mesurée en phase 5 (citations inexactes).
+
+Limites :
+- **La condition est lexicale.** « Combien risque-t-on si… » ne déclenche rien ; le refus reste
+  alors le filet de sécurité.
+- **Il faut que la section visée soit retenue.** Pour l'AIPD, les fiches CNIL occupent le contexte
+  et l'article 35 du RGPD n'y est pas : l'article 83 n'a rien à suivre. C'est un problème de
+  classement, que ce lien inverse ne corrige pas.
+- Cette question a sa place dans le golden set (catégorie `renvoi`), après relecture.
+
 ## Agent d'analyse de conformité (phase 6)
 
 ![Architecture cible](docs/architecture_agent.svg)
@@ -1054,7 +1141,7 @@ chaque analyse et chaque conversation à un utilisateur Supabase Auth, et les ra
 | **Table `analyses`** : propriétaire, statut, niveau, copie du rapport | La page « Mes analyses » se lit sans LangGraph ; le worker la tient à jour au fil des événements | |
 | **Historique du chat** : `conversations` et `messages` (avec les sources de chaque réponse, sans le texte des articles) | La mémoire du routeur (« et pour les PME ? ») lit les derniers messages de la conversation, même interface qu'avant | Mémoire du processus : perdue au redémarrage, mêlait les utilisateurs |
 | **Quotas par utilisateur**, fenêtre glissante : 3 analyses par 24 h, 20 questions par heure (`config.yaml`) | Un seul visiteur ne doit pas bloquer la démo pour les autres (2 requêtes/min chez Mistral). Le refus (429) dit quand une place se libère | Compteur à part : les tables suffisent à compter |
-| **Effacement** : `DELETE /analyses/{id}` (rapport et état LangGraph) et `DELETE /conversations/{id}` | Un outil sur le RGPD doit respecter le droit à l'effacement. Supprimer un utilisateur efface tout le reste (`on delete cascade`) | |
+| **Effacement** : `DELETE /analyses/{id}` (rapport et état LangGraph) et `DELETE /conversations/{id}` | Un outil sur le RGPD doit respecter le droit à l'effacement. Supprimer un utilisateur efface tout le reste : ses lignes par `on delete cascade`, et, depuis la phase 7c, l'état LangGraph de ses analyses par un déclencheur (voir plus bas) | |
 | **RLS en lecture seule** sur les trois tables | Le backend écrit par sa connexion directe ; par l'API publique, chacun ne lit que ses lignes et personne n'écrit | |
 
 Sans `DATABASE_URL` (poste de développement, tests), les mêmes tables sont dans un fichier
@@ -1104,6 +1191,49 @@ seulement.
   désormais lues avec un délai maximal de 10 s : si Supabase ne répond pas, la requête est
   refusée au lieu de rester bloquée.
 
+## L'interface (phase 7c)
+
+Une application Next.js 16 (`frontend/`, détails dans son README) :
+- **Accueil et connexion** : e-mail et mot de passe, ou « Essayer sans compte » (session anonyme).
+- **Questions** : la réponse s'écrit au fil de l'eau. Les sources sont à droite, citées ou non,
+  avec un lien vers le texte officiel ; un renvoi [n] dans la réponse mène à sa source. Si un
+  extrait entre guillemets n'est pas retrouvé mot pour mot (`unverified_quotes`), la réponse le
+  signale au lecteur.
+- **Analyser un projet** : PDF ou description, position dans la file, étapes en direct,
+  questions, puis rapport téléchargeable en Markdown. On peut quitter la page et revenir :
+  `GET /analyses/{id}` donne où reprendre le flux, après les questions déjà répondues.
+- **Mes analyses** : statut, niveau de risque, effacement.
+
+Tout l'espace connecté est rendu dans le navigateur, où vit la session ; FastAPI vérifie le
+jeton à chaque requête. Les flux sont lus avec `fetch`, car `EventSource` ne sait pas envoyer
+l'en-tête `Authorization`.
+
+### Essai dans le navigateur
+
+Avec une session anonyme, sur l'API branchée à Supabase :
+- la question « Quelle amende pour un système de notation sociale ? » reçoit sa réponse
+  (article 5, et article 99, § 3 : 35 M€ ou 7 %) ; le renvoi [13] mène à l'article 99 dans le
+  panneau des sources ;
+- une analyse de la description d'exemple : 9 questions, puis le rapport. Les étapes sont
+  cochées en direct ;
+- la page rechargée en pleine analyse reprend le suivi au bon endroit. L'essai a révélé deux
+  défauts, corrigés : les étapes faites avant la reprise n'étaient plus cochées, et Next.js 16
+  signalait des pages impossibles à afficher « instantanément » (c'est voulu : elles attendent
+  la session) ;
+- sur téléphone : menu sur deux lignes, conversations en liste déroulante, sources dépliables
+  sous chaque réponse.
+
+**Un trou dans l'effacement, trouvé en nettoyant l'essai.** L'état LangGraph d'une analyse est
+rangé par identifiant, sans clé étrangère vers `analyses` : supprimer un utilisateur effaçait
+ses analyses, mais pas leur profil ni leurs réponses dans `langgraph`. Un déclencheur
+(`supabase/migrations/20261118000000_effacer_etat_langgraph.sql`) efface maintenant cet état
+dès qu'une ligne d'`analyses` disparaît, y compris par la cascade. Vérifié sur Supabase : après
+suppression de l'utilisateur de test, 0 analyse, 0 conversation et 0 ligne dans `langgraph`.
+
+Pas encore fait : l'essai de l'effacement par les boutons de l'interface (les fenêtres de
+confirmation bloquent l'automatisation ; l'API est testée) et l'envoi d'un PDF depuis le
+navigateur (le même envoi est testé par l'API).
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
@@ -1118,10 +1248,11 @@ seulement.
 - [x] **Phase 5 bis** : juge de fidélité validé à la main, comparaison `ministral-8b` / `mistral-large` (effort de raisonnement réglable ; `ministral-8b` gardé, `mistral-large` étant devenu payant)
 - [x] **Phase 5 ter** : « parent document » : les parties d'un article découpé sont jointes au contexte (9 réponses fausses sur 14 corrigées, relues à la main)
 - [x] **Phase 5 quater** : renvois inverses vers les dates d'application (articles 113 et 111) : renvois 15/15, faits clés 100 %, 12 des 14 réponses fausses corrigées au total
+- [x] **Phase 5 quinquies** : renvois inverses vers les articles de sanctions (article 99 de l'AI Act, article 83 du RGPD), joints aux seules questions d'amende : golden set inchangé, « Quelle amende pour un système de notation sociale ? » désormais juste
 - [x] **Phase 6** : agent LangGraph d'analyse de conformité (graphe fixe, questions fermées avec pause et reprise, classification AI Act vérifiée, carte des obligations vérifiée contre le texte, liste de vérification CNIL, rapport sourcé, 19 scénarios d'évaluation)
 - [x] **Phase 7a** : analyse d'un PDF du projet (profil prouvé page par page, aucun fichier conservé), file d'attente Celery + Redis (une analyse à la fois), flux SSE, second tour de questions
 - [x] **Phase 7b** : comptes Supabase (jeton vérifié par le backend, session anonyme), analyses et conversations par utilisateur dans Postgres, état de LangGraph dans Postgres, quotas, effacement
-- [ ] **Phase 7c** : frontend Next.js (connexion, chat avec sources, analyse en direct, rapport, historique)
+- [x] **Phase 7c** : frontend Next.js 16 (connexion et session d'essai, chat avec sources, analyse en direct, rapport, historique), effacement de l'état LangGraph avec l'utilisateur
 - [ ] **Phase 8** : déploiement, démo vidéo
 
 ## Sources

@@ -100,6 +100,16 @@ def _enqueue(user, text: str, answers: dict, titre: str, document: str | None = 
     return get_queue().start(text, answers, document=document, analysis_id=analysis_id)
 
 
+def _resume_point(analysis_id: str) -> int:
+    """Où relire le flux : après le dernier événement terminal (des questions déjà répondues,
+    par exemple). Relu depuis 0, le flux s'arrêterait sur ces anciennes questions."""
+    events = get_queue().events.read(analysis_id, 0)
+    terminal = [i for i, e in enumerate(events) if e["type"] in TERMINAL]
+    if terminal and terminal[-1] == len(events) - 1:  # l'analyse attend ou est finie
+        return terminal[-1]
+    return terminal[-1] + 1 if terminal else 0
+
+
 def _finished(analysis_id: str) -> bool:
     """Dernier événement terminal (ou aucun) : l'analyse attend des réponses ou est finie."""
     events = get_queue().events
@@ -183,7 +193,11 @@ def answer(analysis_id: str, request: AnswersRequest, user: CurrentUser) -> dict
 @router.get("/{analysis_id}")
 def status(analysis_id: str, user: CurrentUser) -> dict:
     record = _owned(analysis_id, user)
-    found = {"titre": record["titre"], "cree_le": record["created_at"]}
+    found = {
+        "titre": record["titre"],
+        "cree_le": record["created_at"],
+        "flux": f"/analyses/{analysis_id}/flux?depuis={_resume_point(analysis_id)}",
+    }
     result = get_service().get(analysis_id)
     if result is not None:
         if record["statut"] == "erreur":  # l'état de LangGraph ne garde pas la panne

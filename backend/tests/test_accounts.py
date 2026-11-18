@@ -214,6 +214,19 @@ def test_an_analysis_exists_only_for_its_author(api):
     assert (row["statut"], row["niveau"]) == ("termine", "haut_risque")
 
 
+def test_the_state_gives_where_to_read_the_stream_again(api):
+    """Une page rechargée relit le flux à partir de l'état : jamais d'anciennes questions."""
+    ticket = api.post("/analyses", json={"description": DESCRIPTION}).json()
+    analysis_id = ticket["analyse_id"]
+    started = flux(api, ticket)
+    state = api.get(f"/analyses/{analysis_id}").json()
+    assert [e["type"] for e in flux(api, state)] == ["questions"]  # la question en attente
+    answers = {"reponses": {q["champ"]: "non" for q in started[-1]["questions"]}}
+    flux(api, api.post(f"/analyses/{analysis_id}/reponses", json=answers).json())
+    state = api.get(f"/analyses/{analysis_id}").json()
+    assert [e["type"] for e in flux(api, state)] == ["rapport"]  # pas les questions répondues
+
+
 def test_deleting_an_analysis_erases_its_state(api):
     ticket = api.post("/analyses", json={"description": DESCRIPTION}).json()
     analysis_id = ticket["analyse_id"]
@@ -305,12 +318,12 @@ def test_questions_are_limited_per_user(chat_api, monkeypatch):
 
 # ----------------------------------------------------------------------------- Postgres
 PG_URL = os.environ.get("TEST_DATABASE_URL")
-MIGRATION = (
-    Path(__file__).resolve().parents[2]
-    / "supabase"
-    / "migrations"
-    / "20261116000000_comptes_analyses_conversations.sql"
-)
+MIGRATIONS = Path(__file__).resolve().parents[2] / "supabase" / "migrations"
+# celles des phases 7b et 7c (les précédentes demandent pgvector, absent d'un Postgres nu)
+PHASE_7_MIGRATIONS = [
+    MIGRATIONS / "20261116000000_comptes_analyses_conversations.sql",
+    MIGRATIONS / "20261118000000_effacer_etat_langgraph.sql",
+]
 # ce que Supabase fournit et qu'une base Postgres nue n'a pas
 SUPABASE_STUB = """
 create schema auth;
@@ -336,7 +349,8 @@ def pg():
         for role in ("anon", "authenticated"):
             conn.execute(f"drop role if exists {role}")
         conn.execute(SUPABASE_STUB)
-        conn.execute(MIGRATION.read_text(encoding="utf-8"))
+        for migration in PHASE_7_MIGRATIONS:
+            conn.execute(migration.read_text(encoding="utf-8"))
         conn.execute("insert into auth.users (id) values (%s), (%s)", (ALICE, BOB))
     database = Database(PG_URL)
     yield database
@@ -388,6 +402,32 @@ def test_langgraph_state_lives_in_its_own_schema(pg, tmp_path):
     assert {t["table_schema"] for t in tables} == {"langgraph"}
     service.delete(analysis_id)
     assert service.get(analysis_id) is None
+
+
+@postgres_only
+def test_deleting_a_user_also_erases_the_langgraph_state(pg):
+    """Pas de clé étrangère vers `langgraph` : c'est le déclencheur qui efface l'état."""
+    from test_agent import CV, FakeSources, fake_ask
+
+    from app.agents.graph import AnalysisService, postgres_checkpointer
+
+    carol = "3f1c0d2e-0000-4000-8000-00000000000c"
+    pg.execute("insert into auth.users (id) values (%s)", (carol,))
+    service = AnalysisService(FakeSources(), fake_ask, checkpointer=postgres_checkpointer(pg.pool))
+    analysis_id = list(service.start(CV))[-1]["analyse_id"]  # profil et questions sauvegardés
+    AnalysisRecords(pg).create(analysis_id, carol, "Tri de CV", "description")
+
+    def state_rows() -> int:
+        return sum(
+            pg.execute(f"select count(*) as n from {table} where thread_id = %s", (analysis_id,))[
+                0
+            ]["n"]
+            for table in ("checkpoints", "checkpoint_blobs", "checkpoint_writes")
+        )
+
+    assert state_rows() > 0
+    pg.execute("delete from auth.users where id = %s", (carol,))
+    assert state_rows() == 0 and service.get(analysis_id) is None
 
 
 @postgres_only

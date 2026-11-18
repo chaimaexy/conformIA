@@ -26,6 +26,8 @@ from app.vectordb.store import client, vector_literal
 PAGE = 1000  # limite de lignes par requête PostgREST
 _CHUNKS: dict[str, dict[str, dict]] = {}  # stratégie -> chunks, partagé entre configurations
 _PART = re.compile(r"\(partie (\d+)/\d+")  # « Article 99 - Sanctions (partie 2/5 - ... »
+# question qui porte sur une sanction : seul cas où les articles de sanctions sont joints
+SANCTION_QUESTION = re.compile(r"\b(amendes?|sanction\w*|pénalités?)\b", re.IGNORECASE)
 
 
 def part_number(chunk: dict) -> int:
@@ -48,6 +50,9 @@ class RetrievalSettings:
     # dispositions d'application dans le temps (« Article 113 ») : jointes à toute section
     # du contexte qu'elles citent (lien inverse du graphe des citations)
     temporal_sections: tuple[str, ...] = ()
+    # articles de sanctions, par texte : (« ai_act », « Article 99 »). Si la question parle
+    # d'amende ou de sanction, leurs parties qui citent une section du contexte y sont jointes
+    sanction_sections: tuple[tuple[str, str], ...] = ()
 
     @classmethod
     def from_config(cls) -> "RetrievalSettings":
@@ -65,6 +70,11 @@ class RetrievalSettings:
             rerank_candidates=r.rerank_candidates,
             parent_max_chars=r.parent_max_chars,
             temporal_sections=tuple(r.temporal_sections),
+            sanction_sections=tuple(
+                (source, label)
+                for source, labels in r.sanction_sections.items()
+                for label in labels
+            ),
         )
 
 
@@ -228,7 +238,9 @@ class Retriever:
                     out.append({**sibling, "part_of": row["metadata"]["label"]})
         return out
 
-    def with_citations(self, rows: list[dict], final_k: int, max_extra: int = 6) -> list[dict]:
+    def with_citations(
+        self, rows: list[dict], final_k: int, max_extra: int = 6, question: str = ""
+    ) -> list[dict]:
         """Les final_k meilleurs chunks + les sections qu'ils citent (graphe des citations, 1 saut).
 
         « l'article 83, paragraphe 5, vise les articles 12 à 22 » : l'article 15 (droit d'accès)
@@ -236,6 +248,8 @@ class Retriever:
         celles que le reranker a le mieux notées pour la question (scores des autres lignes de
         `rows`, déjà calculés : aucun appel de plus) ; les autres suivent l'ordre du texte.
         Les sections ajoutées gardent ce score, ou None si elles n'ont pas été notées.
+        S'y ajoutent les liens inverses : dates d'application (temporal_for) et, quand la
+        question parle d'amende ou de sanction, articles de sanctions (sanctions_for).
         """
         context = rows[:final_k]
         if self.settings.parent_max_chars:
@@ -258,7 +272,8 @@ class Retriever:
         for key, cited_by in cited[:max_extra]:
             head = self.section_heads[key]
             context.append({**head, "score": scored.get(key), "cited_by": cited_by})
-        return context + self.temporal_for(chosen, context, scored)
+        context += self.temporal_for(chosen, context, scored)
+        return context + self.sanctions_for(question, chosen, context, rows)
 
     def temporal_for(
         self, chosen: list[dict], context: list[dict], scored: dict[tuple[str, str], float]
@@ -282,6 +297,39 @@ class Retriever:
                     target = sorted(cites & labels)[0]
                     score = scored.get((document, hub))
                     extra += [{**p, "score": score, "applies_to": target} for p in parts]
+        return extra
+
+    def sanctions_for(
+        self, question: str, chosen: list[dict], context: list[dict], rows: list[dict]
+    ) -> list[dict]:
+        """Parties d'un article de sanctions qui citent une section retenue (question d'amende).
+
+        Même lien inverse que pour les dates : l'amende d'une pratique interdite n'est pas dans
+        l'article 5, mais dans l'article 99, paragraphe 3, qui vise « les pratiques en matière
+        d'IA visées à l'article 5 ». Pour « quelle amende pour un système de notation sociale ? »,
+        la recherche retient l'article 5, mais le reranker classe le paragraphe 3 au 16e rang :
+        le passage qui définit la notation sociale ressemble plus à la question que celui qui
+        fixe le montant.
+
+        Deux limites, pour ne pas ajouter de bruit : seules les parties qui citent une section
+        retenue sont jointes (article 99 : paragraphes 1 à 3 et 4 à 6, pas les critères du
+        paragraphe 7), et seulement si la question parle d'amende ou de sanction. Sans cette
+        condition, toute question sur les obligations du déployeur (article 26) recevrait le
+        barème de l'article 99, paragraphe 4.
+        """
+        if not self.settings.sanction_sections or not SANCTION_QUESTION.search(question):
+            return []
+        present = {r["id"] for r in context}
+        scores = {r["id"]: r["score"] for r in rows if r.get("score") is not None}
+        extra: list[dict] = []
+        for source_id, hub in self.settings.sanction_sections:
+            document = self.documents.get(source_id)
+            labels = {r["metadata"]["label"] for r in chosen if r["document_id"] == document}
+            for part in self.section_parts.get((document, hub), []):
+                targets = sorted(labels & set(part["metadata"].get("cites", [])))
+                if targets and part["id"] not in present:
+                    present.add(part["id"])
+                    extra.append({**part, "score": scores.get(part["id"]), "sanctions": targets[0]})
         return extra
 
     def _row(self, chunk_id: str, score: float) -> dict:

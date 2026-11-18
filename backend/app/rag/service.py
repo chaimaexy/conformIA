@@ -179,7 +179,7 @@ class ChatService:
             return Prepared(session_id, message, r, zone=r.intention)
         rows = self.retriever.search_many([r.question], k=SEARCH_DEPTH)[0]
         final_k = get_app_config().retrieval.final_k
-        context = self.retriever.with_citations(rows, final_k)
+        context = self.retriever.with_citations(rows, final_k, question=r.question)
         top_score = rows[0]["score"] if rows else None
         zone = zone_for(top_score)
         sources = [Source.from_row(i + 1, row) for i, row in enumerate(context)]

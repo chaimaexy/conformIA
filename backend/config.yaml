@@ -79,6 +79,12 @@ retrieval:
   final_k: 4                            # chunks envoyés au LLM
   parent_max_chars: 4000                # partie d'un article découpé : section entière jusqu'à 4 000 car., sinon parties voisines
   temporal_sections: [Article 113, Article 111]  # dates d'application : jointes à toute section qu'elles citent
+  # Question d'amende ou de sanction : parties de ces articles qui citent une section du contexte
+  # (article 99, paragraphe 3, pour l'article 5). L'article 100 de l'AI Act (institutions de
+  # l'Union) n'y est pas : il cite aussi l'article 5 et mettrait un autre barème sous les yeux du modèle.
+  sanction_sections:
+    ai_act: [Article 99]
+    rgpd: [Article 83]
 
 # Versions figées pour la reproductibilité. L'ingestion interroge Cellar et prévient
 # si une version consolidée plus récente ou un nouveau rectificatif français existe.

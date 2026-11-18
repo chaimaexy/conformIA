@@ -58,6 +58,7 @@ PRODUCTION = replace(
     rerank_candidates=50,
     parent_max_chars=4000,
     temporal_sections=("Article 113", "Article 111"),
+    sanction_sections=(("ai_act", "Article 99"), ("rgpd", "Article 83")),
 )
 SUITES = {
     # Phase 3 : stratégies de découpage x modèles d'embedding (recherche dense seule)
@@ -130,6 +131,15 @@ SUITES = {
             "hybride + multi-query + reranker Cohere v5 pro",
             replace(HYBRID, multi_query=True, reranker=COHERE),
         ),
+    ],
+    # Articles de sanctions joints aux questions d'amende (lien inverse, comme les dates)
+    "sanctions": [
+        Config("production sans articles de sanctions", replace(PRODUCTION, sanction_sections=())),
+        Config(
+            "+ article 99 (AI Act)",
+            replace(PRODUCTION, sanction_sections=(("ai_act", "Article 99"),)),
+        ),
+        Config("+ article 99 (AI Act) et article 83 (RGPD)", PRODUCTION),
     ],
 }
 CONFIGS = SUITES["phase3"]
@@ -234,7 +244,10 @@ def run(items: list[GoldenItem], configs: list[Config] = CONFIGS) -> dict:
                     "found@8": found_refs(item, rows, sources, 8),
                     "found@4": found_refs(item, rows, sources, FINAL_K),
                     "found_contexte": found_refs(
-                        item, retriever.with_citations(rows, FINAL_K), sources, 99
+                        item,
+                        retriever.with_citations(rows, FINAL_K, question=item.question),
+                        sources,
+                        99,
                     ),
                     "n_expected": len(item.expected),
                     "top_score": round(rows[0]["score"], 4) if rows else 0.0,
