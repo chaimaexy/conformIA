@@ -1,7 +1,8 @@
 """Mémoire de conversation : les derniers échanges de chaque session.
 
-En mémoire du processus pour l'instant ; l'interface (get / add) restera la même quand
-l'historique sera rattaché à l'utilisateur dans Supabase (phase 7, avec l'authentification).
+En mémoire du processus : pour l'évaluation et les tests. L'API utilise la même interface
+(get / add) sur la base, conversation par conversation de chaque utilisateur
+(app/storage/records.py, Conversations).
 """
 
 import threading
@@ -19,7 +20,7 @@ class ConversationStore:
         with self._lock:
             return list(self._sessions.get(session_id, ()))
 
-    def add(self, session_id: str, question: str, answer: str) -> None:
+    def add(self, session_id: str, question: str, answer: str, sources=None) -> None:
         with self._lock:
             self._sessions[session_id].append({"role": "user", "content": question})
             self._sessions[session_id].append({"role": "assistant", "content": answer})

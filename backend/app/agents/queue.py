@@ -85,20 +85,29 @@ class RedisEvents:
         self.redis.lrem(PENDING_KEY, 0, analysis_id)
 
 
-def run_job(service, events, job: dict) -> None:
-    """Exécute une analyse (début ou reprise) et publie ses événements. Exécuté par le worker."""
+def run_job(service, events, job: dict, records=None) -> None:
+    """Exécute une analyse (début ou reprise) et publie ses événements. Exécuté par le worker.
+    records : table des analyses (statut, copie du rapport), tenue à jour au fil des événements."""
     analysis_id = job["analyse_id"]
     events.started(analysis_id)
+
+    def publish(event: dict) -> None:
+        events.push(analysis_id, event)
+        if records is not None:
+            records.on_event(analysis_id, event)
+
     try:
         if job["type"] == "debut":
             run = service.start(job["texte"], job.get("reponses"), analysis_id, job.get("document"))
         else:
+            if records is not None:
+                records.set_status(analysis_id, "en_cours")
             run = service.resume(analysis_id, job.get("reponses") or {})
         for event in run:
-            events.push(analysis_id, event)
+            publish(event)
     except Exception:  # panne réseau, quota : l'utilisateur doit le savoir, pas attendre
         logger.exception("Analyse %s en échec", analysis_id)
-        events.push(analysis_id, {"type": "erreur", "analyse_id": analysis_id, "message": FAILURE})
+        publish({"type": "erreur", "analyse_id": analysis_id, "message": FAILURE})
 
 
 class AnalysisQueue:
@@ -107,10 +116,16 @@ class AnalysisQueue:
     def __init__(self, events, submit: Callable[[dict], None]):
         self.events, self._submit = events, submit
 
-    def start(self, text: str, answers: dict | None = None, document: str | None = None) -> dict:
+    def start(
+        self,
+        text: str,
+        answers: dict | None = None,
+        document: str | None = None,
+        analysis_id: str | None = None,
+    ) -> dict:
         job = {
             "type": "debut",
-            "analyse_id": uuid.uuid4().hex,
+            "analyse_id": analysis_id or uuid.uuid4().hex,
             "texte": text,
             "reponses": answers or {},
             "document": document,
@@ -131,13 +146,13 @@ class AnalysisQueue:
         return {"analyse_id": analysis_id, "position": position, "depuis": since}
 
 
-def local_queue(service) -> AnalysisQueue:
+def local_queue(service, records=None) -> AnalysisQueue:
     """File sans Redis : un seul fil d'exécution, donc une analyse à la fois."""
     events = MemoryEvents()
     pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="analyses")
 
     def submit(job: dict) -> None:
-        pool.submit(run_job, service, events, job)
+        pool.submit(run_job, service, events, job, records)
 
     return AnalysisQueue(events, submit)
 

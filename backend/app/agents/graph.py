@@ -8,7 +8,7 @@ LLM : le trajet est reproductible et relisible par un juriste, et le nombre d'ap
 (7 dans le cas général, au plus 10 avec les nouveaux essais de citation). Avec 2 requêtes par
 minute en offre gratuite, un agent libre (ReAct) en ferait 15 à 30.
 
-L'état est sauvegardé à chaque étape (checkpointer SQLite, Postgres en phase 7) : une analyse
+L'état est sauvegardé à chaque étape (Postgres avec DATABASE_URL, sinon SQLite) : une analyse
 peut attendre les réponses de l'utilisateur, puis reprendre là où elle s'était arrêtée.
 """
 
@@ -273,13 +273,40 @@ def build_graph(sources: Sources, ask: Callable[[str], dict], checkpointer=None)
     return graph.compile(checkpointer=checkpointer)
 
 
+def sqlite_checkpointer(db_path: Path = CHECKPOINTS) -> SqliteSaver:
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    return SqliteSaver(sqlite3.connect(db_path, check_same_thread=False))
+
+
+def postgres_checkpointer(pool):
+    """État des analyses dans Postgres (schéma `langgraph`, voir app/storage/db.py)."""
+    from langgraph.checkpoint.postgres import PostgresSaver
+
+    saver = PostgresSaver(pool)
+    saver.setup()  # crée ou met à jour les tables de LangGraph (sans effet si elles sont à jour)
+    return saver
+
+
+def default_checkpointer():
+    """Postgres si DATABASE_URL (API et worker partagent l'état), sinon SQLite local."""
+    from app.storage.db import get_database
+
+    db = get_database()
+    return postgres_checkpointer(db.pool) if db.postgres else sqlite_checkpointer()
+
+
 class AnalysisService:
     """Lance, reprend et relit les analyses ; produit les événements envoyés au client."""
 
-    def __init__(self, sources: Sources | None = None, ask=None, db_path: Path = CHECKPOINTS):
-        db_path.parent.mkdir(parents=True, exist_ok=True)
-        conn = sqlite3.connect(db_path, check_same_thread=False)
-        self.graph = build_graph(sources or Sources(), ask or default_ask(), SqliteSaver(conn))
+    def __init__(
+        self,
+        sources: Sources | None = None,
+        ask=None,
+        db_path: Path = CHECKPOINTS,
+        checkpointer=None,
+    ):
+        self.checkpointer = checkpointer or sqlite_checkpointer(db_path)
+        self.graph = build_graph(sources or Sources(), ask or default_ask(), self.checkpointer)
 
     @staticmethod
     def _config(analysis_id: str) -> dict:
@@ -307,6 +334,10 @@ class AnalysisService:
             yield {"type": "erreur", "message": "Cette analyse n'attend pas de réponse."}
             return
         yield from self._run(analysis_id, Command(resume=answers))
+
+    def delete(self, analysis_id: str) -> None:
+        """Efface l'état de l'analyse (profil, réponses, rapport) : droit à l'effacement."""
+        self.checkpointer.delete_thread(analysis_id)
 
     def waiting(self, analysis_id: str) -> bool:
         return bool(self.graph.get_state(self._config(analysis_id)).interrupts)

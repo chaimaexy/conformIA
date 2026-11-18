@@ -46,6 +46,8 @@ class Settings(BaseSettings):
     database_url: str | None = None
     # file des analyses (Celery) ; absent : file locale dans le processus de l'API
     redis_url: str | None = None
+    # poste de développement seulement (avec SQLite) : pas de jeton, un utilisateur local fixe
+    auth_disabled: bool = False
 
     config_path: Path = BACKEND_DIR / "config.yaml"
 
@@ -120,6 +122,14 @@ class CorpusConfig(BaseModel):
     sources: list[CorpusSource] = Field(default_factory=list)
 
 
+class QuotasConfig(BaseModel):
+    """Par utilisateur, sur une fenêtre glissante : le compte Mistral gratuit (2 requêtes/min)
+    est partagé par tous les visiteurs."""
+
+    analyses_par_jour: int = 3
+    questions_par_heure: int = 20
+
+
 class AppConfig(BaseModel):
     llm: LLMConfig = Field(default_factory=LLMConfig)
     embeddings: EmbeddingsConfig = Field(default_factory=EmbeddingsConfig)
@@ -127,6 +137,7 @@ class AppConfig(BaseModel):
     chunking: ChunkingConfig = Field(default_factory=ChunkingConfig)
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     corpus: CorpusConfig = Field(default_factory=CorpusConfig)
+    quotas: QuotasConfig = Field(default_factory=QuotasConfig)
 
 
 def load_app_config(path: Path) -> AppConfig:

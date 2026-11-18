@@ -26,18 +26,25 @@ celery_app.conf.update(
 
 @lru_cache
 def _runtime():
-    """Service d'analyse et événements Redis, créés une fois par processus worker."""
+    """Service d'analyse, événements Redis et table des analyses, créés une fois par processus
+    worker (après le fork : chaque processus a ses propres connexions)."""
     import redis
 
-    from app.agents.graph import AnalysisService
+    from app.agents.graph import AnalysisService, default_checkpointer
     from app.agents.queue import RedisEvents
+    from app.storage.db import get_database
+    from app.storage.records import AnalysisRecords
 
-    return AnalysisService(), RedisEvents(redis.Redis.from_url(get_settings().redis_url))
+    return (
+        AnalysisService(checkpointer=default_checkpointer()),
+        RedisEvents(redis.Redis.from_url(get_settings().redis_url)),
+        AnalysisRecords(get_database()),
+    )
 
 
 @celery_app.task(name="analyses.executer")
 def execute(job: dict) -> None:
     from app.agents.queue import run_job
 
-    service, events = _runtime()
-    run_job(service, events, job)
+    service, events, records = _runtime()
+    run_job(service, events, job, records)

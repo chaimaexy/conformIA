@@ -99,3 +99,9 @@ corpus:
       kind: cnil
       title: "CNIL - Fiches pratiques IA (développement des systèmes d'IA et RGPD)"
       url: "https://www.cnil.fr/fr/les-fiches-pratiques-ia"   # licence CC-BY-ND 4.0
+
+quotas:
+  # Par utilisateur (compte ou session anonyme), sur une fenêtre glissante. Le compte Mistral
+  # gratuit (2 requêtes/min) est partagé par tous : une analyse en fait ~7, une question 1 à 2.
+  analyses_par_jour: 3
+  questions_par_heure: 20

@@ -202,12 +202,16 @@ def test_stream_hides_the_refusal_marker(monkeypatch):
     assert text == "".join(pieces) and events[-1]["verification"]["cited"] == [1]
 
 
-def test_chat_endpoints(monkeypatch):
+def test_chat_endpoints(monkeypatch, db, as_user):
     from app.api.routes import chat
     from app.main import app
+    from app.storage.records import Conversations
 
     service, _ = make_service(monkeypatch, 0.8, "Applicable dès le 2 août 2026 [1].")
+    conversations = Conversations(db)
+    service.memory = conversations
     monkeypatch.setattr(chat, "get_service", lambda: service)
+    monkeypatch.setattr(chat, "get_conversations", lambda: conversations)
     monkeypatch.setattr(
         service_module,
         "stream_text",
@@ -216,10 +220,13 @@ def test_chat_endpoints(monkeypatch):
     client = TestClient(app)
     body = client.post("/chat", json={"message": "Quand l'AI Act s'applique-t-il ?"}).json()
     assert body["sources"][0]["cited"] and body["verification"]["cited"] == [1]
-    response = client.post("/chat/stream", json={"message": "Quand ?", "session_id": "s"})
+    session = body["session_id"]  # conversation créée au premier message
+    response = client.post("/chat/stream", json={"message": "Quand ?", "session_id": session})
     events = [json.loads(line[6:]) for line in response.text.split("\n\n") if line]
-    assert events[-1]["type"] == "fin" and events[-1]["session_id"] == "s"
+    assert events[-1]["type"] == "fin" and events[-1]["session_id"] == session
     assert client.post("/chat", json={"message": ""}).status_code == 422
+    unknown = client.post("/chat", json={"message": "Quand ?", "session_id": "inventee"})
+    assert unknown.status_code == 404
 
 
 # ----------------------------------------------------------------------------- évaluation

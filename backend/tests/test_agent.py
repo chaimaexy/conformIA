@@ -349,18 +349,25 @@ def test_graph_pauses_for_questions_then_reports(tmp_path):
 
 
 @pytest.fixture
-def api(monkeypatch, tmp_path):
-    """Client de l'API avec un faux LLM et la file locale (sans Redis)."""
+def api(monkeypatch, tmp_path, db, as_user):
+    """Client de l'API avec un faux LLM, la file locale (sans Redis), une base SQLite jetable
+    et l'utilisateur « utilisateur-a » connecté."""
     from app.agents.queue import local_queue
     from app.api.routes import analyses
     from app.main import app
+    from app.storage.records import AnalysisRecords
 
     service = AnalysisService(FakeSources(), fake_ask, db_path=tmp_path / "a.sqlite")
-    queue = local_queue(service)
+    records = AnalysisRecords(db)
+    queue = local_queue(service, records)
     monkeypatch.setattr(analyses, "get_service", lambda: service)
+    monkeypatch.setattr(analyses, "get_records", lambda: records)
     monkeypatch.setattr(analyses, "get_queue", lambda: queue)
     monkeypatch.setattr(analyses, "POLL_S", 0.01)
-    return TestClient(app)
+    client = TestClient(app)
+    client.login = as_user
+    client.service, client.records = service, records
+    return client
 
 
 def flux(client, ticket) -> list[dict]:

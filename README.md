@@ -547,8 +547,9 @@ option pour un produit.
 ```bash
 cd backend
 uvicorn app.main:app --reload
-curl -X POST localhost:8000/chat -H "Content-Type: application/json" \
+curl -X POST localhost:8000/chat -H "$AUTH" -H "Content-Type: application/json" \
      -d '{"message": "Quelle amende pour un système de notation sociale ?"}'
+# $AUTH : la session Supabase de l'utilisateur (phase 7b)
 python -m app.evaluation.generation --validated   # chaîne complète sur le golden set
 ```
 
@@ -558,7 +559,8 @@ python -m app.evaluation.generation --validated   # chaîne complète sur le gol
 | `POST /chat/stream` | Server-Sent Events : `statut` (recherche, rédaction) -> `sources` -> `texte` (au fil de l'eau) -> `fin` (réponse définitive et vérification) |
 
 Renvoyer le `session_id` reçu poursuit la conversation : « et pour les PME ? » est réécrit en
-question autonome à partir des 3 derniers échanges.
+question autonome à partir des 3 derniers échanges. Depuis la phase 7b, le `session_id` est
+l'identifiant d'une conversation de l'utilisateur, gardée dans la base.
 
 ```
 message ─> routeur LLM (seulement si historique ou message très court) : intention + réécriture
@@ -819,15 +821,19 @@ les obligations et leurs dates, passe la liste de vérification RGPD de la CNIL,
 manque et rend un rapport sourcé.
 
 ```bash
-curl -X POST localhost:8000/analyses -H "Content-Type: application/json" \
+# depuis la phase 7b, chaque requête porte la session Supabase de l'utilisateur
+# (en local avec SQLite, AUTH_DISABLED=true dans .env dispense du jeton)
+AUTH="Authorization: Bearer <jeton d'accès Supabase>"
+curl -X POST localhost:8000/analyses -H "$AUTH" -H "Content-Type: application/json" \
      -d '{"description": "Nous voulons utiliser un logiciel qui classe les CV de nos candidats."}'
 # -> 202 {"analyse_id", "position" dans la file, "flux": "/analyses/<id>/flux?depuis=0"}
-curl -N "localhost:8000/analyses/<id>/flux?depuis=0"
+curl -N -H "$AUTH" "localhost:8000/analyses/<id>/flux?depuis=0"
 # -> événements : en_attente, debut, etape..., questions (l'analyse attend)
-curl -X POST localhost:8000/analyses/<id>/reponses -H "Content-Type: application/json" \
+curl -X POST localhost:8000/analyses/<id>/reponses -H "$AUTH" -H "Content-Type: application/json" \
      -d '{"reponses": {"roles": ["deployeur"], "biometrie": "non"}}'
 # -> 202, puis le flux donne etape..., rapport (JSON + Markdown)
-curl -X POST localhost:8000/analyses/document -F "fichier=@docs/exemples/cahier_des_charges_aide_logement.pdf"
+curl -X POST localhost:8000/analyses/document -H "$AUTH" \
+     -F "fichier=@docs/exemples/cahier_des_charges_aide_logement.pdf"
 # -> même déroulé, à partir d'un PDF du projet (phase 7a)
 python -m app.agents.obligations --verifier    # la carte des obligations est-elle fidèle au texte ?
 python -m app.evaluation.agent                 # 19 scénarios vérifiés
@@ -1029,7 +1035,74 @@ bout, ce n'est pas une évaluation chiffrée.
 Deux analyses envoyées en même temps ont reçu les positions 1 et 2. Le worker a pris la seconde
 seulement après avoir fini la première.
 
-Le SQLite partagé convient à un seul poste. En production, l'état ira dans Postgres (phase 7b).
+Le SQLite partagé convient à un seul poste. Depuis la phase 7b, avec `DATABASE_URL`, l'état
+des analyses est dans Postgres.
+
+## Comptes, historique et quotas (phase 7b)
+
+Jusqu'ici, n'importe qui connaissant l'identifiant d'une analyse pouvait la lire, et rien ne
+limitait l'usage du compte Mistral gratuit, partagé par tous les visiteurs. Cette phase rattache
+chaque analyse et chaque conversation à un utilisateur Supabase Auth, et les range dans Postgres.
+
+| Choix | Pourquoi | Écarté |
+|---|---|---|
+| **E-mail + mot de passe, et « Essayer sans compte »** (session anonyme de Supabase) | Le serveur d'e-mails fourni par Supabase n'envoie qu'aux membres de l'équipe du projet : un recruteur ne recevrait ni lien magique ni e-mail de confirmation. La session anonyme donne un vrai utilisateur (`is_anonymous` dans le jeton), sans donnée personnelle | Lien magique seul : inutilisable sans serveur SMTP à soi |
+| **Le backend vérifie le jeton** avec les clés publiques du projet (JWKS, ES256) : signature, émetteur, audience `authenticated`, expiration | Aucun secret partagé à garder ; une clé révoquée cesse d'être acceptée en 10 minutes (cache des clés) | Secret HS256 : déconseillé par Supabase ; appeler `/auth/v1/user` à chaque requête : lent |
+| **Une analyse n'existe que pour son auteur** : un autre utilisateur reçoit 404, pas 403 | On ne révèle pas qu'un identifiant existe | |
+| **État de LangGraph dans Postgres**, schéma `langgraph` à part (`PostgresSaver`) | L'API et le worker partagent l'état sans fichier commun ; l'API publique de Supabase n'expose pas ce schéma (droits retirés à `anon` et `authenticated`) | Tables dans `public` : exposées par l'API REST de Supabase |
+| **Connexion par le « session pooler »** (port 5432) | La connexion directe ne répond qu'en IPv6 : inaccessible depuis Docker et la plupart des hébergeurs | Mode transaction (6543) : pour les fonctions éphémères, pas pour un serveur |
+| **Table `analyses`** : propriétaire, statut, niveau, copie du rapport | La page « Mes analyses » se lit sans LangGraph ; le worker la tient à jour au fil des événements | |
+| **Historique du chat** : `conversations` et `messages` (avec les sources de chaque réponse, sans le texte des articles) | La mémoire du routeur (« et pour les PME ? ») lit les derniers messages de la conversation, même interface qu'avant | Mémoire du processus : perdue au redémarrage, mêlait les utilisateurs |
+| **Quotas par utilisateur**, fenêtre glissante : 3 analyses par 24 h, 20 questions par heure (`config.yaml`) | Un seul visiteur ne doit pas bloquer la démo pour les autres (2 requêtes/min chez Mistral). Le refus (429) dit quand une place se libère | Compteur à part : les tables suffisent à compter |
+| **Effacement** : `DELETE /analyses/{id}` (rapport et état LangGraph) et `DELETE /conversations/{id}` | Un outil sur le RGPD doit respecter le droit à l'effacement. Supprimer un utilisateur efface tout le reste (`on delete cascade`) | |
+| **RLS en lecture seule** sur les trois tables | Le backend écrit par sa connexion directe ; par l'API publique, chacun ne lit que ses lignes et personne n'écrit | |
+
+Sans `DATABASE_URL` (poste de développement, tests), les mêmes tables sont dans un fichier
+SQLite (`data/cache/app.sqlite`) : les requêtes sont écrites une fois pour les deux bases
+(`app/storage/`). `AUTH_DISABLED=true` dispense alors du jeton, en environnement local
+seulement.
+
+| Endpoint | Rôle |
+|---|---|
+| `GET /analyses` | analyses de l'utilisateur, les plus récentes d'abord |
+| `DELETE /analyses/{id}` | efface le rapport et l'état de l'analyse (refusé pendant qu'elle tourne) |
+| `GET /conversations` | conversations de l'utilisateur |
+| `GET /conversations/{id}` | messages d'une conversation, avec les sources des réponses |
+| `DELETE /conversations/{id}` | efface la conversation et ses messages |
+
+### Vérification
+
+- **Tests** : 21 tests de la phase, dont 4 sur un vrai Postgres 17 (lancé dans Docker,
+  `TEST_DATABASE_URL`). Ils couvrent :
+  - les jetons refusés : signés par une autre clé, expirés, d'un autre projet, mauvaise
+    audience, secret partagé ;
+  - l'accès d'un autre utilisateur, qui reçoit 404 ;
+  - les quotas ;
+  - l'historique avec ses sources ;
+  - l'effacement, y compris en cascade quand l'utilisateur est supprimé ;
+  - l'état de LangGraph dans le schéma `langgraph` ;
+  - les droits de l'API publique.
+- **Migration sur Supabase** : aucune alerte de sécurité. Par l'API publique, `anon` n'a aucun
+  droit sur les trois tables et `authenticated` ne peut que lire. Une fois la session anonyme
+  activée, Supabase avertit que des politiques s'appliquent aux utilisateurs anonymes : c'est
+  voulu, chacun lit ses propres lignes et rien d'autre.
+- **Essai réel**, avec `docker compose` (API, Redis, worker) branché sur Supabase et une
+  session anonyme :
+  - sans jeton ou avec un jeton falsifié, 401 ;
+  - le PDF d'exemple donne le même rapport qu'à la phase 7a (haut risque, 5 a), mêmes
+    obligations), avec deux tours de questions ;
+  - « Mes analyses » le liste comme terminé ;
+  - une question au chat crée une conversation, gardée avec ses 2 messages et les sources de la
+    réponse ;
+  - l'effacement de l'analyse vide sa ligne et ses points de reprise dans `langgraph` ;
+  - la suppression des utilisateurs de test efface leur conversation en cascade.
+
+  Les réponses de Mistral venaient du cache (même document, mêmes réponses), d'où 18 s : cet
+  essai vérifie le branchement, pas le modèle.
+- **Un blocage non reproduit** : une fois, une requête avec un jeton falsifié est restée sans
+  réponse. Les essais suivants répondent 401 en moins de 0,1 s. Les clés publiques sont
+  désormais lues avec un délai maximal de 10 s : si Supabase ne répond pas, la requête est
+  refusée au lieu de rester bloquée.
 
 ## Feuille de route
 
@@ -1047,7 +1120,8 @@ Le SQLite partagé convient à un seul poste. En production, l'état ira dans Po
 - [x] **Phase 5 quater** : renvois inverses vers les dates d'application (articles 113 et 111) : renvois 15/15, faits clés 100 %, 12 des 14 réponses fausses corrigées au total
 - [x] **Phase 6** : agent LangGraph d'analyse de conformité (graphe fixe, questions fermées avec pause et reprise, classification AI Act vérifiée, carte des obligations vérifiée contre le texte, liste de vérification CNIL, rapport sourcé, 19 scénarios d'évaluation)
 - [x] **Phase 7a** : analyse d'un PDF du projet (profil prouvé page par page, aucun fichier conservé), file d'attente Celery + Redis (une analyse à la fois), flux SSE, second tour de questions
-- [ ] **Phase 7b** : frontend Next.js, auth Supabase, état des analyses dans Postgres
+- [x] **Phase 7b** : comptes Supabase (jeton vérifié par le backend, session anonyme), analyses et conversations par utilisateur dans Postgres, état de LangGraph dans Postgres, quotas, effacement
+- [ ] **Phase 7c** : frontend Next.js (connexion, chat avec sources, analyse en direct, rapport, historique)
 - [ ] **Phase 8** : déploiement, démo vidéo
 
 ## Sources

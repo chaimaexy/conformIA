@@ -20,10 +20,13 @@ dependencies = [
     "numpy>=2.0",
     "snowballstemmer>=2.2",            # racinisation française pour BM25 (pur Python)
     "langgraph>=1.2,<2",                # agent d'analyse : graphe fixe, pause et reprise
-    "langgraph-checkpoint-sqlite>=3.1,<4",  # état des analyses (Postgres en phase 7)
+    "langgraph-checkpoint-sqlite>=3.1,<4",  # état des analyses sans base (poste de développement)
     "celery>=5.4,<6",                   # file des analyses : une à la fois (2 requêtes/min)
     "redis>=5,<7",
     "python-multipart>=0.0.18",         # envoi du PDF du projet (formulaire multipart)
+    "langgraph-checkpoint-postgres>=3.2,<4",  # état des analyses dans Postgres (Supabase)
+    "psycopg[binary,pool]>=3.2",        # connexion Postgres (analyses, conversations, LangGraph)
+    "pyjwt[crypto]>=2.10",              # vérification des jetons Supabase Auth (ES256, JWKS)
     # 1.13.1 : DLL bloquée par le contrôle des applications de Windows sur le poste de dev
     "ormsgpack==1.12.2; sys_platform == 'win32'",
 ]

@@ -220,7 +220,9 @@ class ChatService:
             verification=verification,
             coverage=p.coverage,
         )
-        self.memory.add(p.session_id, p.message, text)
+        # sources gardées avec la réponse pour l'historique : références, pas le texte des articles
+        cited = [{k: v for k, v in asdict(s).items() if k != "text"} for s in p.sources]
+        self.memory.add(p.session_id, p.message, text, sources=cited)
         return result
 
     def answer(self, message: str, session_id: str | None = None) -> ChatAnswer:
