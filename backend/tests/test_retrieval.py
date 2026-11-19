@@ -341,3 +341,36 @@ def test_qwen3_prompt_format():
     ((query, doc),) = reranker._pairs("Quand ?", ["Texte"])
     assert query.endswith("<Query>: Quand ?\n") and "<Instruct>:" in query
     assert doc.startswith("<Document>: Texte<|im_end|>")
+
+
+def test_passages_and_index_load_once_even_when_two_requests_ask_together(monkeypatch):
+    """Au démarrage, le préchargement et une première question demandent les passages en même
+    temps : un seul chargement (avec 0,1 CPU, deux en parallèle doubleraient l'attente)."""
+    import threading
+    import time
+
+    from app.retrieval import pipeline
+
+    calls = []
+
+    def slow_load(db, strategy):
+        calls.append(strategy)
+        time.sleep(0.2)
+        return [{"id": "c1", "content": "amende administrative", "metadata": {}}]
+
+    monkeypatch.setattr(pipeline, "load_chunks", slow_load)
+    monkeypatch.setattr(pipeline, "_CHUNKS", {})
+    retriever = pipeline.Retriever(pipeline.RetrievalSettings("verrou", bm25=True), db=object())
+    built = []
+    real_bm25 = pipeline.BM25
+    monkeypatch.setattr(pipeline, "BM25", lambda texts: built.append(1) or real_bm25(texts))
+
+    results = []
+    threads = [threading.Thread(target=lambda: results.append(retriever.bm25)) for _ in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert calls == ["verrou"] and built == [1]
+    assert all(r is results[0] for r in results)  # le même index pour tous

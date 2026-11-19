@@ -11,6 +11,7 @@ Chaque étape est activable séparément pour être mesurée sur le golden set
 """
 
 import re
+import threading
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
@@ -25,6 +26,25 @@ from app.vectordb.store import client, vector_literal
 
 PAGE = 1000  # limite de lignes par requête PostgREST
 _CHUNKS: dict[str, dict[str, dict]] = {}  # stratégie -> chunks, partagé entre configurations
+# Un seul chargement à la fois. Au démarrage, l'API précharge passages et index en arrière-plan
+# (app/main.py) ; une question arrivée pendant ce temps attend la fin au lieu de tout recharger
+# en parallèle (cached_property ne verrouille pas) : avec 0,1 CPU, deux chargements simultanés
+# prendraient chacun deux fois plus de temps.
+_LOADING = threading.RLock()
+
+
+class loaded_once(cached_property):
+    """cached_property calculée une seule fois, même demandée par deux fils à la fois."""
+
+    def __get__(self, instance, owner=None):
+        if instance is None:
+            return self
+        with _LOADING:
+            if self.attrname in instance.__dict__:  # calculée pendant l'attente
+                return instance.__dict__[self.attrname]
+            return super().__get__(instance, owner)
+
+
 _PART = re.compile(r"\(partie (\d+)/\d+")  # « Article 99 - Sanctions (partie 2/5 - ... »
 # question qui porte sur une sanction : seul cas où les articles de sanctions sont joints
 SANCTION_QUESTION = re.compile(r"\b(amendes?|sanction\w*|pénalités?)\b", re.IGNORECASE)
@@ -104,10 +124,12 @@ class Retriever:
     def chunks(self) -> dict[str, dict]:
         strategy = self.settings.strategy
         if strategy not in _CHUNKS:
-            _CHUNKS[strategy] = {row["id"]: row for row in load_chunks(self.db, strategy)}
+            with _LOADING:
+                if strategy not in _CHUNKS:
+                    _CHUNKS[strategy] = {row["id"]: row for row in load_chunks(self.db, strategy)}
         return _CHUNKS[strategy]
 
-    @cached_property
+    @loaded_once
     def bm25(self) -> tuple[BM25, list[str]]:
         ids = list(self.chunks)
         return BM25([self.chunks[i]["content"] for i in ids]), ids
@@ -174,7 +196,7 @@ class Retriever:
         scores = self.reranker.scores(question, [self._row(i, 0)["content"] for i in ids])
         return sorted(zip(ids, scores, strict=True), key=lambda kv: kv[1], reverse=True)
 
-    @cached_property
+    @loaded_once
     def section_parts(self) -> dict[tuple[str, str], list[dict]]:
         """(document, « Article 99 ») -> chunks de la section, dans l'ordre du texte."""
         parts: dict[tuple[str, str], list[dict]] = defaultdict(list)
@@ -184,7 +206,7 @@ class Retriever:
             chunks.sort(key=part_number)
         return dict(parts)
 
-    @cached_property
+    @loaded_once
     def documents(self) -> dict[str, str]:
         """« ai_act » -> identifiant du document dans l'index."""
         rows = self.db.table("documents").select("id, source_id").execute().data
@@ -199,7 +221,7 @@ class Retriever:
         document = self.documents.get(source_id)
         return [{**c, "score": None} for c in self.section_parts.get((document, label), [])]
 
-    @cached_property
+    @loaded_once
     def section_heads(self) -> dict[tuple[str, str], dict]:
         """(document, « Article 15 ») -> 1er chunk de la section (pour l'expansion)."""
         return {key: chunks[0] for key, chunks in self.section_parts.items()}

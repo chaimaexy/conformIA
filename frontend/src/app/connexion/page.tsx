@@ -31,7 +31,13 @@ export default function Connexion() {
       router.push("/chat");
       return;
     }
-    const { data, error: failure } = await auth.signUp({ email, password });
+    // le lien de confirmation ramène sur ce site (local ou en ligne) : adresse autorisée dans
+    // Supabase > Authentication > URL Configuration > Redirect URLs
+    const { data, error: failure } = await auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/connexion` },
+    });
     setBusy(false);
     if (failure) return setError(authMessage(failure.code, "Inscription impossible."));
     if (data.session) router.push("/chat");

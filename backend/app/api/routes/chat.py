@@ -20,6 +20,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+from app.api.sse import SSE_HEADERS
 from app.core.auth import CurrentUser, User
 from app.core.config import get_app_config
 from app.rag.service import ChatService
@@ -75,4 +76,4 @@ def chat_stream(request: ChatRequest, user: CurrentUser) -> StreamingResponse:
         for event in get_service().stream(request.message, session_id):
             yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
 
-    return StreamingResponse(events(), media_type="text/event-stream")
+    return StreamingResponse(events(), media_type="text/event-stream", headers=SSE_HEADERS)

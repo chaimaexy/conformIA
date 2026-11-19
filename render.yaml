@@ -1,0 +1,33 @@
+# Render (offre gratuite) : l'API FastAPI dans un seul conteneur, sans Redis ni worker.
+# Sans REDIS_URL, les analyses tournent dans le processus de l'API, une à la fois (même règle
+# que le worker Celery : 2 requêtes/min sur l'offre gratuite de Mistral).
+# Données (passages, vecteurs, comptes, analyses) : le projet Supabase. Guide : docs/deploiement.md
+services:
+  - type: web
+    name: conformia-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    autoDeploy: false  # déploiement à la demande, depuis le tableau de bord
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      # adresse du frontend (Vercel), au format JSON : ["https://conformia.vercel.app"]
+      - key: CORS_ORIGINS
+        sync: false
+      # secrets : saisis dans le tableau de bord de Render, jamais dans ce fichier
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: COHERE_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false

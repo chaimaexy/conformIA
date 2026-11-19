@@ -34,6 +34,7 @@ from pydantic import BaseModel, Field
 from app.agents.document import MAX_BYTES, DocumentError, read_pdf
 from app.agents.graph import AnalysisService, default_checkpointer
 from app.agents.queue import TERMINAL, AnalysisQueue, local_queue, redis_queue
+from app.api.sse import SSE_HEADERS
 from app.core.auth import CurrentUser
 from app.core.config import get_app_config, get_settings
 from app.storage.db import get_database
@@ -176,7 +177,7 @@ def stream(analysis_id: str, user: CurrentUser, depuis: int = 0) -> StreamingRes
         timeout = {"type": "erreur", "message": "Délai dépassé : relancez le flux."}
         yield f"data: {json.dumps(timeout, ensure_ascii=False)}\n\n"
 
-    return StreamingResponse(body(), media_type="text/event-stream")
+    return StreamingResponse(body(), media_type="text/event-stream", headers=SSE_HEADERS)
 
 
 @router.post("/{analysis_id}/reponses", status_code=202)

@@ -61,6 +61,20 @@ class AnalysisRecords:
             (statut, now(), analysis_id),
         )
 
+    def interrupt_unfinished(self) -> int:
+        """Met en erreur les analyses en attente ou en cours ; rend leur nombre.
+
+        Seulement au démarrage d'une API qui exécute elle-même les analyses (sans Redis) : sa
+        file vivait dans le processus précédent, ces analyses ne reprendront pas. Sans cela, leur
+        page attendrait un flux qui n'existe plus.
+        """
+        rows = self.db.execute(
+            "update analyses set statut = 'erreur', updated_at = %s"
+            " where statut in ('en_attente', 'en_cours') returning id",
+            (now(),),
+        )
+        return len(rows)
+
     def on_event(self, analysis_id: str, event: dict) -> None:
         """Suit les événements de l'analyse (exécuté par le worker)."""
         kind = event.get("type")

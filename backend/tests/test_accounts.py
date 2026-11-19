@@ -238,6 +238,28 @@ def test_deleting_an_analysis_erases_its_state(api):
     assert api.get("/analyses").json() == []
 
 
+def test_a_restart_turns_analyses_left_running_into_errors(api, monkeypatch):
+    """Sans Redis, la file vit dans le processus : après un redémarrage (Render peut en faire à
+    tout moment), une analyse en cours ne reprendra pas. Sa page doit le dire, pas attendre."""
+    from app.api.routes import analyses
+    from app.core.config import get_settings
+    from app.main import interrupt_unfinished
+
+    records = analyses.get_records()
+    for analysis_id, statut in [("r1", None), ("r2", "en_cours"), ("r3", "questions")]:
+        records.create(analysis_id, "utilisateur-a", "Projet", "description")
+        if statut:
+            records.set_status(analysis_id, statut)
+    monkeypatch.setattr(get_settings(), "redis_url", "redis://worker")
+    interrupt_unfinished()  # file Redis : le worker les reprendra, rien ne change
+    assert records.get("r1", "utilisateur-a")["statut"] == "en_attente"
+    monkeypatch.setattr(get_settings(), "redis_url", None)
+    interrupt_unfinished()
+    statuts = {i: records.get(i, "utilisateur-a")["statut"] for i in ("r1", "r2", "r3")}
+    assert statuts == {"r1": "erreur", "r2": "erreur", "r3": "questions"}  # r3 attend, intacte
+    assert api.get("/analyses/r2").json()["statut"] == "erreur"
+
+
 def test_analyses_are_limited_per_user(api, monkeypatch):
     from app.api.routes import analyses
     from app.core.config import AppConfig, QuotasConfig
@@ -367,6 +389,10 @@ def test_records_and_conversations_on_postgres(pg):
     assert row["rapport"] == rapport and row["created_at"].endswith("+00:00")
     assert records.get("pg1", BOB) is None
     assert records.count_since(ALICE, now() - timedelta(days=1))[0] == 1
+    records.create("pg-coupee", ALICE, "Coupée", "description")
+    assert records.interrupt_unfinished() >= 1
+    assert records.get("pg-coupee", ALICE)["statut"] == "erreur"
+    assert records.get("pg1", ALICE)["statut"] == "termine"  # finie : intacte
     cid = conversations.create(ALICE, "Quand ?")
     conversations.add(cid, "Quand ?", "Le 2 août [1].", sources=[{"n": 1}])
     assert conversations.messages(cid)[1]["sources"] == [{"n": 1}]

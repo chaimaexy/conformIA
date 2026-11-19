@@ -1234,6 +1234,26 @@ Pas encore fait : l'essai de l'effacement par les boutons de l'interface (les fe
 confirmation bloquent l'automatisation ; l'API est testée) et l'envoi d'un PDF depuis le
 navigateur (le même envoi est testé par l'API).
 
+## Mise en ligne (phase 8)
+
+Guide pas à pas : **[docs/deploiement.md](docs/deploiement.md)**. Tout est gratuit :
+
+```
+navigateur ──► Vercel (Next.js) ──► Render (FastAPI, un conteneur, Francfort) ──► Supabase
+                                         └─ Mistral, Cohere
+```
+
+| Choix | Pourquoi |
+|---|---|
+| **API seule sur Render, sans Redis ni worker** | L'offre gratuite n'a qu'un service web de 512 Mo. Sans `REDIS_URL`, l'API exécute les analyses elle-même, une à la fois (même règle que le worker). Une fois chargée (passages, BM25, agent, connexions), elle occupe 124 Mo, mesurés dans le conteneur limité comme chez Render (512 Mo, 0,1 CPU) |
+| **Préchargement au démarrage** | Charger les 1 193 passages et l'index BM25 prend 29 s sur un portable, environ 3 min 20 s avec 0,1 CPU. En arrière-plan, `/health` répond tout de suite ; une question arrivée pendant ce temps attend la fin du chargement au lieu de le refaire en parallèle (verrou, test `test_passages_and_index_load_once_even_when_two_requests_ask_together`) |
+| **Analyses interrompues mises en erreur au démarrage** | Render peut redémarrer un service gratuit à tout moment : la file vivait dans le processus. La page de l'analyse dit qu'elle a échoué au lieu d'attendre un flux disparu (test : `test_a_restart_turns_analyses_left_running_into_errors`) |
+| **Bandeau de réveil dans l'interface** | Après 15 min sans visite, le serveur dort et met une à deux minutes à se réveiller. L'interface l'appelle dès l'arrivée et prévient si la réponse tarde |
+| **`render.yaml` (Blueprint)** | Le service est décrit dans le dépôt : Docker, offre, région, contrôle de santé. Les secrets sont saisis dans le tableau de bord (`sync: false`), jamais dans le fichier |
+| **Hugging Face Spaces, Koyeb écartés** | Les Spaces Docker demandent maintenant un abonnement PRO ; l'inscription gratuite de Koyeb est fermée |
+
+La CI vérifie aussi l'interface (lint et compilation).
+
 ## Feuille de route
 
 - [x] **Phase 0** : setup (backend, config, schéma Supabase, CI)
@@ -1253,7 +1273,7 @@ navigateur (le même envoi est testé par l'API).
 - [x] **Phase 7a** : analyse d'un PDF du projet (profil prouvé page par page, aucun fichier conservé), file d'attente Celery + Redis (une analyse à la fois), flux SSE, second tour de questions
 - [x] **Phase 7b** : comptes Supabase (jeton vérifié par le backend, session anonyme), analyses et conversations par utilisateur dans Postgres, état de LangGraph dans Postgres, quotas, effacement
 - [x] **Phase 7c** : frontend Next.js 16 (connexion et session d'essai, chat avec sources, analyse en direct, rapport, historique), effacement de l'état LangGraph avec l'utilisateur
-- [ ] **Phase 8** : déploiement, démo vidéo
+- [ ] **Phase 8** : déploiement (préparé : API sur Render, interface sur Vercel, voir [docs/deploiement.md](docs/deploiement.md)), démo vidéo
 
 ## Sources
 

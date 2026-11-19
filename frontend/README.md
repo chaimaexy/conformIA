@@ -25,6 +25,9 @@ Choix :
   envoyer l'en-tête `Authorization`.
 - **Pas de couche Next.js entre l'interface et l'API** : une seule vérification des droits,
   celle de FastAPI.
+- **Bandeau de réveil** (`src/components/server-wake.tsx`) : en ligne, l'API dort après 15 min
+  sans visite (offre gratuite de Render). Elle est appelée dès l'arrivée sur le site, et un bandeau
+  prévient si elle tarde. Mise en ligne : `docs/deploiement.md`.
 - `@supabase/supabase-js` seul : `@supabase/ssr` ne sert que si le serveur Next.js lit la session.
 
 Structure :
