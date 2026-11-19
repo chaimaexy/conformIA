@@ -54,7 +54,7 @@ et `Cache-Control: no-cache`, pour qu'aucun proxy ne les retienne avant de les t
 
    | Variable | Valeur |
    |---|---|
-   | `CORS_ORIGINS` | pour l'instant `["http://localhost:3000"]` (on mettra l'adresse Vercel à l'étape 3) |
+   | `CORS_ORIGINS` | pour l'instant `http://localhost:3000` (on mettra l'adresse Vercel à l'étape 3) |
    | `MISTRAL_API_KEY` | ta clé Mistral |
    | `COHERE_API_KEY` | ta clé Cohere |
    | `SUPABASE_URL` | `https://<ref>.supabase.co` |
@@ -92,8 +92,9 @@ avoir changé une, il faut redéployer.
 ## 3. Relier les trois
 
 1. **Render** > le service > **Environment** : `CORS_ORIGINS` =
-   `["https://<projet>.vercel.app","http://localhost:3000"]` (format JSON, sans `/` final), puis
-   enregistrer : le service redémarre. Sans cela, le navigateur refuse les réponses de l'API.
+   `["https://<projet>.vercel.app","http://localhost:3000"]` (ou simplement
+   `https://<projet>.vercel.app,http://localhost:3000` : les deux formats sont acceptés, et un
+   `/` final est retiré), puis enregistrer : le service redémarre. Sans cela, le navigateur refuse les réponses de l'API.
    Les adresses de prévisualisation de Vercel (une par branche) ne sont pas autorisées : on
    essaie sur l'adresse de production.
 2. **Supabase** > Authentication > **URL Configuration** :

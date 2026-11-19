@@ -34,3 +34,27 @@ def test_chat_model_requires_api_key(monkeypatch):
     )
     with pytest.raises(llm_client.MissingAPIKeyError):
         llm_client._api_key()
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        (
+            '["https://conformia.vercel.app","http://localhost:3000"]',
+            ["https://conformia.vercel.app", "http://localhost:3000"],
+        ),
+        (
+            "https://conformia.vercel.app/, http://localhost:3000",
+            ["https://conformia.vercel.app", "http://localhost:3000"],
+        ),
+        ("https://conformia.vercel.app", ["https://conformia.vercel.app"]),
+        ("", ["http://localhost:3000"]),
+    ],
+)
+def test_cors_origins_accept_json_or_comma_separated(monkeypatch, raw, expected):
+    """Saisie chez l'hébergeur : un format inattendu ne doit pas empêcher l'API de démarrer
+    (premier déploiement sur Render : CORS_ORIGINS sans crochets, l'API s'arrêtait)."""
+    from app.core.config import Settings
+
+    monkeypatch.setenv("CORS_ORIGINS", raw)
+    assert Settings(_env_file=None).cors_origins == expected

@@ -17,7 +17,8 @@ services:
         value: production
       - key: LOG_LEVEL
         value: INFO
-      # adresse du frontend (Vercel), au format JSON : ["https://conformia.vercel.app"]
+      # adresses du frontend, séparées par des virgules (ou en JSON) :
+      # https://conformia.vercel.app,http://localhost:3000
       - key: CORS_ORIGINS
         sync: false
       # secrets : saisis dans le tableau de bord de Render, jamais dans ce fichier

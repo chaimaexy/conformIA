@@ -5,13 +5,14 @@ Deux sources :
 - `config.yaml` pour les paramètres de l'application (AppConfig)
 """
 
+import json
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 REPO_DIR = BACKEND_DIR.parent
@@ -31,7 +32,8 @@ class Settings(BaseSettings):
 
     environment: Literal["local", "staging", "production"] = "local"
     log_level: str = "INFO"
-    cors_origins: list[str] = ["http://localhost:3000"]
+    # JSON (["https://a.vercel.app","http://localhost:3000"]) ou adresses séparées par des virgules
+    cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:3000"]
 
     mistral_api_key: str | None = None
     cohere_api_key: str | None = None  # reranker Cohere (clé d'essai gratuite)
@@ -50,6 +52,21 @@ class Settings(BaseSettings):
     auth_disabled: bool = False
 
     config_path: Path = BACKEND_DIR / "config.yaml"
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def parse_origins(cls, value):
+        """Liste des origines autorisées, quel que soit le format saisi chez l'hébergeur.
+
+        Une origine n'a jamais de « / » final (le navigateur envoie `https://site.app`) : une
+        adresse copiée avec ce « / » ne correspondrait à rien, on le retire.
+        """
+        if isinstance(value, str):
+            text = value.strip()
+            if not text:
+                return ["http://localhost:3000"]
+            value = json.loads(text) if text.startswith("[") else text.split(",")
+        return [str(origin).strip().rstrip("/") for origin in value if str(origin).strip()]
 
 
 class RateLimit(BaseModel):
